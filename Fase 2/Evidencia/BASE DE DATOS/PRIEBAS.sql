@@ -1,0 +1,1 @@
+SELECT resultado, COUNT(*), ROUND(AVG(latencia_ms)) FROM ecoscan.inferencia GROUP BY resultado;
