@@ -1,0 +1,13 @@
+fastapi==0.165.0
+uvicorn==0.54.0
+SQLAlchemy==2.1.9
+PyMySQL==1.2.4
+python-multipart==0.0.34
+pydantic==2.14.3
+opencv-python==5.1.0.95
+numpy==2.5.5
+pillow==13.0.0
+pillow_heif==1.8.1
+pi_heif==1.4.0
+ultralytics==8.4.215
+python-dotenv==1.2.4
