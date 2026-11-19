@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ecoscan-backend
+        working-directory: Fase 3/ecoscan-backend
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -30,14 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ecoscan-frontend
+        working-directory: Fase 3/ecoscan-frontend
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: ecoscan-frontend/package-lock.json
+          cache-dependency-path: Fase 3/ecoscan-frontend/package-lock.json
       - name: Instalar dependencias
         run: npm ci
       - name: Pruebas unitarias

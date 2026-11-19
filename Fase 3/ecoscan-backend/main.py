@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 load_dotenv()
-# Permite que el .env de la raíz del repo funcione aunque se lance el backend
+# Permite que el .env de la carpeta Fase 3 funcione aunque se lance el backend
 # desde VS Code o desde otra carpeta (REC-64: secretos fuera del código).
 load_dotenv(dotenv_path=Path(__file__).resolve().parent.parent / '.env', override=False)
 

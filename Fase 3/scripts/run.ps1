@@ -111,7 +111,7 @@ if (-not $SinVSCode) {
   $code = (Get-Command code -ErrorAction SilentlyContinue).Source
   if ($code) {
     Start-Process -FilePath $code -ArgumentList @('-n', ('"' + $Raiz + '"')) -WindowStyle Normal | Out-Null
-    Ok 'Visual Studio Code abierto en la raíz del repositorio.'
+    Ok 'Visual Studio Code abierto en la carpeta Fase 3.'
   } else {
     Info 'VS Code no está en PATH; omiendo este paso (instálalo o abre la carpeta manualmente).'
   }

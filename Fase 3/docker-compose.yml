@@ -1,3 +1,5 @@
+name: ecoscan
+
 services:
   mysql:
     image: mysql:8.0

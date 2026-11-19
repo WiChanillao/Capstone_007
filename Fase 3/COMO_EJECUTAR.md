@@ -19,11 +19,11 @@ Además, el entorno virtual estaba copiado de otra computadora y apuntaba a esa 
 
 ## Cómo darle Run
 
-1. Abre en VS Code esta carpeta: **`...\version del ema capstone\Capstone`** (la carpeta `Capstone`, no `ecoscan-backend` sola).
+1. Abre en VS Code esta carpeta: **`...\version del ema capstone\Capstone\Fase 3`** (la carpeta `Fase 3`, no `ecoscan-backend` sola).
 2. Presiona **F5**.
 3. En el desplegable elige **"EcoScan: Backend (F5)"** (o **"EcoScan: Full Stack (Backend + Frontend)"** si quieres ambos).
 4. Si VS Code pregunta por el intérprete, selecciona:
-   `Capstone\ecoscan-backend\venv\Scripts\python.exe`
+   `Capstone\Fase 3\ecoscan-backend\venv\Scripts\python.exe`
 
 También puedes ir a **Terminal → Run Task…** y elegir:
 - `EcoScan: Backend (FastAPI)`
@@ -58,7 +58,7 @@ La ventaja de Docker es que **no hay que instalar Python, Node.js, React ni las 
 1. **Instalar y abrir Docker Desktop** en Windows. Si no está instalado, el comando `docker` no se reconoce. Durante la instalación dejar seleccionada la opción **WSL 2**. Si ya está instalado, abrir Docker Desktop y esperar a que esté corriendo antes de ejecutar cualquier comando.
 2. **Virtualización activada en la BIOS/UEFI**. Si Docker Desktop muestra el aviso rojo *“Virtualization is disabled in firmware”*, hay que habilitar la virtualización en la BIOS/UEFI del computador y reiniciar.
 3. **Descomprimir el proyecto**. Si se recibió un `.zip` o `.rar`, extraerlo primero. Ejecutar Docker desde dentro del archivo comprimido hará que no encuentre los archivos.
-4. **Ubicarse en la carpeta raíz `Capstone`**, la que contiene `docker-compose.yml`.
+4. **Ubicarse en la carpeta `Capstone\Fase 3`**, la que contiene `docker-compose.yml`.
 
 ### Comando
 
@@ -80,7 +80,10 @@ Para revisar logs si algo falla:
 docker compose logs -f
 ```
 
-> Estado real: los archivos `docker-compose.yml` y los `Dockerfile` están entregados en el proyecto. **La ejecución de Docker Compose no ha sido verificada en esta máquina**; por eso REC-67 sigue documentado como pendiente.
+> Estado real verificado: `docker compose up --build -d` levantó los 3 servicios
+> (`mysql`, `backend`, `frontend`) en estado **healthy**; `/health`, `/v1/models`,
+> `/docs` y `/` respondieron 200 y un `POST /predict` incrementó las inferencias
+> en MySQL de 60 a 61. Evidencia: carpeta `06_DOCKER/` del paquete de evidencias.
 
 ## Verificación ya realizada
 

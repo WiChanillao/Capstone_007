@@ -17,7 +17,7 @@ Credenciales por defecto del `.env.example`: `root` / `admin`, base `ecoscan`. C
 
 ## Opción A — Arranque local (un solo comando)
 
-Desde la raíz del repositorio:
+Desde la carpeta **`Capstone\Fase 3`** (donde están `scripts/` y `docker-compose.yml`):
 
 **Windows:**
 ```bat
@@ -40,7 +40,7 @@ El script hace todo esto automáticamente:
    - aplica `docker/mysql/init/01_schema.sql` y `02_seed.sql` **solo si no hay datos**;
    - **nunca borra datos existentes**.
 6. Abre dos terminales visibles: backend FastAPI (8000) y frontend Vite (5173).
-7. Abre Visual Studio Code en la raíz del repo y el navegador en la app.
+7. Abre Visual Studio Code en la carpeta `Fase 3` y el navegador en la app.
 8. Espera a `/health` y `/db/impacto` e imprime la verificación real.
 
 Salida esperada al final:
@@ -81,7 +81,7 @@ DROP DATABASE IF EXISTS ecoscan_prueba;
 
 El `docker-compose.yml` levanta **MySQL + backend + frontend**, sin depender del MySQL instalado en Windows. El MySQL del contenedor publica el puerto **3307** para no chocar con el local 3306.
 
-Desde la raíz del repositorio:
+Desde la carpeta **`Capstone\Fase 3`**:
 
 ```bash
 copy .env.example .env      # Windows
@@ -101,10 +101,10 @@ URLs:
 - Impacto: http://127.0.0.1:8000/db/impacto
 - MySQL Docker: `localhost:3307`, usuario `root`, clave de `MYSQL_ROOT_PASSWORD`
 
-Para abrir VS Code con el repo clonado:
+Para abrir VS Code con el proyecto ordenado:
 
 ```bash
-code .
+code .        # estando dentro de Capstone\Fase 3
 ```
 
 Para reiniciar **realmente desde cero** en Docker (esto borra el volumen de datos):
@@ -124,7 +124,7 @@ docker compose down
 
 ## Solo desde Visual Studio Code (sin CMD)
 
-Abre la carpeta del repo en VS Code y pulsa **`Ctrl+Shift+B`**. Se ejecuta la tarea de build por defecto:
+Abre la carpeta **`Capstone\Fase 3`** en VS Code y pulsa **`Ctrl+Shift+B`**. Se ejecuta la tarea de build por defecto:
 
 - **EcoScan: FULL STACK (solo VS Code, sin CMD)**
 
@@ -164,23 +164,22 @@ También hay `.vscode/launch.json` con la configuración **EcoScan: Full Stack (
 | `.dockerignore` en cada app | Evita copiar `venv`, `node_modules`, `.env` y temporales |
 | `.env.example`, `.gitignore`, `.gitattributes` | Configuración limpia, secretos fuera del repo y finales de línea correctos |
 | `.vscode/tasks.json` | Arranque desde VS Code |
-| `ecoscan-backend/main.py` | Carga también el `.env` de la raíz del repo |
+| `ecoscan-backend/main.py` | Carga también el `.env` de la carpeta `Fase 3` |
 | `INICIO_RAPIDO.md` | Esta guía |
 
 ---
 
-## Estado honesto de Git en la PC actual
+## Estado real de Git, Docker y CI (19-11-2026)
 
-La carpeta `Capstone` **no tiene carpeta `.git`** y no hay `git.exe` instalado/en PATH, por lo que no pude hacer `commit` ni `push` aquí. Los archivos ya están dentro de la carpeta del proyecto, listos para versionar. Cuando Git esté disponible:
-
-```bash
-git init
-git add .
-git commit -m "Arranque reproducible EcoScan: scripts, Docker, BD semilla y VS Code"
-git remote add origin <URL_DEL_REPOSITORIO>
-git push -u origin main
-```
-
-Si el profesor descarga el ZIP en vez de clonar, el flujo de la Opción A funciona igual desde la carpeta descomprimida.
-
-> Docker Compose y GitHub Actions están configurados, pero en esta PC **no se ejecutaron**: Docker CLI/daemon no está disponible y Git no está instalado. La verificación en vivo sí se hizo con el arranque local (Opción A).
+- Git 2.56.0.4 instalado y en PATH; repo: <https://github.com/WiChanillao/Capstone_007>.
+- Todo el proyecto está agrupado en `Fase 3/`. En la raíz solo quedan `.github/`,
+  `.gitignore`, `.gitattributes` y este README índice (GitHub/Git los necesitan).
+- Docker Compose **sí se ejecutó y se verificó**: 3 contenedores `healthy`,
+  `/health`, `/v1/models`, `/docs` y `/` → 200, y `POST /predict` incrementó
+  inferencias en MySQL de 60 a 61.
+- CI de GitHub Actions **sí se ejecutó**: tras corregir el test de `/health`
+  (REC-142), los jobs `backend` y `frontend` pasaron; además se actualizaron
+  `actions/checkout`, `actions/setup-python` y `actions/setup-node` a v7 para
+  quitar los avisos de Node.js 20.
+- Si descargas el ZIP en vez de clonar, las opciones A y B funcionan igual desde
+  `Capstone\Fase 3`.

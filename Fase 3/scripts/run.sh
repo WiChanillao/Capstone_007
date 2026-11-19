@@ -89,7 +89,7 @@ ok "Verificación: $(curl -fsS http://127.0.0.1:8000/db/impacto)"
 
 if command -v code >/dev/null 2>&1; then
   code "$RAIZ" >/dev/null 2>&1 || true
-  ok "VS Code abierto en la raíz del repositorio."
+  ok "VS Code abierto en la carpeta Fase 3."
 fi
 if command -v xdg-open >/dev/null 2>&1; then
   xdg-open http://127.0.0.1:5173/ >/dev/null 2>&1 || true
