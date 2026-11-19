@@ -114,6 +114,50 @@ const MENSAJES_CLIMATICOS = [
   }
 ];
 
+// Galería interactiva del Eco-Simulador: consejos + videos verificados (19-11-2026).
+// Las imágenes son miniaturas oficiales descargadas localmente; los videos son de terceros.
+const CONSEJOS_GALERIA = [
+  {
+    id: 'plastico',
+    etiqueta: 'Plástico',
+    icono: '🍾',
+    titulo: 'Enjuaga y aplasta el PET',
+    texto: 'Enjuaga la botella, retira la tapa y la etiqueta si son de otro material, y aplástala para que ocupe menos espacio. Así facilitas el reciclaje del plástico PET y HDPE.',
+    imagen: '/galeria/plastico.jpg',
+    video: {
+      id: 'Rn7mCLIew6c',
+      titulo: '¿Qué pasa con la basura que generamos?',
+      autor: 'EcologíaVerde'
+    }
+  },
+  {
+    id: 'carton',
+    etiqueta: 'Cartón',
+    icono: '📦',
+    titulo: 'Cartón limpio, seco y aplastado',
+    texto: 'Retira grapas, cintas y restos de comida. Si el cartón está limpio y seco, sepáralo del resto y aplasta las cajas: ocuparás menos espacio en tu casa y en el punto limpio.',
+    imagen: '/galeria/carton.jpg',
+    video: {
+      id: 'M3z-YPsumOw',
+      titulo: 'Campaña de concienciación para fomentar el reciclaje',
+      autor: 'Ayuntamiento de Móstoles'
+    }
+  },
+  {
+    id: 'aluminio',
+    etiqueta: 'Aluminio',
+    icono: '🥫',
+    titulo: 'Una lata bien separada vuelve a ser aluminio',
+    texto: 'Vacia y enjuaga la lata, déjala secar y aplástala suavemente. Reciclar aluminio ahorra mucha energía frente a producirlo desde cero.',
+    imagen: '/galeria/aluminio.jpg',
+    video: {
+      id: 'XVoQayZfakE',
+      titulo: 'Spot Agüita: ¡Pon la basura en su lugar!',
+      autor: 'ANA Perú'
+    }
+  }
+];
+
 // Puntos Limpios RM (Filtrados a Cartón, Plástico y Aluminio)
 const PUNTOS_RM = [
   {
@@ -240,6 +284,8 @@ export default function App() {
   const [materialSeleccionado, setMaterialSeleccionado] = useState('Todos');
   const [puntosRM, setPuntosRM] = useState(PUNTOS_RM);
   const [puntoMapaActivo, setPuntoMapaActivo] = useState(null);
+  const [consejoIndice, setConsejoIndice] = useState(0);
+  const [videoAbierto, setVideoAbierto] = useState(null);
   const [ubicacion, setUbicacion] = useState(null);
   const [geoError, setGeoError] = useState('');
   const [errorEscaneo, setErrorEscaneo] = useState('');
@@ -503,6 +549,11 @@ export default function App() {
   const co2EvitadoKg = Number(impactoActual.impacto?.co2_kg || 0).toFixed(2);
   const kmRedMovilidad = Number(impactoActual.equivalencias?.km_auto ?? (Number(co2EvitadoKg) * 7.5).toFixed(1));
   const kgBasuraDesviada = Number(impactoActual.impacto?.residuos_kg || 0).toFixed(2);
+
+  // Galería: solo navega entre información, nunca modifica los datos del simulador.
+  const consejoActual = CONSEJOS_GALERIA[consejoIndice];
+  const moverConsejo = (paso) =>
+    setConsejoIndice((i) => (i + paso + CONSEJOS_GALERIA.length) % CONSEJOS_GALERIA.length);
 
   const desafiosAuto = desafios.map(d => ({
     ...d,
@@ -1411,6 +1462,102 @@ export default function App() {
                   🔄 Este indicador se actualiza solo cuando escaneas una imagen en el Eco-Scanner. Fuente: MySQL <code className="text-emerald-400">ecoscan.escaneos</code>.
                 </p>
               </div>
+
+              {/* Galería interactiva: solo navega contenido informativo, nunca edita datos */}
+              <div className="border-t border-slate-800 pt-6 space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-lg font-black text-white">💡 Consejos para reciclar mejor</h3>
+                    <p className="text-xs text-slate-400 mt-1">Usa las flechas para cambiar la foto y el consejo. No modifica tus datos.</p>
+                  </div>
+                  <span className="text-[11px] font-bold text-emerald-300">
+                    Consejo {consejoIndice + 1} de {CONSEJOS_GALERIA.length}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-900 min-h-[230px]">
+                    <img
+                      src={consejoActual.imagen}
+                      alt={`Consejo de reciclaje: ${consejoActual.etiqueta}`}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/10 to-transparent" />
+                    <button
+                      type="button"
+                      aria-label="Consejo anterior"
+                      onClick={() => moverConsejo(-1)}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-slate-950/85 border border-slate-600 text-white text-2xl font-black hover:border-emerald-400 cursor-pointer"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Consejo siguiente"
+                      onClick={() => moverConsejo(1)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-slate-950/85 border border-slate-600 text-white text-2xl font-black hover:border-emerald-400 cursor-pointer"
+                    >
+                      ›
+                    </button>
+                    <span className="absolute bottom-3 left-3 text-[10px] font-bold px-2 py-1 rounded-md bg-emerald-500/90 text-slate-950">
+                      {consejoActual.etiqueta}
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between gap-4">
+                    <div>
+                      <span className="text-2xl">{consejoActual.icono}</span>
+                      <h4 className="text-base font-black text-white mt-2">{consejoActual.titulo}</h4>
+                      <p className="text-xs text-slate-300 leading-relaxed mt-2">{consejoActual.texto}</p>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex gap-1.5">
+                        {CONSEJOS_GALERIA.map((c, i) => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            aria-label={`Ir al consejo ${i + 1}`}
+                            onClick={() => setConsejoIndice(i)}
+                            className={`h-2 rounded-full transition-all cursor-pointer ${
+                              i === consejoIndice ? 'w-6 bg-emerald-400' : 'w-2 bg-slate-700 hover:bg-slate-600'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setVideoAbierto(consejoActual.video)}
+                        className="px-3 py-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-xs font-bold hover:bg-emerald-500/20 cursor-pointer"
+                      >
+                        ▶ Ver video: {consejoActual.video.titulo}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold text-slate-200">🎬 Videos: para qué sirve reciclar</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">
+                    Videos de terceros alojados en YouTube. No se reproducen automáticamente.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+                    {CONSEJOS_GALERIA.map((c) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => setVideoAbierto(c.video)}
+                        className="group text-left bg-slate-900/80 border border-slate-800 hover:border-emerald-500/40 rounded-xl p-3 flex gap-3 items-center cursor-pointer transition-all"
+                      >
+                        <img src={c.imagen} alt="" className="w-20 h-14 object-cover rounded-lg border border-slate-700" />
+                        <span className="min-w-0">
+                          <span className="block text-[11px] font-bold text-white leading-snug">{c.video.titulo}</span>
+                          <span className="block text-[10px] text-slate-400 mt-1">{c.video.autor} · ▶ Ver</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1493,6 +1640,50 @@ export default function App() {
         <p>EcoLearn Chile — Tecnología y Conciencia Ambiental para la Región Metropolitana.</p>
         <p className="text-[10px] text-slate-400">Soporta: Cartón • Plástico PET/HDPE • Latas de Aluminio</p>
       </footer>
+
+      {/* Modal de videos: no autoplay, fuente externa identificada */}
+      {videoAbierto && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={videoAbierto.titulo}
+          onClick={() => setVideoAbierto(null)}
+          onKeyDown={(e) => { if (e.key === 'Escape') setVideoAbierto(null); }}
+        >
+          <div
+            className="w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-2xl p-4 space-y-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-black text-white">{videoAbierto.titulo}</h3>
+                <p className="text-[11px] text-slate-400 mt-0.5">{videoAbierto.autor} · YouTube</p>
+              </div>
+              <button
+                type="button"
+                aria-label="Cerrar video"
+                onClick={() => setVideoAbierto(null)}
+                className="w-9 h-9 rounded-full border border-slate-600 text-white font-bold hover:border-emerald-400 cursor-pointer shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="aspect-video w-full rounded-xl overflow-hidden bg-black">
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube-nocookie.com/embed/${videoAbierto.id}?rel=0`}
+                title={videoAbierto.titulo}
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+            <p className="text-[10px] text-slate-500">
+              El video se reproduce solo al abrirlo. Contenido de terceros; EcoLearn no se hace responsable de su contenido.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

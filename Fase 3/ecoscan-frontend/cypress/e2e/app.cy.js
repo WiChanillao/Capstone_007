@@ -13,6 +13,27 @@ describe('EcoLearn Chile - app funcional', () => {
     cy.contains('Escaneos reales:').should('be.visible');
   });
 
+  it('galería de consejos cambia foto/consejo con flechas y abre video sin autoplay', () => {
+    cy.visit('/');
+    cy.contains('button', 'Eco-Simulador RM').click();
+    cy.contains('Consejos para reciclar mejor').should('be.visible');
+    cy.contains('Consejo 1 de 3').should('be.visible');
+    cy.contains('Enjuaga y aplasta el PET').should('be.visible');
+
+    cy.get('button[aria-label="Consejo siguiente"]').click();
+    cy.contains('Consejo 2 de 3').should('be.visible');
+    cy.contains('Cartón limpio, seco y aplastado').should('be.visible');
+
+    cy.get('button[aria-label="Consejo anterior"]').click();
+    cy.contains('Enjuaga y aplasta el PET').should('be.visible');
+
+    cy.contains('button', 'Ver video: ¿Qué pasa con la basura que generamos?').click();
+    cy.get('[role="dialog"]').should('be.visible');
+    cy.get('[role="dialog"] iframe[src*="youtube-nocookie.com/embed/Rn7mCLIew6c"]').should('exist');
+    cy.get('button[aria-label="Cerrar video"]').click();
+    cy.get('[role="dialog"]').should('not.exist');
+  });
+
   it('ordena puntos por cercanía con geolocalización autorizada', () => {
     cy.visit('/');
     cy.window().then((win) => {

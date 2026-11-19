@@ -33,7 +33,7 @@ Todo el proyecto está agrupado aquí. Todos los comandos de esta guía se ejecu
 | Ruta | Contenido |
 |---|---|
 | `ecoscan-backend/` | API FastAPI (`main.py`), rutas de datos (`rutas_db.py`), `best.pt`, `Dockerfile`, pruebas (`tests/`) |
-| `ecoscan-frontend/` | App React + Vite + Tailwind (pestañas Escáner IA, Puntos Limpios —con mapa interactivo Leaflet/OpenStreetMap, 35 registros (10 propios y 25 externos sin validar), procedencia y coordenada aproximada visibles—, Eco-Simulador, Desafío Verde, Impacto), `Dockerfile`, Cypress y Vitest |
+| `ecoscan-frontend/` | App React + Vite + Tailwind (pestañas Escáner IA, Puntos Limpios —con mapa interactivo Leaflet/OpenStreetMap, 35 registros (10 propios y 25 externos sin validar), procedencia y coordenada aproximada visibles—, Eco-Simulador —con galería interactiva de consejos con flechas y videos educativos, sin controles manuales—, Desafío Verde, Impacto), `Dockerfile`, Cypress y Vitest |
 | `docker/mysql/init/` | `01_schema.sql` (esquema `ecoscan`) y `02_seed.sql` (datos iniciales) |
 | `docker-compose.yml` | Stack completo: MySQL 8.0 (host 3307), backend (8000), frontend Nginx (5173) con *healthchecks* |
 | `scripts/` | `run.ps1` / `run.sh` / `run.bat` (arranque reproducible), `verificar_docker.ps1`, `instalar_docker.ps1`, `init_local_db.py` |
