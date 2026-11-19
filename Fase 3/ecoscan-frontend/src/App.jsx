@@ -1174,54 +1174,61 @@ export default function App() {
         {/* ---------------- PESTAÑA 2: PUNTOS LIMPIOS RM ---------------- */}
         {pestaña === 'puntos_rm' && (
           <div className="space-y-6 animate-fade-in">
-            <div className="bg-slate-950/60 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-black text-white">📍 Puntos Limpios en la Región Metropolitana</h2>
-                  <p className="text-xs text-slate-400 mt-1">Encuentra estaciones para entregar Cartón, Plástico y Aluminio.</p>
-                  <p className="text-[11px] text-amber-300/80 mt-1">
-                    Cobertura actual: {puntosRM.length} puntos en {comunasDisponibles.length - 1} comunas de la RM. Incluye puntos de listado externo sin validar oficialmente; materiales sujetos a confirmación (REC-65).
-                  </p>
+            <div className="bg-slate-950/60 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-3">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <h2 className="text-2xl font-black text-white">📍 Puntos Limpios RM</h2>
+                  <p className="text-xs text-slate-400 mt-1">Estaciones de reciclaje en la Región Metropolitana.</p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <label className="text-xs text-slate-400 font-bold">Comuna:</label>
-                  <select 
-                    value={comunaSeleccionada}
-                    onChange={(e) => setComunaSeleccionada(e.target.value)}
-                    className="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-2 outline-none focus:border-emerald-500 cursor-pointer"
+                <div className="flex flex-col md:flex-row md:items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-slate-400 font-bold">Comuna:</label>
+                    <select 
+                      value={comunaSeleccionada}
+                      onChange={(e) => setComunaSeleccionada(e.target.value)}
+                      className="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-2 outline-none focus:border-emerald-500 cursor-pointer"
+                    >
+                      {comunasDisponibles.map((c, i) => (
+                        <option key={i} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-slate-400 font-bold">Material:</label>
+                    <select
+                      value={materialSeleccionado}
+                      onChange={(e) => setMaterialSeleccionado(e.target.value)}
+                      className="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-2 outline-none focus:border-emerald-500 cursor-pointer"
+                    >
+                      {materialesDisponibles.map((m, i) => (
+                        <option key={i} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={usarMiUbicacion}
+                    className="px-3 py-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-bold whitespace-nowrap self-start md:self-auto cursor-pointer hover:bg-emerald-500/20"
                   >
-                    {comunasDisponibles.map((c, i) => (
-                      <option key={i} value={c}>{c}</option>
-                    ))}
-                  </select>
-                  <label className="text-xs text-slate-400 font-bold ml-2">Material:</label>
-                  <select
-                    value={materialSeleccionado}
-                    onChange={(e) => setMaterialSeleccionado(e.target.value)}
-                    className="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-2 outline-none focus:border-emerald-500 cursor-pointer"
-                  >
-                    {materialesDisponibles.map((m, i) => (
-                      <option key={i} value={m}>{m}</option>
-                    ))}
-                  </select>
+                    📍 Usar mi ubicación
+                  </button>
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 text-[11px]">
-                <button
-                  onClick={usarMiUbicacion}
-                  className="px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 font-bold cursor-pointer hover:bg-emerald-500/20"
-                >
-                  📍 Usar mi ubicación
-                </button>
-                {ubicacion && (
-                  <span className="text-slate-300">
-                    Ubicación autorizada: {ubicacion.lat.toFixed(4)}, {ubicacion.lon.toFixed(4)} — puntos ordenados por cercanía.
-                  </span>
-                )}
-                {geoError && <span className="text-amber-300">{geoError}</span>}
-              </div>
+              <p className="text-[11px] text-amber-300/80">
+                Cobertura actual: {puntosRM.length} puntos en {comunasDisponibles.length - 1} comunas de la RM. Incluye puntos de listado externo sin validar oficialmente; materiales sujetos a confirmación (REC-65).
+              </p>
+              {(ubicacion || geoError) && (
+                <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                  {ubicacion && (
+                    <span className="text-slate-300">
+                      Ubicación autorizada: {ubicacion.lat.toFixed(4)}, {ubicacion.lon.toFixed(4)} — puntos ordenados por cercanía.
+                    </span>
+                  )}
+                  {geoError && <span className="text-amber-300">{geoError}</span>}
+                </div>
+              )}
 
               {/* Mapa interactivo: mismo dataset filtrado, sin APIs de pago */}
               <div className="space-y-2 pt-2">
