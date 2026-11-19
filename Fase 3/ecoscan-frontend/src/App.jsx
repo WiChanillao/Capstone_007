@@ -1176,6 +1176,9 @@ export default function App() {
                 <div>
                   <h2 className="text-2xl font-black text-white">📍 Puntos Limpios en la Región Metropolitana</h2>
                   <p className="text-xs text-slate-400 mt-1">Encuentra estaciones para entregar Cartón, Plástico y Aluminio.</p>
+                  <p className="text-[11px] text-amber-300/80 mt-1">
+                    Cobertura actual: {puntosRM.length} puntos en {comunasDisponibles.length - 1} comunas de la RM. Listado de demostración, no un catastro oficial; direcciones en validación (REC-65).
+                  </p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
