@@ -238,9 +238,6 @@ export default function MapaPuntos({ puntos, ubicacion, puntoActivo, onSeleccion
         aria-label="Mapa interactivo de puntos limpios en la Región Metropolitana"
         className="h-[340px] sm:h-[460px] lg:h-[540px] w-full rounded-2xl border border-slate-700 overflow-hidden bg-slate-900"
       />
-      <div className="absolute top-3 left-3 z-[500] px-3 py-1.5 rounded-lg bg-slate-950/85 border border-emerald-500/40 text-[11px] font-black text-emerald-200 shadow-lg pointer-events-none">
-        Región Metropolitana de Santiago
-      </div>
       <div className="absolute top-3 right-3 z-[500] flex flex-col items-end gap-2">
         <button
           type="button"

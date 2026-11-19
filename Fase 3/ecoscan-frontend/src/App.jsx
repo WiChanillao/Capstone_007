@@ -1233,7 +1233,7 @@ export default function App() {
               {/* Mapa interactivo: mismo dataset filtrado, sin APIs de pago */}
               <div className="space-y-2 pt-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-bold text-slate-200">🗺️ Mapa de la Región Metropolitana</p>
+                  <p className="text-xs font-bold text-slate-200">🗺️ Mapa interactivo</p>
                   <span className="text-[11px] text-slate-400">
                     {puntosFiltrados.length} {puntosFiltrados.length === 1 ? 'punto visible' : 'puntos visibles'} · haz clic en un marcador para ver detalles
                   </span>
