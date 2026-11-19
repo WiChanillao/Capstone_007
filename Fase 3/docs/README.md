@@ -14,12 +14,12 @@ disponible desde un solo clone.
 
 ## Diagrama de estructura y Docker
 
-`ESTRUCTURA_PROYECTO_DOCKER.png` (1920 × 1080) muestra en una sola imagen el
-árbol real de `Fase 3/`, los tres servicios de `docker-compose.yml` con sus
-puertos (5173, 8000 y 3307) y el flujo navegador → frontend → backend → MySQL
-→ impacto/desafíos, junto con la verificación real (health, 35 puntos, pruebas
-15/15 + 4/4 + 4/4 y mAP oficial 0,562). No es un mockup: los nombres y puertos
-salen del repositorio y del compose vigente.
+`ESTRUCTURA_PROYECTO_DOCKER.png` es una **captura real de Docker Desktop** (no
+un diagrama diseñado), tomada de la ventana del proyecto `capstone`. Muestra
+los tres contenedores en ejecución con sus puertos (`mysql 3307:3306`,
+`backend 8000:8000`, `frontend 5173:80`), el estado del motor y los logs de
+`/health` y `/v1/models` respondiendo `200 OK`. El texto de la captura se
+verificó por OCR, no por inspección visual.
 
 ## Nota de seguridad
 
