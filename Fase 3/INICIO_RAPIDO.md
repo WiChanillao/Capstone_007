@@ -9,7 +9,7 @@ Este documento explica cómo levantar el proyecto **desde un clone/descarga del 
 | **A. Local (recomendado en la PC actual)** | Python 3.10+, Node.js 20+ con npm, MySQL 8.0 en `localhost:3306`, Visual Studio Code (opcional) |
 | **B. Docker** | Docker Desktop con Compose v2 (no es obligatorio) |
 
-Credenciales por defecto del `.env.example`: `root` / `admin`, base `ecoscan`. Cámbialas en `.env` si tu MySQL usa otras.
+Antes de levantar, copia `.env.example` a `.env` y **define una contraseña propia** en `MYSQL_ROOT_PASSWORD` (y `MYSQL_PASSWORD`). El ejemplo trae el placeholder `cambiar_esta_clave`: no sirve para usar tal cual. El compose falla con un mensaje claro si `MYSQL_ROOT_PASSWORD` no está definida.
 
 > `.env` está ignorado por Git. Nunca subas credenciales reales.
 
@@ -86,6 +86,9 @@ Desde la carpeta **`Capstone\Fase 3`**:
 ```bash
 copy .env.example .env      # Windows
 # o: cp .env.example .env   # Linux/macOS
+
+# IMPORTANTE: editar .env y reemplazar cambiar_esta_clave por una clave propia
+# en MYSQL_ROOT_PASSWORD y MYSQL_PASSWORD antes del siguiente comando.
 
 docker compose up --build -d
 docker compose ps

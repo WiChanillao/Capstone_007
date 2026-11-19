@@ -50,9 +50,15 @@ Requisitos: Docker Desktop con WSL2 (en Windows, `scripts/instalar_docker.ps1`
 lo instala si falta).
 
 ```bash
+cp .env.example .env             # Windows: copy .env.example .env
+# Editar .env y definir MYSQL_ROOT_PASSWORD (y MYSQL_PASSWORD) con una clave propia
 docker compose up --build -d     # MySQL 3307, backend 8000, frontend 5173
 docker compose ps                # los 3 servicios deben verse "healthy"
 ```
+
+> El compose no usa valores por defecto para la contraseña: si
+> `MYSQL_ROOT_PASSWORD` no está definida en `.env`, `docker compose up` falla
+> con el mensaje `Definir MYSQL_ROOT_PASSWORD en .env`.
 
 - App: http://localhost:5173/
 - API: http://127.0.0.1:8000/ · Docs: http://127.0.0.1:8000/docs
