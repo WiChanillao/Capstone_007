@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import MapaPuntos from './MapaPuntos.jsx';
 
 // URL del backend configurable por entorno (REC-105). Sin VITE_API_URL usa localhost.
 const API_URL = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000').replace(/\/$/, '');
@@ -238,6 +239,7 @@ export default function App() {
   const [comunaSeleccionada, setComunaSeleccionada] = useState('Todas');
   const [materialSeleccionado, setMaterialSeleccionado] = useState('Todos');
   const [puntosRM, setPuntosRM] = useState(PUNTOS_RM);
+  const [puntoMapaActivo, setPuntoMapaActivo] = useState(null);
   const [ubicacion, setUbicacion] = useState(null);
   const [geoError, setGeoError] = useState('');
   const [errorEscaneo, setErrorEscaneo] = useState('');
@@ -1215,9 +1217,33 @@ export default function App() {
                 {geoError && <span className="text-amber-300">{geoError}</span>}
               </div>
 
+              {/* Mapa interactivo: mismo dataset filtrado, sin APIs de pago */}
+              <div className="space-y-2 pt-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs font-bold text-slate-200">🗺️ Mapa de la Región Metropolitana</p>
+                  <span className="text-[11px] text-slate-400">
+                    {puntosFiltrados.length} {puntosFiltrados.length === 1 ? 'punto visible' : 'puntos visibles'} · haz clic en un marcador para ver detalles
+                  </span>
+                </div>
+                <MapaPuntos
+                  puntos={puntosFiltrados}
+                  ubicacion={ubicacion}
+                  puntoActivo={puntoMapaActivo}
+                  onSeleccionar={setPuntoMapaActivo}
+                  estaAbierto={estaAbiertoAhora}
+                />
+                <p className="text-[10px] text-slate-500">
+                  Mapa base © OpenStreetMap / CARTO. Los marcadores usan las coordenadas reales cargadas desde MySQL; arrastra para moverte y usa los controles + / − para acercar.
+                </p>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 {puntosFiltrados.map((punto, idx) => (
-                  <div key={idx} className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 hover:border-emerald-500/30 transition-all space-y-3">
+                  <div key={idx} className={`bg-slate-900/80 border rounded-2xl p-5 transition-all space-y-3 ${
+                    puntoMapaActivo?.nombre === punto.nombre
+                      ? 'border-emerald-500/70 shadow-lg shadow-emerald-500/10'
+                      : 'border-slate-800 hover:border-emerald-500/30'
+                  }`}>
                     <div className="flex items-start justify-between">
                       <div>
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -1248,14 +1274,23 @@ export default function App() {
                           </span>
                         );
                       })()}
-                      <a
-                        href={linkCómoLlegar(punto, ubicacion)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[11px] font-bold text-emerald-400 hover:underline"
-                      >
-                        🧭 Cómo llegar
-                      </a>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setPuntoMapaActivo(punto)}
+                          className="text-[11px] font-bold text-cyan-300 hover:underline cursor-pointer"
+                        >
+                          🗺️ Ver en mapa
+                        </button>
+                        <a
+                          href={linkCómoLlegar(punto, ubicacion)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] font-bold text-emerald-400 hover:underline"
+                        >
+                          🧭 Cómo llegar
+                        </a>
+                      </div>
                     </div>
 
                     <div className="flex flex-wrap gap-1.5 pt-1">
