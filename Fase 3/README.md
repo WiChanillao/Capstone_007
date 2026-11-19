@@ -162,6 +162,13 @@ guardadas del cuaderno difieren de la iteración final documentada (0.562) y no
 deben usarse para afirmar que el objetivo se alcanzó. Detalle en
 `EVIDENCIA_ECOLEARN_ACTUALIZADA_2026-11-19/14_COLAB/EVIDENCIA_COLAB.txt`.
 
+Segunda iteración ejecutada el 19-11-2026 en la misma GPU T4 (YOLO11n, 100
+épocas, `patience=20`): mAP@50 **0.622 en validación y 0.527 en test**, con
+latencia PyTorch 12,9 ms y ONNX 129,6 ms. No supera la cifra oficial (0.562)
+ni el objetivo (0.65), por lo que la tabla de resultados y la presentación
+final se mantienen sin cambios. Registro completo en
+`EVIDENCIA_ECOLEARN_ACTUALIZADA_2026-11-19/14_COLAB/EVIDENCIA_COLAB_REENTRENAMIENTO.txt`.
+
 ## Equipo y gestión
 
 Jira: tablero **EcoLearn** (proyecto **REC**). Ramas: `main` (estable), `develop`,
