@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --aqua-primary: #14b8a6;
+    --aqua-hover: #0d9488;
+    --emerald-accent: #10b981;
+    --bg-dark: #040e13;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  html {
+    background-color: var(--bg-dark);
+    overscroll-behavior-y: none;
+  }
+
+  /* Fondo principal en tonalidad Verde Aqua oscura.
+     Sin background-attachment: fixed: esa propiedad deja franjas negras al hacer scroll. */
+  body {
+    background-color: var(--bg-dark) !important;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.25) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.20) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(6, 182, 212, 0.08) 0px, transparent 60%) !important;
+    background-attachment: scroll !important;
+    background-repeat: no-repeat !important;
+    color: #f0fdf4;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Personalización del Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #06141b;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #113836;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #14b8a6;
+  }
+}
+
+@layer components {
+  /* Paneles translúcidos estilo Glassmorphism Aqua */
+  .glass-panel {
+    background: rgba(8, 28, 32, 0.94);
+    border: 1px solid rgba(20, 184, 166, 0.25);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  /* Botón Principal (Verde Esmeralda a Aqua) */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300 ease-out cursor-pointer;
+    background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+    box-shadow: 0 4px 15px rgba(20, 184, 166, 0.4);
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+    box-shadow: 0 6px 22px rgba(20, 184, 166, 0.6);
+    transform: translateY(-2px);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  /* Botón Secundario (Borde y resplandor Aqua) */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold text-teal-300 transition-all duration-300 ease-out cursor-pointer;
+    background: rgba(20, 184, 166, 0.12);
+    border: 1px solid rgba(20, 184, 166, 0.35);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(20, 184, 166, 0.22);
+    border-color: rgba(20, 184, 166, 0.6);
+    color: #ffffff;
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary:active {
+    transform: translateY(0);
+  }
+
+  /* Efectos de Resplandor (Glow) */
+  .glow-aqua {
+    box-shadow: 0 0 30px -5px rgba(20, 184, 166, 0.4);
+  }
+
+  .glow-emerald {
+    box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.4);
+  }
+
+  /* Gradiente de texto */
+  .text-gradient-aqua {
+    background: linear-gradient(135deg, #34d399 0%, #2dd4bf 50%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(12px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
