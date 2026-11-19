@@ -27,7 +27,7 @@
 
 LOCK TABLES `banner_impacto` WRITE;
 /*!40000 ALTER TABLE `banner_impacto` DISABLE KEYS */;
-INSERT INTO `banner_impacto` VALUES (1,'Tiempos Extremos de Degradaci├│n','Una botella pl├ística PET tarda m├ís de 500 a├▒os en descomponerse. En Chile, menos del 10% del pl├ístico consumido se recicla.'),(2,'Micropl├ísticos en el Oc├®ano','Para 2050, habr├í m├ís pl├ístico que peces en el oc├®ano si no reducimos y reciclamos nuestros residuos urbanos.'),(3,'Impacto en el Calentamiento Global','Por cada tonelada de aluminio reciclada, se evita la emisi├│n de casi 9 toneladas de COÔéé a la atm├│sfera.'),(4,'Saturaci├│n en Rellenos Sanitarios de la RM','Los rellenos sanitarios de Santiago (como Santa Marta o Tiltil) reciben miles de toneladas diarias que podr├¡an valorizarse.');
+INSERT INTO `banner_impacto` VALUES (1,'Tiempos Extremos de Degradación','Una botella plástica PET tarda más de 500 años en descomponerse. En Chile, menos del 10% del plástico consumido se recicla.'),(2,'Microplásticos en el Océano','Para 2050, habrá más plástico que peces en el océano si no reducimos y reciclamos nuestros residuos urbanos.'),(3,'Impacto en el Calentamiento Global','Por cada tonelada de aluminio reciclada, se evita la emisión de casi 9 toneladas de CO₂ a la atmósfera.'),(4,'Saturación en Rellenos Sanitarios de la RM','Los rellenos sanitarios de Santiago (como Santa Marta o Tiltil) reciben miles de toneladas diarias que podrían valorizarse.');
 /*!40000 ALTER TABLE `banner_impacto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -37,7 +37,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `comuna` WRITE;
 /*!40000 ALTER TABLE `comuna` DISABLE KEYS */;
-INSERT INTO `comuna` VALUES (6,'La Florida'),(4,'Las Condes'),(1,'Maip├║'),(7,'├æu├▒oa'),(9,'Pe├▒alol├®n'),(3,'Providencia'),(5,'Puente Alto'),(8,'San Bernardo'),(2,'Santiago Centro');
+INSERT INTO `comuna` VALUES (6,'La Florida'),(4,'Las Condes'),(1,'Maipú'),(7,'Ñuñoa'),(9,'Peñalolén'),(3,'Providencia'),(5,'Puente Alto'),(8,'San Bernardo'),(2,'Santiago Centro');
 /*!40000 ALTER TABLE `comuna` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -67,7 +67,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `habito` WRITE;
 /*!40000 ALTER TABLE `habito` DISABLE KEYS */;
-INSERT INTO `habito` VALUES (1,'Bolsas Reutilizables en la Feria o Vega','Realiza tus compras semanales en la Feria Libre o Vega Central usando bolsas de g├®nero o carrito.'),(2,'Dona Tapitas a Damas de Caf├®','Junta las tapas pl├ísticas de botellas y ll├®valas a los puntos de donaci├│n para ni├▒os del Hospital Calvo Mackenna / San Borja.'),(3,'Confecciona un Ecoladrillo Casero','Rellena una botella PET limpia con pl├ísticos flexibles no reciclables (envolturas de snacks, fideos, galletas).'),(4,'Separaci├│n Limpia en Origen','Lava y seca todos los envases pl├ísticos y latas antes de llevarlos al Punto Limpio de tu comuna.');
+INSERT INTO `habito` VALUES (1,'Bolsas Reutilizables en la Feria o Vega','Realiza tus compras semanales en la Feria Libre o Vega Central usando bolsas de género o carrito.'),(2,'Dona Tapitas a Damas de Café','Junta las tapas plásticas de botellas y llévalas a los puntos de donación para niños del Hospital Calvo Mackenna / San Borja.'),(3,'Confecciona un Ecoladrillo Casero','Rellena una botella PET limpia con plásticos flexibles no reciclables (envolturas de snacks, fideos, galletas).'),(4,'Separación Limpia en Origen','Lava y seca todos los envases plásticos y latas antes de llevarlos al Punto Limpio de tu comuna.');
 /*!40000 ALTER TABLE `habito` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -106,7 +106,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `item_simulador` WRITE;
 /*!40000 ALTER TABLE `item_simulador` DISABLE KEYS */;
-INSERT INTO `item_simulador` VALUES (1,'Botellas Pl├ísticas (PET)',8,50,3.000,0.0800,0.0300),(2,'Latas de Bebida / Conservas',6,50,2.000,0.1700,0.0150),(3,'Cajas de Cart├│n / Envoltorios',4,30,12.000,0.2500,0.1200);
+INSERT INTO `item_simulador` VALUES (1,'Botellas Plásticas (PET)',8,50,3.000,0.0800,0.0300),(2,'Latas de Bebida / Conservas',6,50,2.000,0.1700,0.0150),(3,'Cajas de Cartón / Envoltorios',4,30,12.000,0.2500,0.1200);
 /*!40000 ALTER TABLE `item_simulador` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,7 +116,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `material` WRITE;
 /*!40000 ALTER TABLE `material` DISABLE KEYS */;
-INSERT INTO `material` VALUES (1,'Cart├│n y Papel',1),(2,'Pl├ístico (PET/HDPE)',2),(3,'Aluminio',3);
+INSERT INTO `material` VALUES (1,'Cartón y Papel',1),(2,'Plástico (PET/HDPE)',2),(3,'Aluminio',3);
 /*!40000 ALTER TABLE `material` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -126,7 +126,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `paso_instruccion` WRITE;
 /*!40000 ALTER TABLE `paso_instruccion` DISABLE KEYS */;
-INSERT INTO `paso_instruccion` VALUES (1,1,1,'Limpia el cart├│n o papel de grasas o restos de comida.'),(2,1,2,'Retira cintas adhesivas, corchetes o pl├ísticos pegados.'),(3,1,3,'Desarma y aplasta las cajas para reducir volumen.'),(4,2,1,'├Üsalo como base para compostaje o mantillo de huertos.'),(5,2,2,'Crea organizadores de escritorio o cajas de almacenamiento.'),(6,2,3,'Reutiliza las cajas intactas para futuros env├¡os o mudanzas.'),(7,3,1,'Enjuaga la lata para eliminar restos de l├¡quido o alimento.'),(8,3,2,'Deja secar el interior por completo.'),(9,3,3,'Apl├ístala suavemente para optimizar espacio en el contenedor.'),(10,4,1,'Convi├®rtela en macetero decorativo para suculentas.'),(11,4,2,'├Üsala como portal├ípices u organizador de escritorio.'),(12,4,3,'Fabrica faroles decorativos o ceniceros reutilizables.'),(13,5,1,'Lava y enjuaga el envase pl├ístico.'),(14,5,2,'Retira la tapa y la etiqueta (si es de material distinto).'),(15,5,3,'Aplasta la botella antes de depositarla en el contenedor.'),(16,6,1,'Transforma botellas en maceteros autorregantes.'),(17,6,2,'Crea embudos caseros o dispensadores.'),(18,6,3,'Convi├®rtelas en ecoladrillos para proyectos de construcci├│n.');
+INSERT INTO `paso_instruccion` VALUES (1,1,1,'Limpia el cartón o papel de grasas o restos de comida.'),(2,1,2,'Retira cintas adhesivas, corchetes o plásticos pegados.'),(3,1,3,'Desarma y aplasta las cajas para reducir volumen.'),(4,2,1,'Úsalo como base para compostaje o mantillo de huertos.'),(5,2,2,'Crea organizadores de escritorio o cajas de almacenamiento.'),(6,2,3,'Reutiliza las cajas intactas para futuros envíos o mudanzas.'),(7,3,1,'Enjuaga la lata para eliminar restos de líquido o alimento.'),(8,3,2,'Deja secar el interior por completo.'),(9,3,3,'Aplástala suavemente para optimizar espacio en el contenedor.'),(10,4,1,'Conviértela en macetero decorativo para suculentas.'),(11,4,2,'Úsala como portalápices u organizador de escritorio.'),(12,4,3,'Fabrica faroles decorativos o ceniceros reutilizables.'),(13,5,1,'Lava y enjuaga el envase plástico.'),(14,5,2,'Retira la tapa y la etiqueta (si es de material distinto).'),(15,5,3,'Aplasta la botella antes de depositarla en el contenedor.'),(16,6,1,'Transforma botellas en maceteros autorregantes.'),(17,6,2,'Crea embudos caseros o dispensadores.'),(18,6,3,'Conviértelas en ecoladrillos para proyectos de construcción.');
 /*!40000 ALTER TABLE `paso_instruccion` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -136,7 +136,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `punto_limpio` WRITE;
 /*!40000 ALTER TABLE `punto_limpio` DISABLE KEYS */;
-INSERT INTO `punto_limpio` VALUES (1,1,'Punto Limpio Parque Tres Poniente','Av. Tres Poniente con Borgo├▒o','Mar a Dom: 09:00 - 17:30 hrs',-33.5170000,-70.7350000),(2,1,'Punto Limpio Ciudad Sat├®lite','Av. Parque Sur con Alcalde Infante Larra├¡n','Lun a S├íb: 08:30 - 18:00 hrs',-33.4980000,-70.7680000),(3,2,'Punto Limpio Parque Forestal','Av. Cardenal Jos├® Mar├¡a Caro (frente a Museo Bellas Artes)','Lun a Dom: 08:00 - 19:00 hrs',-33.4330000,-70.6410000),(4,3,'Punto Limpio Parque In├®s de Su├írez','Av. Regimiento de Cazadores 1220','Mar a Dom: 09:00 - 18:00 hrs',-33.4260000,-70.6170000),(5,4,'Punto Limpio Parque Araucano','Av. Presidente Riesco 5698','Lun a Dom: 08:30 - 20:00 hrs',-33.4040000,-70.5750000),(6,5,'Punto Limpio Mall Plaza Tobalaba','Av. Camilo Henr├¡quez 3296','Lun a Dom: 10:00 - 19:00 hrs',-33.5870000,-70.5910000),(7,6,'Punto Limpio Walker Mart├¡nez','Av. Walker Mart├¡nez 2245','Mar a S├íb: 09:00 - 18:00 hrs',-33.5170000,-70.5980000),(8,7,'Punto Limpio Plaza ├æu├▒oa','Av. Irarr├ízaval 3550 (Sector Norte)','Lun a S├íb: 09:00 - 18:00 hrs',-33.4580000,-70.6130000),(9,8,'Punto Limpio Parque Garcia de la Huerta','Am├®rica 504','Lun a Vie: 09:00 - 17:00 hrs',-33.6010000,-70.6990000),(10,9,'Ecoparque Pe├▒alol├®n','Av. Jos├® Arrieta 10000','Mar a Dom: 09:00 - 17:30 hrs',-33.4340000,-70.5450000);
+INSERT INTO `punto_limpio` VALUES (1,1,'Punto Limpio Parque Tres Poniente','Av. Tres Poniente con Borgoño','Mar a Dom: 09:00 - 17:30 hrs',-33.5170000,-70.7350000),(2,1,'Punto Limpio Ciudad Satélite','Av. Parque Sur con Alcalde Infante Larraín','Lun a Sáb: 08:30 - 18:00 hrs',-33.4980000,-70.7680000),(3,2,'Punto Limpio Parque Forestal','Av. Cardenal José María Caro (frente a Museo Bellas Artes)','Lun a Dom: 08:00 - 19:00 hrs',-33.4330000,-70.6410000),(4,3,'Punto Limpio Parque Inés de Suárez','Av. Regimiento de Cazadores 1220','Mar a Dom: 09:00 - 18:00 hrs',-33.4260000,-70.6170000),(5,4,'Punto Limpio Parque Araucano','Av. Presidente Riesco 5698','Lun a Dom: 08:30 - 20:00 hrs',-33.4040000,-70.5750000),(6,5,'Punto Limpio Mall Plaza Tobalaba','Av. Camilo Henríquez 3296','Lun a Dom: 10:00 - 19:00 hrs',-33.5870000,-70.5910000),(7,6,'Punto Limpio Walker Martínez','Av. Walker Martínez 2245','Mar a Sáb: 09:00 - 18:00 hrs',-33.5170000,-70.5980000),(8,7,'Punto Limpio Plaza Ñuñoa','Av. Irarrázaval 3550 (Sector Norte)','Lun a Sáb: 09:00 - 18:00 hrs',-33.4580000,-70.6130000),(9,8,'Punto Limpio Parque Garcia de la Huerta','América 504','Lun a Vie: 09:00 - 17:00 hrs',-33.6010000,-70.6990000),(10,9,'Ecoparque Peñalolén','Av. José Arrieta 10000','Mar a Dom: 09:00 - 17:30 hrs',-33.4340000,-70.5450000);
 /*!40000 ALTER TABLE `punto_limpio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -156,7 +156,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `recurso_externo` WRITE;
 /*!40000 ALTER TABLE `recurso_externo` DISABLE KEYS */;
-INSERT INTO `recurso_externo` VALUES (1,1,'Portal ReChile (MMA)','https://rechile.mma.gob.cl'),(2,1,'TriCiclos Chile','https://www.triciclos.cl'),(3,2,'Traperos de Ema├║s','https://www.emaus.cl'),(4,2,'Fundaci├│n Basura','https://www.fundacionbasura.org'),(5,3,'Kyklos Chile','https://www.kyklos.cl'),(6,3,'Portal ReChile (MMA)','https://rechile.mma.gob.cl'),(7,4,'Fundaci├│n Basura','https://www.fundacionbasura.org'),(8,5,'Comberplast Chile','https://www.comberplast.cl'),(9,5,'Portal ReChile (MMA)','https://rechile.mma.gob.cl'),(10,6,'Ecoladrillos Chile','https://www.fundacionbasura.org');
+INSERT INTO `recurso_externo` VALUES (1,1,'Portal ReChile (MMA)','https://rechile.mma.gob.cl'),(2,1,'TriCiclos Chile','https://www.triciclos.cl'),(3,2,'Traperos de Emaús','https://www.emaus.cl'),(4,2,'Fundación Basura','https://www.fundacionbasura.org'),(5,3,'Kyklos Chile','https://www.kyklos.cl'),(6,3,'Portal ReChile (MMA)','https://rechile.mma.gob.cl'),(7,4,'Fundación Basura','https://www.fundacionbasura.org'),(8,5,'Comberplast Chile','https://www.comberplast.cl'),(9,5,'Portal ReChile (MMA)','https://rechile.mma.gob.cl'),(10,6,'Ecoladrillos Chile','https://www.fundacionbasura.org');
 /*!40000 ALTER TABLE `recurso_externo` ENABLE KEYS */;
 UNLOCK TABLES;
 
