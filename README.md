@@ -91,6 +91,13 @@ npm run dev                     # http://localhost:5173
 | `GET` | `/db/puntos?comuna=...` | Puntos limpios filtrados por comuna |
 | `GET` | `/db/*`, `/impacto`, `/sesiones` | Datos de materiales, hábitos, impacto y sesiones |
 
+## Presentación final
+
+[`docs/presentacion/EcoLearn_Presentacion_Final_Fase3.pptx`](docs/presentacion/)
+(16 diapositivas): problema, solución, arquitectura, CRISP-DM, resultados,
+capturas del demo, retrospectiva, gestión y trabajo futuro. Usa los nombres y
+la tecnología reales de la app.
+
 ## CRISP-DM
 
 Notebook completo: [`docs/crisp-dm/`](docs/crisp-dm/) (fases 1 a 6 y cierre).
