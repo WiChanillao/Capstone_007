@@ -147,7 +147,9 @@ se inyecta por variable de entorno o en los Secretos de Colab. Ver `.env.example
 Jira: tablero **EcoLearn** (proyecto **REC**). Ramas: `main` (estable), `develop`,
 `feature/<ticket>`. Commits: `REC-xx: descripción corta`.
 
-Repo público de documentación y evidencia de fases:
-<https://github.com/WiChanillao/Capstone_007> (Fase 1 y Fase 2: guías, diarios,
-PPT, CRISP-DM, requisitos, BPMN, SQL e informe de pruebas). Ese repo **no contiene
-el código de la app**, que se trabaja localmente en esta carpeta.
+Repo público: <https://github.com/WiChanillao/Capstone_007>. En `main` están
+tanto las evidencias de Fase 1 y Fase 2 (guías, diarios, PPT, CRISP-DM,
+requisitos, BPMN, SQL e informe de pruebas) como el código de la app,
+Docker Compose, CI y los scripts. El historial original de documentación se
+integró sin borrarlo; el notebook de Fase 2 publicado usa variables de entorno
+para la API key de Roboflow.
