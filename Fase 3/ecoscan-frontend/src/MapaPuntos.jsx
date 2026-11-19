@@ -3,6 +3,33 @@ import 'leaflet/dist/leaflet.css';
 
 const CENTRO_RM = [-33.45, -70.65];
 
+// Fuentes publicas, sin API key. Se prueba la primera y se cambia automaticamente
+// si el proveedor bloquea las teselas; el usuario tambien puede alternar a mano.
+const BASEMAPAS = [
+  {
+    id: 'osm',
+    etiqueta: 'Calles OSM',
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    subdominios: 'abc',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>',
+  },
+  {
+    id: 'voyager',
+    etiqueta: 'Calles claras',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    subdominios: 'abcd',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>',
+  },
+  {
+    id: 'satellite',
+    etiqueta: 'Satelite',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    subdominios: 'abc',
+    overlay: 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; Esri, Maxar, Earthstar Geographics',
+  },
+];
+
 function escapar(texto) {
   return String(texto ?? '')
     .replaceAll('&', '&amp;')
@@ -13,7 +40,7 @@ function escapar(texto) {
 }
 
 /**
- * Mapa interactivo de Puntos Limpios RM con Leaflet + OpenStreetMap/CARTO.
+ * Mapa interactivo de Puntos Limpios RM con Leaflet.
  * No usa API keys. Los marcadores salen de los datos reales de MySQL.
  */
 export default function MapaPuntos({ puntos, ubicacion, puntoActivo, onSeleccionar, estaAbierto }) {
@@ -21,12 +48,16 @@ export default function MapaPuntos({ puntos, ubicacion, puntoActivo, onSeleccion
   const mapaRef = useRef(null);
   const leafletRef = useRef(null);
   const grupoRef = useRef(null);
+  const teselasRef = useRef(null);
+  const etiquetasRef = useRef(null);
   const limitesRef = useRef(null);
   const marcadoresRef = useRef(new Map());
   const seleccionRef = useRef(null);
+  const fallbacksRef = useRef(0);
   const [listo, setListo] = useState(false);
+  const [indiceBase, setIndiceBase] = useState(0);
 
-  // Crear el mapa una sola vez (Leaflet se carga dinámicamente para no
+  // Crear el mapa una sola vez (Leaflet se carga dinamicamente para no
   // interferir con las pruebas unitarias en jsdom).
   useEffect(() => {
     let vivo = true;
@@ -40,12 +71,6 @@ export default function MapaPuntos({ puntos, ubicacion, puntoActivo, onSeleccion
         attributionControl: true,
       }).setView(CENTRO_RM, 11);
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
-        subdomains: 'abcd',
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>',
-      }).addTo(mapa);
-
       grupoRef.current = L.layerGroup().addTo(mapa);
       mapaRef.current = mapa;
       mapa.whenReady(() => mapa.invalidateSize());
@@ -54,16 +79,69 @@ export default function MapaPuntos({ puntos, ubicacion, puntoActivo, onSeleccion
 
     return () => {
       vivo = false;
-      if (mapa) {
-        mapa.remove();
+      if (mapaRef.current) {
+        mapaRef.current.remove();
         mapaRef.current = null;
         grupoRef.current = null;
+        teselasRef.current = null;
         marcadores.clear();
       }
     };
   }, []);
 
-  // Redibujar marcadores cuando cambian los filtros o la ubicación.
+  // Capa base con respaldo automatico si el proveedor no responde.
+  useEffect(() => {
+    if (!listo) return;
+    const L = leafletRef.current;
+    const mapa = mapaRef.current;
+    if (!L || !mapa) return;
+
+    if (teselasRef.current) mapa.removeLayer(teselasRef.current);
+    if (etiquetasRef.current) mapa.removeLayer(etiquetasRef.current);
+    const cfg = BASEMAPAS[indiceBase];
+    const capa = L.tileLayer(cfg.url, {
+      maxZoom: 19,
+      subdomains: cfg.subdominios,
+      attribution: cfg.attribution,
+      crossOrigin: true,
+    });
+
+    let errores = 0;
+    capa.on('tileerror', () => {
+      errores += 1;
+      if (errores >= 3 && fallbacksRef.current < BASEMAPAS.length - 1) {
+        fallbacksRef.current += 1;
+        setIndiceBase((i) => (i + 1) % BASEMAPAS.length);
+      }
+    });
+    capa.addTo(mapa);
+    capa.bringToBack();
+    teselasRef.current = capa;
+
+    if (cfg.overlay) {
+      const etiquetas = L.tileLayer(cfg.overlay, {
+        maxZoom: 19,
+        subdomains: 'abc',
+        attribution: '&copy; Esri',
+        pane: 'shadowPane',
+      });
+      etiquetas.addTo(mapa);
+      etiquetasRef.current = etiquetas;
+    }
+
+    return () => {
+      if (teselasRef.current === capa) {
+        mapa.removeLayer(capa);
+        teselasRef.current = null;
+      }
+      if (etiquetasRef.current) {
+        mapa.removeLayer(etiquetasRef.current);
+        etiquetasRef.current = null;
+      }
+    };
+  }, [listo, indiceBase]);
+
+  // Redibujar marcadores cuando cambian los filtros o la ubicacion.
   useEffect(() => {
     if (!listo) return;
     const L = leafletRef.current;
@@ -83,7 +161,7 @@ export default function MapaPuntos({ puntos, ubicacion, puntoActivo, onSeleccion
       const estado = abierto === true ? '● Abierto ahora' : abierto === false ? '○ Cerrado ahora' : 'Horario por confirmar';
       const icono = L.divIcon({
         className: 'punto-limpio-marker',
-        html: `<div style="width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${color};border:2px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(45deg);font-size:15px">♻️</span></div>`,
+        html: `<div style="width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${color};border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(45deg);font-size:15px">♻️</span></div>`,
         iconSize: [32, 32],
         iconAnchor: [16, 32],
         popupAnchor: [0, -30],
@@ -118,8 +196,8 @@ export default function MapaPuntos({ puntos, ubicacion, puntoActivo, onSeleccion
     }
 
     if (coords.length) {
-      limitesRef.current = L.latLngBounds(coords).pad(0.18);
-      mapa.fitBounds(limitesRef.current, { maxZoom: 13 });
+      limitesRef.current = L.latLngBounds(coords).pad(0.25);
+      mapa.fitBounds(limitesRef.current, { maxZoom: 13, padding: [24, 24] });
     } else {
       mapa.setView(CENTRO_RM, 11);
     }
@@ -153,18 +231,34 @@ export default function MapaPuntos({ puntos, ubicacion, puntoActivo, onSeleccion
         ref={contenedorRef}
         role="application"
         aria-label="Mapa interactivo de puntos limpios en la Región Metropolitana"
-        className="h-[320px] sm:h-[420px] lg:h-[500px] w-full rounded-2xl border border-slate-700 overflow-hidden bg-slate-900"
+        className="h-[340px] sm:h-[460px] lg:h-[540px] w-full rounded-2xl border border-slate-700 overflow-hidden bg-slate-900"
       />
-      <button
-        type="button"
-        onClick={() => {
-          const mapa = mapaRef.current;
-          if (mapa && limitesRef.current) mapa.fitBounds(limitesRef.current, { maxZoom: 13 });
-        }}
-        className="absolute top-3 right-3 z-[500] px-3 py-1.5 rounded-lg bg-slate-950/90 border border-slate-600 text-[11px] font-bold text-slate-100 hover:border-emerald-400 cursor-pointer"
-      >
-        ⤢ Ajustar mapa
-      </button>
+      <div className="absolute top-3 left-3 z-[500] px-3 py-1.5 rounded-lg bg-slate-950/85 border border-emerald-500/40 text-[11px] font-black text-emerald-200 shadow-lg pointer-events-none">
+        Región Metropolitana de Santiago
+      </div>
+      <div className="absolute top-3 right-3 z-[500] flex flex-col items-end gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            fallbacksRef.current = 0;
+            setIndiceBase((i) => (i + 1) % BASEMAPAS.length);
+          }}
+          className="px-3 py-1.5 rounded-lg bg-slate-950/90 border border-slate-600 text-[11px] font-bold text-slate-100 hover:border-emerald-400 cursor-pointer"
+          title="Cambiar estilo del mapa"
+        >
+          🗺️ {BASEMAPAS[indiceBase].etiqueta} ▾
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            const mapa = mapaRef.current;
+            if (mapa && limitesRef.current) mapa.fitBounds(limitesRef.current, { maxZoom: 13, padding: [24, 24] });
+          }}
+          className="px-3 py-1.5 rounded-lg bg-slate-950/90 border border-slate-600 text-[11px] font-bold text-slate-100 hover:border-emerald-400 cursor-pointer"
+        >
+          ⤢ Ajustar mapa
+        </button>
+      </div>
       <div className="absolute bottom-3 left-3 z-[500] flex flex-wrap gap-2 text-[10px] font-bold">
         <span className="px-2 py-1 rounded-md bg-slate-950/90 border border-emerald-500/40 text-emerald-300">● Abierto</span>
         <span className="px-2 py-1 rounded-md bg-slate-950/90 border border-rose-500/40 text-rose-300">● Cerrado</span>
