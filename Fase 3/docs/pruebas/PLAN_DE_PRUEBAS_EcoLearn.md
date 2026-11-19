@@ -127,6 +127,8 @@ El XLSX de Fase 2 describe el diseño original. La Fase 3 cambió varias decisio
 
 Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 
+**Correspondencia con el Excel:** los IDs `001` a `040` de la hoja `Plan de pruebas` corresponden a `CP-01` a `CP-40` de este documento. En la columna `Criterios de aceptación` del Excel, el corchete inicial (`[RF-03]`, `[RNF-02]`, etc.) indica el **requisito que verifica** el caso; `CP` significa **Caso de Prueba**, no es un requisito.
+
 ### 7.1 Backend y API
 
 | ID | RF/RNF | Caso (pasos resumidos) | Resultado esperado | Estado | Evidencia |
