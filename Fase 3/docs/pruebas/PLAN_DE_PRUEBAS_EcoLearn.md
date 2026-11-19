@@ -4,7 +4,7 @@
 |---|---|
 | Proyecto | EcoLearn Chile — Clasificador inteligente de residuos (EcoScan) |
 | Fase | Fase 3 — Capstone 2026-2, Duoc UC |
-| Versión del documento | 1.0 |
+| Versión del documento | 1.2 |
 | Fecha | 19-11-2026 |
 | Estado | Vigente |
 | Responsable de elaboración | Equipo EcoLearn Chile |
@@ -298,12 +298,13 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 
 ## 15. Entregables
 
-1. `Fase 3/docs/pruebas/PLAN_DE_PRUEBAS_EcoLearn.md` (este documento).
-2. Copia en evidencia: `07_DOCUMENTACION/PLAN_DE_PRUEBAS_EcoLearn.md`.
-3. `Informe_de_pruebas_EcoScan.docx` (resultados de ejecución Fase 2).
-4. `06_DOCKER/EVIDENCIA_DOCKER.txt` (secciones 15 a 24 con ejecuciones vigentes).
-5. `Fase 3/docs/pruebas/evidencia_visual/` — 14 capturas reales incrustadas en el Anexo A (sección 16).
-6. Salidas de comandos y capturas referenciadas en la sección 7.
+1. `Fase 3/docs/pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx` (**formato oficial de entrega**: misma estructura de 8 columnas y listas desplegables de `2.1.3 Plantilla básica plan de pruebas.xlsx`, con 40 casos y hoja `Evidencia` con 14 capturas reales).
+2. `Fase 3/docs/pruebas/PLAN_DE_PRUEBAS_EcoLearn.md` (este documento, detalle técnico).
+3. Copias en evidencia: `07_DOCUMENTACION/PLAN_DE_PRUEBAS_EcoLearn.xlsx`, `.md` y `.docx`.
+4. `Informe_de_pruebas_EcoScan.docx` (resultados de ejecución Fase 2).
+5. `06_DOCKER/EVIDENCIA_DOCKER.txt` (secciones 15 a 27 con ejecuciones vigentes).
+6. `Fase 3/docs/pruebas/evidencia_visual/` — 14 capturas reales incrustadas en el Anexo A (sección 16) y en la hoja `Evidencia` del Excel.
+7. Salidas de comandos y capturas referenciadas en la sección 7.
 
 ---
 

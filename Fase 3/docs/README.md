@@ -9,7 +9,7 @@ disponible desde un solo clone.
 | `requisitos/` | `EcoScan_Requisitos_Funcionales.xlsx` — 100 requisitos (RF-01..RF-60, RNF-01..RNF-40). |
 | `bpmn/` | `EcoScan_Procesos_BPMN_v4_extendidos.bpmn` — 14 procesos BPMN. |
 | `modelo-datos/` | Modelo lógico/relacional (DOCX) y `diagrama_relacional.png` (14 tablas). |
-| `pruebas/` | `Informe_de_pruebas_EcoScan.docx` (resultados de BD, API y modelo), `PLAN_DE_PRUEBAS_EcoLearn.md` y `PLAN_DE_PRUEBAS_EcoLearn_CON_EVIDENCIA.docx` (estrategia, 40 casos por RF/RNF y anexo con 14 capturas reales en `evidencia_visual/`). |
+| `pruebas/` | `PLAN_DE_PRUEBAS_EcoLearn.xlsx` (**formato oficial**: plantilla de 8 columnas, 40 casos, listas desplegables y hoja `Evidencia` con 14 capturas), `PLAN_DE_PRUEBAS_EcoLearn.md` (detalle técnico), `PLAN_DE_PRUEBAS_EcoLearn_CON_EVIDENCIA.docx`/`.pdf` (41 páginas con anexo visual) y `Informe_de_pruebas_EcoScan.docx` (resultados Fase 2). |
 | `bd/` | Scripts SQL originales de esquema y datos (el stack Docker usa además `docker/mysql/init/`). |
 
 ## Nota de seguridad
