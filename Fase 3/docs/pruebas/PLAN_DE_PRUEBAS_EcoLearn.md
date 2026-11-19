@@ -266,7 +266,7 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 - Tipos: Tarea `10003`, Error `10006`.
 - Transiciones: `11` Por hacer, `21` En curso, `31` En revisión, `41` Finalizada.
 - Regla: **todo defecto se cierra solo con evidencia verificable** (HTTP, captura, comando o run de CI).
-- Ejemplos ya registrados: REC-142 (CI), REC-158 (encabezado), REC-159 (zoom), REC-160 (galería).
+- Ejemplos ya registrados: REC-142 (CI), REC-158 (encabezado), REC-159 (zoom), REC-160 (galería), REC-161 (este plan de pruebas y su anexo visual).
 
 ---
 
@@ -302,11 +302,93 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 2. Copia en evidencia: `07_DOCUMENTACION/PLAN_DE_PRUEBAS_EcoLearn.md`.
 3. `Informe_de_pruebas_EcoScan.docx` (resultados de ejecución Fase 2).
 4. `06_DOCKER/EVIDENCIA_DOCKER.txt` (secciones 15 a 24 con ejecuciones vigentes).
-5. Salidas de comandos y capturas referenciadas en la sección 7.
+5. `Fase 3/docs/pruebas/evidencia_visual/` — 14 capturas reales incrustadas en el Anexo A (sección 16).
+6. Salidas de comandos y capturas referenciadas en la sección 7.
 
 ---
 
-## 16. Aprobación
+## 16. Anexo A — Evidencia visual
+
+Las capturas siguientes son archivos reales del repositorio y de la carpeta de
+evidencia, no ilustraciones ni mockups. Cada una se liga al caso de prueba
+(CP) que la justifica. Las imágenes largas son capturas de desplazamiento
+completo: para leerlas en detalle, abre el archivo indicado en el pie.
+
+| CP | Captura | Qué demuestra |
+|---|---|---|
+| CP-19, CP-20 | `01_Menu_Principal.png` | Menú principal y acceso anónimo; 5 pestañas visibles |
+| CP-03 | `02_Escanner_IA.png` | Pestaña Escáner IA: carga de foto, vista previa y envío a `/predict` |
+| CP-08, CP-21 | `03_Puntos_Limpios_RM.png` | Mapa Leaflet, filtros y 35 marcadores en Puntos Limpios |
+| CP-24, CP-25, CP-26 | `04_Eco_Simulador_RM.png` | Simulador sin controles manuales, galería y videos |
+| CP-27 | `05_Desafio_Verde_RM.png` | Cuatro desafíos automáticos activados por escaneos |
+| CP-28 | `EVIDENCIA_IMPACTO_AUTOMATICO.png` | Panel de impacto con cifras desde MySQL, sin carga manual |
+| REC-140 | `EVIDENCIA_JIRA_REC140.png` | Trazabilidad de la decisión de diseño en Jira |
+| CP-30 | `webkit_app.png` | Render responsive en WebKit |
+| CP-34 | `app_en_docker_5173.jpeg` | Frontend servido desde Docker en el puerto 5173 |
+| CP-01 a CP-34 | `REC-59_00m00s_pruebas.png` | Video de respaldo, minuto 0: pruebas |
+| CP-19 | `REC-59_00m30s_cuatro_pestanas.png` | Video de respaldo, minuto 0:30: cuatro pestañas |
+| CP-03 | `REC-59_01m15s_foto_y_log.png` | Video de respaldo, minuto 1:15: foto y registro |
+| CP-13 | `REC-59_01m50s_mysql_workbench.png` | Video de respaldo, minuto 1:50: MySQL Workbench |
+
+**Imagen 1 — Resumen visual general.** Fuente: `00_RESUMEN_VISUAL.png`.
+
+![Resumen visual general](evidencia_visual/00_RESUMEN_VISUAL.png)
+
+**Imagen 2 — CP-19, CP-20: menú principal y pestañas.** Fuente: `02_VISUAL_APP/01_Menu_Principal.png`.
+
+![Menú principal](evidencia_visual/01_Menu_Principal.png)
+
+**Imagen 3 — CP-03: Escáner IA.** Fuente: `02_VISUAL_APP/02_Escanner_IA.png`.
+
+![Escáner IA](evidencia_visual/02_Escanner_IA.png)
+
+**Imagen 4 — CP-08, CP-21: Puntos Limpios y mapa.** Fuente: `02_VISUAL_APP/03_Puntos_Limpios_RM.png`.
+
+![Puntos Limpios y mapa](evidencia_visual/03_Puntos_Limpios_RM.png)
+
+**Imagen 5 — CP-24, CP-25, CP-26: Eco-Simulador y galería.** Fuente: `02_VISUAL_APP/04_Eco_Simulador_RM.png`.
+
+![Eco-Simulador y galería](evidencia_visual/04_Eco_Simulador_RM.png)
+
+**Imagen 6 — CP-27: Desafío Verde automático.** Fuente: `02_VISUAL_APP/05_Desafio_Verde_RM.png`.
+
+![Desafío Verde](evidencia_visual/05_Desafio_Verde_RM.png)
+
+**Imagen 7 — CP-28: impacto automático desde MySQL.** Fuente: `02_VISUAL_APP/EVIDENCIA_IMPACTO_AUTOMATICO.png`.
+
+![Impacto automático](evidencia_visual/EVIDENCIA_IMPACTO_AUTOMATICO.png)
+
+**Imagen 8 — REC-140: decisión de diseño en Jira.** Fuente: `02_VISUAL_APP/EVIDENCIA_JIRA_REC140.png`.
+
+![Evidencia Jira REC-140](evidencia_visual/EVIDENCIA_JIRA_REC140.png)
+
+**Imagen 9 — CP-30: WebKit responsive.** Fuente: `04_PRUEBAS_Y_BD/webkit_app.png`.
+
+![WebKit responsive](evidencia_visual/webkit_app.png)
+
+**Imagen 10 — CP-34: frontend en Docker.** Fuente: `06_DOCKER/app_en_docker_5173.jpeg`.
+
+![Frontend en Docker](evidencia_visual/app_en_docker_5173.jpeg)
+
+**Imagen 11 — Video de respaldo, minuto 0.** Fuente: `10_CAPTURAS_VIDEO/REC-59_00m00s_pruebas.png`.
+
+![Video minuto 0](evidencia_visual/REC-59_00m00s_pruebas.png)
+
+**Imagen 12 — Video de respaldo, minuto 0:30: cuatro pestañas.** Fuente: `10_CAPTURAS_VIDEO/REC-59_00m30s_cuatro_pestanas.png`.
+
+![Video minuto 0:30](evidencia_visual/REC-59_00m30s_cuatro_pestanas.png)
+
+**Imagen 13 — Video de respaldo, minuto 1:15: foto y registro.** Fuente: `10_CAPTURAS_VIDEO/REC-59_01m15s_foto_y_log.png`.
+
+![Video minuto 1:15](evidencia_visual/REC-59_01m15s_foto_y_log.png)
+
+**Imagen 14 — Video de respaldo, minuto 1:50: MySQL Workbench.** Fuente: `10_CAPTURAS_VIDEO/REC-59_01m50s_mysql_workbench.png`.
+
+![Video minuto 1:50](evidencia_visual/REC-59_01m50s_mysql_workbench.png)
+
+---
+
+## 17. Aprobación
 
 | Rol | Nombre | Fecha | Firma |
 |---|---|---|---|
