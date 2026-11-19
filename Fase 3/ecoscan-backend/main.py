@@ -38,6 +38,8 @@ app = FastAPI(title="EcoLearn Chile API")
 
 # REC-106: límite simple por IP para /predict (30 peticiones por minuto).
 _LIMIT_MINUTO = int(os.getenv("LIMITE_PREDICT_MINUTO", "30"))
+# Límite de subida: 10 MB. Controlado por Content-Length y por lectura real.
+MAX_TAMANO_ARCHIVO = 10 * 1024 * 1024
 _solicitudes = defaultdict(deque)
 _bloqueo = threading.Lock()
 
@@ -276,7 +278,27 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
             ejecutar("INSERT IGNORE INTO sesion (id_sesion) VALUES (%s)", (sesion,))
         except Exception:
             pass
-    contents = await file.read()
+    # Rechazar archivos > 10 MB antes de cargarlos en memoria. Se revisa la
+    # cabecera Content-Length del parte y además se limita la lectura real,
+    # porque la cabecera es declarada por el cliente y puede faltar o mentir.
+    try:
+        longitud = int((file.headers or {}).get("content-length") or 0)
+    except (TypeError, ValueError):
+        longitud = 0
+    if longitud > MAX_TAMANO_ARCHIVO:
+        raise HTTPException(
+            status_code=413,
+            detail={"codigo": "ARCHIVO_MUY_GRANDE",
+                    "mensaje": "La imagen supera el límite de 10 MB."},
+        )
+
+    contents = await file.read(MAX_TAMANO_ARCHIVO + 1)
+    if len(contents) > MAX_TAMANO_ARCHIVO:
+        raise HTTPException(
+            status_code=413,
+            detail={"codigo": "ARCHIVO_MUY_GRANDE",
+                    "mensaje": "La imagen supera el límite de 10 MB."},
+        )
 
     # Validar que el archivo sea realmente una imagen (REC-54: 400 controlado, no 500)
     try:
