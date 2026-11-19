@@ -12,6 +12,15 @@ disponible desde un solo clone.
 | `pruebas/` | `PLAN_DE_PRUEBAS_EcoLearn.xlsx` (**formato oficial**: plantilla de 8 columnas, 40 casos, listas desplegables y hoja `Evidencia` con 14 capturas), `PLAN_DE_PRUEBAS_EcoLearn.md` (detalle técnico), `PLAN_DE_PRUEBAS_EcoLearn_CON_EVIDENCIA.docx`/`.pdf` (41 páginas con anexo visual) y `Informe_de_pruebas_EcoScan.docx` (resultados Fase 2). |
 | `bd/` | Scripts SQL originales de esquema y datos (el stack Docker usa además `docker/mysql/init/`). |
 
+## Diagrama de estructura y Docker
+
+`ESTRUCTURA_PROYECTO_DOCKER.png` (1920 × 1080) muestra en una sola imagen el
+árbol real de `Fase 3/`, los tres servicios de `docker-compose.yml` con sus
+puertos (5173, 8000 y 3307) y el flujo navegador → frontend → backend → MySQL
+→ impacto/desafíos, junto con la verificación real (health, 35 puntos, pruebas
+15/15 + 4/4 + 4/4 y mAP oficial 0,562). No es un mockup: los nombres y puertos
+salen del repositorio y del compose vigente.
+
 ## Nota de seguridad
 
 Los notebooks incorporados fueron revisados: no contienen la API key de
