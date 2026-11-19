@@ -53,13 +53,43 @@ def test_version_expone_sha256_y_dataset():
     assert body["clases"] == ["Aluminio", "Carton", "Plastico"]
 
 
-def test_health_informa_conexion_mysql():
+def test_health_informa_conexion_mysql(monkeypatch):
+    """Simula MySQL: en CI no hay base de datos y /health debe seguir siendo 'ok'
+    cuando la conexión está disponible. Comprobar el estado real de la BD
+    corresponde a las pruebas de integración con Docker."""
+
+    class _Consulta:
+        def count(self):
+            return 48
+
+    class _Sesion:
+        def query(self, *_args, **_kwargs):
+            return _Consulta()
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(main, "db_activa", True)
+    monkeypatch.setattr(main, "SessionLocal", lambda: _Sesion())
+
     r = client.get("/health")
     assert r.status_code == 200
     body = r.json()
     assert body["status"] == "ok"
     assert body["mysql_conectado"] is True
     assert body["escaneos_registrados"] >= 48
+
+
+def test_health_reporta_degraded_sin_mysql(monkeypatch):
+    """Sin MySQL el servicio sigue respondiendo 200, pero marca 'degraded'."""
+    monkeypatch.setattr(main, "db_activa", False)
+    monkeypatch.setattr(main, "SessionLocal", None)
+
+    r = client.get("/health")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["status"] == "degraded"
+    assert body["mysql_conectado"] is False
 
 
 def test_cabeceras_de_seguridad_en_todas_las_respuestas():
