@@ -37,7 +37,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `comuna` WRITE;
 /*!40000 ALTER TABLE `comuna` DISABLE KEYS */;
-INSERT INTO `comuna` VALUES (6,'La Florida'),(4,'Las Condes'),(1,'Maipú'),(7,'Ñuñoa'),(9,'Peñalolén'),(3,'Providencia'),(5,'Puente Alto'),(8,'San Bernardo'),(2,'Santiago Centro');
+INSERT INTO `comuna` VALUES (6,'La Florida'),(4,'Las Condes'),(1,'Maipú'),(7,'Ñuñoa'),(9,'Peñalolén'),(3,'Providencia'),(5,'Puente Alto'),(8,'San Bernardo'),(2,'Santiago Centro'),(10,'Recoleta'),(11,'Huechuraba'),(12,'Colina'),(13,'Vitacura'),(14,'Talagante'),(15,'El Monte');
 /*!40000 ALTER TABLE `comuna` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,7 +116,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `material` WRITE;
 /*!40000 ALTER TABLE `material` DISABLE KEYS */;
-INSERT INTO `material` VALUES (1,'Cartón y Papel',1),(2,'Plástico (PET/HDPE)',2),(3,'Aluminio',3);
+INSERT INTO `material` VALUES (1,'Cartón y Papel',1),(2,'Plástico (PET/HDPE)',2),(3,'Aluminio',3),(4,'Reciclables (por confirmar)',NULL);
 /*!40000 ALTER TABLE `material` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -136,7 +136,42 @@ UNLOCK TABLES;
 
 LOCK TABLES `punto_limpio` WRITE;
 /*!40000 ALTER TABLE `punto_limpio` DISABLE KEYS */;
-INSERT INTO `punto_limpio` VALUES (1,1,'Punto Limpio Parque Tres Poniente','Av. Tres Poniente con Borgoño','Mar a Dom: 09:00 - 17:30 hrs',-33.5170000,-70.7350000),(2,1,'Punto Limpio Ciudad Satélite','Av. Parque Sur con Alcalde Infante Larraín','Lun a Sáb: 08:30 - 18:00 hrs',-33.4980000,-70.7680000),(3,2,'Punto Limpio Parque Forestal','Av. Cardenal José María Caro (frente a Museo Bellas Artes)','Lun a Dom: 08:00 - 19:00 hrs',-33.4330000,-70.6410000),(4,3,'Punto Limpio Parque Inés de Suárez','Av. Regimiento de Cazadores 1220','Mar a Dom: 09:00 - 18:00 hrs',-33.4260000,-70.6170000),(5,4,'Punto Limpio Parque Araucano','Av. Presidente Riesco 5698','Lun a Dom: 08:30 - 20:00 hrs',-33.4040000,-70.5750000),(6,5,'Punto Limpio Mall Plaza Tobalaba','Av. Camilo Henríquez 3296','Lun a Dom: 10:00 - 19:00 hrs',-33.5870000,-70.5910000),(7,6,'Punto Limpio Walker Martínez','Av. Walker Martínez 2245','Mar a Sáb: 09:00 - 18:00 hrs',-33.5170000,-70.5980000),(8,7,'Punto Limpio Plaza Ñuñoa','Av. Irarrázaval 3550 (Sector Norte)','Lun a Sáb: 09:00 - 18:00 hrs',-33.4580000,-70.6130000),(9,8,'Punto Limpio Parque Garcia de la Huerta','América 504','Lun a Vie: 09:00 - 17:00 hrs',-33.6010000,-70.6990000),(10,9,'Ecoparque Peñalolén','Av. José Arrieta 10000','Mar a Dom: 09:00 - 17:30 hrs',-33.4340000,-70.5450000);
+INSERT INTO `punto_limpio` (`id_punto`, `id_comuna`, `nombre`, `direccion`, `horario`, `lat`, `lon`, `fuente`, `nota`, `coords_aproximadas`) VALUES
+  (1,1,'Punto Limpio Parque Tres Poniente','Av. Tres Poniente con Borgoño','Mar a Dom: 09:00 - 17:30 hrs',-33.5170000,-70.7350000,'investigacion_propia',NULL,0),
+  (2,1,'Punto Limpio Ciudad Satélite','Av. Parque Sur con Alcalde Infante Larraín','Lun a Sáb: 08:30 - 18:00 hrs',-33.4980000,-70.7680000,'investigacion_propia',NULL,0),
+  (3,2,'Punto Limpio Parque Forestal','Av. Cardenal José María Caro (frente a Museo Bellas Artes)','Lun a Dom: 08:00 - 19:00 hrs',-33.4330000,-70.6410000,'investigacion_propia',NULL,0),
+  (4,3,'Punto Limpio Parque Inés de Suárez','Av. Regimiento de Cazadores 1220','Mar a Dom: 09:00 - 18:00 hrs',-33.4260000,-70.6170000,'investigacion_propia',NULL,0),
+  (5,4,'Punto Limpio Parque Araucano','Av. Presidente Riesco 5698','Lun a Dom: 08:30 - 20:00 hrs',-33.4040000,-70.5750000,'investigacion_propia',NULL,0),
+  (6,5,'Punto Limpio Mall Plaza Tobalaba','Av. Camilo Henríquez 3296','Lun a Dom: 10:00 - 19:00 hrs',-33.5870000,-70.5910000,'investigacion_propia',NULL,0),
+  (7,6,'Punto Limpio Walker Martínez','Av. Walker Martínez 2245','Mar a Sáb: 09:00 - 18:00 hrs',-33.5170000,-70.5980000,'investigacion_propia',NULL,0),
+  (8,7,'Punto Limpio Plaza Ñuñoa','Av. Irarrázaval 3550 (Sector Norte)','Lun a Sáb: 09:00 - 18:00 hrs',-33.4580000,-70.6130000,'investigacion_propia',NULL,0),
+  (9,8,'Punto Limpio Parque Garcia de la Huerta','América 504','Lun a Vie: 09:00 - 17:00 hrs',-33.6010000,-70.6990000,'investigacion_propia',NULL,0),
+  (10,9,'Ecoparque Peñalolén','Av. José Arrieta 10000','Mar a Dom: 09:00 - 17:30 hrs',-33.4340000,-70.5450000,'investigacion_propia',NULL,0),
+  (11,2,'Punto Limpio Parque de Los Reyes','Parque de los Reyes, Santiago, Región Metropolitana','Lun a Sáb: 08:00 - 17:00 hrs',-33.4275536,-70.671841,'listado_externo_2026-11-19','Plástico y latas metálicas registrados; cartón por confirmar. Listado externo 19-11-2026. Valoración 4.2 en el registro de origen; no se usa como dato de la app. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (12,2,'Punto Limpio República 477','República 477, Santiago, Región Metropolitana','Lun a Sáb: 09:00 - 13:00 hrs',-33.4514606,-70.6677541,'listado_externo_2026-11-19','Plástico y latas metálicas registrados; cartón por confirmar. Listado externo 19-11-2026. El horario de la tarde (14:00-18:00) no se calcula en la app; ver texto original. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (13,10,'Punto Limpio Bellavista','Loreto 19, Recoleta, Región Metropolitana','Lun a Vie: 09:30 - 17:30 hrs',-33.4337285,-70.6426167,'listado_externo_2026-11-19','Plástico y latas metálicas registrados; cartón por confirmar. Listado externo 19-11-2026. Referencia municipal: Av. Recoleta 3005 (Estadio Recoleta) y Av. La Paz 1072/1021. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; s...',1),
+  (14,10,'Centro de reciclaje Recoleta','Recoleta, Región Metropolitana (código postal 8440697)',NULL,-33.4020744,-70.6428912,'listado_externo_2026-11-19','Listado externo 19-11-2026. Dirección solo a nivel de comuna: coordenada aproximada. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (15,11,'Punto Limpio Zero E Waste Chile - Ciudad Empresarial','Av. del Parque 4951, Huechuraba, Región Metropolitana',NULL,-33.3940106,-70.6210425,'listado_externo_2026-11-19','Listado externo 19-11-2026. Enfocado en residuos electrónicos; figura temporalmente cerrado. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; sin verificación en terreno.',1),
+  (16,11,'Punto de reciclaje Huechuraba','Huechuraba, Región Metropolitana','Lun a Dom: 10:00 - 18:00 hrs',-33.3744615,-70.6362988,'listado_externo_2026-11-19','Listado externo 19-11-2026. Dirección solo a nivel de comuna: coordenada aproximada. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (17,11,'Punto Limpio Pedro Fontova','Av. Pedro Fontova 8084, Huechuraba, Región Metropolitana',NULL,-33.3711283,-70.670949,'listado_externo_2026-11-19','Listado externo 19-11-2026. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; sin verificación en terreno.',1),
+  (18,12,'Punto Limpio Municipal Santa Elena','Eco-Urbe - Santa Elena 200, Colina, Región Metropolitana','Lun a Sáb: 09:00 - 14:00 hrs',-33.2156715,-70.7323896,'listado_externo_2026-11-19','Plástico y latas metálicas registrados; cartón por confirmar. Listado externo 19-11-2026. Bloque de tarde no calculado en la app. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (19,12,'Punto limpio Chamisero - ReSimple','El Canelo 1, Colina, Región Metropolitana',NULL,-33.202472,-70.6749147,'listado_externo_2026-11-19','Listado externo 19-11-2026. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; sin verificación en terreno.',1),
+  (20,13,'Punto Limpio Vitacura','Isabel Montt, Vitacura, Región Metropolitana','Lun a Dom: 09:00 - 18:30 hrs',-33.3947882,-70.5958976,'listado_externo_2026-11-19','Plástico y latas metálicas registrados; cartón por confirmar. Listado externo 19-11-2026. Dirección sin número: coordenada aproximada al sector. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (21,4,'Punto Limpio Las Condes','Las Condes, Región Metropolitana',NULL,-33.4084548,-70.5671489,'listado_externo_2026-11-19','Listado externo 19-11-2026. Dirección solo a nivel de comuna: coordenada aproximada. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (22,3,'Punto limpio días jueves','El Aguilucho con Chile España, Providencia, Región Metropolitana',NULL,-33.4292155,-70.6112946,'listado_externo_2026-11-19','Listado externo 19-11-2026. Punto de funcionamiento semanal. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; sin verificación en terreno.',1),
+  (23,1,'Punto Limpio Mall Arauco Maipú','Longitudinal 4437, Maipú, Región Metropolitana','Lun a Vie: 10:00 - 19:00 hrs',-33.4799348,-70.7499078,'listado_externo_2026-11-19','Plástico y latas metálicas registrados; cartón por confirmar. Listado externo 19-11-2026. Horario de fin de semana no calculado en la app. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (24,1,'Punto Reciclaje Parque El Rosal','Parque El Rosal, Maipú, Región Metropolitana','Lun a Dom: 00:00 - 23:59 hrs',-33.4936936,-70.7805181,'listado_externo_2026-11-19','Listado externo 19-11-2026. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (25,1,'Punto limpio Reciclaje de plásticos','Alejandría con Gastón Palma, Maipú, Región Metropolitana',NULL,-33.5094409,-70.756182,'listado_externo_2026-11-19','Listado externo 19-11-2026. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; sin verificación en terreno.',1),
+  (26,1,'Punto de reciclaje ReSimple Maipú','Av. 5 Pte. 26, Maipú, Región Metropolitana',NULL,-33.5211133,-70.8009382,'listado_externo_2026-11-19','Listado externo 19-11-2026. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (27,1,'Punto limpio El Olimpo','El Olimpo 2032, Maipú, Región Metropolitana',NULL,-33.5118026,-70.7758213,'listado_externo_2026-11-19','Listado externo 19-11-2026. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (28,5,'Punto limpio municipal de Puente Alto','Av. Eyzaguirre 159, Puente Alto, Región Metropolitana',NULL,-33.607917,-70.5376559,'listado_externo_2026-11-19','Listado externo 19-11-2026. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (29,5,'Punto Limpio Don Ramón','Punta Blanca 2454-2478, Puente Alto, Región Metropolitana','Lun a Vie: 08:30 - 17:20 hrs',-33.5832217,-70.5534284,'listado_externo_2026-11-19','Plástico y latas metálicas registrados; cartón por confirmar. Listado externo 19-11-2026. Horario de sábado no calculado en la app. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (30,5,'Punto Limpio Juan de Dios Malebrán','Juan de Dios Malebrán 1147, Puente Alto, Región Metropolitana','Lun a Vie: 08:30 - 17:20 hrs',-33.5960149,-70.5896388,'listado_externo_2026-11-19','Plástico y latas metálicas registrados; cartón por confirmar. Listado externo 19-11-2026. Horario de sábado no calculado en la app. Georreferenciado desde dirección del listado; sin verificación en terreno.',1),
+  (31,5,'Centro de Educación Ambiental y Punto Limpio Creta','Parque Villa Los Aromos - Calle Creta Nte. 3980, parad. 28, Puente Alto, Región Metropolitana','Lun a Vie: 08:30 - 17:20 hrs',-33.6095279,-70.5754736,'listado_externo_2026-11-19','Listado externo 19-11-2026. Horario de sábado no calculado en la app. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; sin verificación en terreno.',1),
+  (32,5,'Punto de Reciclaje Villa Humberto Díaz Casanueva','Villa Humberto Díaz Casanueva, Puente Alto, Región Metropolitana','Lun a Dom: 00:00 - 23:59 hrs',-33.6095279,-70.5754736,'listado_externo_2026-11-19','Listado externo 19-11-2026. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; sin verificación en terreno.',1),
+  (33,14,'Punto Reciclaje 4R','Av. Bernardo O''Higgins 3259, Talagante, Región Metropolitana','Lun a Dom: 09:00 - 19:00 hrs',-33.6640178,-70.930526,'listado_externo_2026-11-19','Listado externo 19-11-2026. Cierre del miércoles no calculado en la app. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; sin verificación en terreno.',1),
+  (34,14,'Punto Limpio Domingo Toro Herrera','Domingo Toro Herrera 19, Talagante, Región Metropolitana',NULL,-33.6604549,-70.9289713,'listado_externo_2026-11-19','Listado externo 19-11-2026. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; sin verificación en terreno.',1),
+  (35,15,'Punto Limpio La Patera','Ignacio Carrera Pinto 048, El Monte, Región Metropolitana','Lun a Jue: 08:30 - 17:30 hrs',-33.6799585,-70.9799392,'listado_externo_2026-11-19','Listado externo 19-11-2026. Bloques de viernes y sábado no calculados en la app. Coordenada a nivel de comuna/sector. Georreferenciado desde dirección; sin verificación en terreno.',1);
 /*!40000 ALTER TABLE `punto_limpio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,7 +181,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `punto_material` WRITE;
 /*!40000 ALTER TABLE `punto_material` DISABLE KEYS */;
-INSERT INTO `punto_material` VALUES (1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,1),(9,1),(10,1),(1,2),(2,2),(3,2),(4,2),(5,2),(6,2),(7,2),(8,2),(9,2),(10,2),(1,3),(2,3),(3,3),(4,3),(5,3),(6,3),(7,3),(8,3),(9,3),(10,3);
+INSERT INTO `punto_material`VALUES (1,1),(1,2),(1,3),(2,1),(2,2),(2,3),(3,1),(3,2),(3,3),(4,1),(4,2),(4,3),(5,1),(5,2),(5,3),(6,1),(6,2),(6,3),(7,1),(7,2),(7,3),(8,1),(8,2),(8,3),(9,1),(9,2),(9,3),(10,1),(10,2),(10,3),(11,4),(12,4),(13,4),(14,4),(15,4),(16,4),(17,4),(18,4),(19,4),(20,4),(21,4),(22,4),(23,4),(24,4),(25,4),(26,4),(27,4),(28,4),(29,4),(30,4),(31,4),(32,4),(33,4),(34,4),(35,4);
 /*!40000 ALTER TABLE `punto_material` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -243,10 +243,13 @@ CREATE TABLE `punto_limpio` (
   `horario` varchar(100) DEFAULT NULL,
   `lat` decimal(10,7) DEFAULT NULL,
   `lon` decimal(10,7) DEFAULT NULL,
+  `fuente` varchar(60) NOT NULL DEFAULT 'investigacion_propia',
+  `nota` varchar(250) DEFAULT NULL,
+  `coords_aproximadas` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_punto`),
   KEY `fk_punto_comuna` (`id_comuna`),
   CONSTRAINT `fk_punto_comuna` FOREIGN KEY (`id_comuna`) REFERENCES `comuna` (`id_comuna`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

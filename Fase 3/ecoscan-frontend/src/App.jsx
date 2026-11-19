@@ -192,7 +192,7 @@ const PUNTOS_RM = [
 const DIAS = { Dom: 0, Lun: 1, Mar: 2, Mié: 3, Jue: 4, Vie: 5, Sáb: 6 };
 
 function estaAbiertoAhora(punto, fecha = new Date()) {
-  const m = punto.horario.match(/([A-Za-zÁÉÍÓÚáéíóú]+)\s+a\s+([A-Za-zÁÉÍÓÚáéíóú]+).*?(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/);
+  const m = String(punto.horario || '').match(/([A-Za-zÁÉÍÓÚáéíóú]+)\s+a\s+([A-Za-zÁÉÍÓÚáéíóú]+).*?(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/);
   if (!m) return null;
   const desde = DIAS[m[1]] ?? DIAS[m[1].normalize('NFD').replace(/[\u0300-\u036f]/g, '')];
   const hasta = DIAS[m[2]] ?? DIAS[m[2].normalize('NFD').replace(/[\u0300-\u036f]/g, '')];
@@ -374,6 +374,9 @@ export default function App() {
           materiales: String(p.materiales || '').split(',').map(m => m.trim()).filter(Boolean),
           lat: p.lat === null || p.lat === undefined ? null : Number(p.lat),
           lon: p.lon === null || p.lon === undefined ? null : Number(p.lon),
+          fuente: p.fuente || 'investigacion_propia',
+          nota: p.nota || '',
+          coordsAproximadas: p.coords_aproximadas === 1 || p.coords_aproximadas === true,
         })));
       })
       .catch(() => {});
@@ -407,7 +410,7 @@ export default function App() {
   };
 
   const comunasDisponibles = ['Todas', ...Array.from(new Set(puntosRM.map(p => p.comuna)))];
-  const materialesDisponibles = ['Todos', 'Cartón', 'Plástico', 'Aluminio'];
+  const materialesDisponibles = ['Todos', 'Cartón', 'Plástico', 'Aluminio', 'Reciclables (por confirmar)'];
   const puntosFiltrados = puntosRM.filter(p => {
     const porComuna = comunaSeleccionada === 'Todas' || p.comuna === comunaSeleccionada;
     const porMaterial = materialSeleccionado === 'Todos' ||
@@ -1177,7 +1180,7 @@ export default function App() {
                   <h2 className="text-2xl font-black text-white">📍 Puntos Limpios en la Región Metropolitana</h2>
                   <p className="text-xs text-slate-400 mt-1">Encuentra estaciones para entregar Cartón, Plástico y Aluminio.</p>
                   <p className="text-[11px] text-amber-300/80 mt-1">
-                    Cobertura actual: {puntosRM.length} puntos en {comunasDisponibles.length - 1} comunas de la RM. Listado de demostración, no un catastro oficial; direcciones en validación (REC-65).
+                    Cobertura actual: {puntosRM.length} puntos en {comunasDisponibles.length - 1} comunas de la RM. Incluye puntos de listado externo sin validar oficialmente; materiales sujetos a confirmación (REC-65).
                   </p>
                 </div>
 
@@ -1253,15 +1256,30 @@ export default function App() {
                           {punto.comuna}
                         </span>
                         <h4 className="text-base font-bold text-white mt-1.5">{punto.nombre}</h4>
+                        {(punto.fuente === 'listado_externo_2026-11-19' || punto.coordsAproximadas) && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {punto.fuente === 'listado_externo_2026-11-19' && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                                Externo · sin validar
+                              </span>
+                            )}
+                            {punto.coordsAproximadas && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-600">
+                                Coordenada aproximada
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <span className="text-xl">🏢</span>
                     </div>
 
                     <p className="text-xs text-slate-300">📍 {punto.direccion}</p>
+                    {punto.nota && <p className="text-[10px] leading-relaxed text-slate-400 italic">{punto.nota}</p>}
                     {punto.distanciaKm !== null && (
                       <p className="text-[11px] font-bold text-cyan-300">📏 A {punto.distanciaKm.toFixed(1)} km de tu ubicación</p>
                     )}
-                    <p className="text-xs text-slate-400">🕒 {punto.horario}</p>
+                    <p className="text-xs text-slate-400">🕒 {punto.horario || 'Horario por confirmar'}</p>
                     <div className="flex items-center justify-between gap-2 pt-1">
                       {(() => {
                         const abierto = estaAbiertoAhora(punto);

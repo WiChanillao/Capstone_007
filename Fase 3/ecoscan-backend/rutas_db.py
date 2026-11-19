@@ -136,14 +136,15 @@ def comunas():
 def puntos(comuna: Optional[int] = None):
     return consultar(
         """SELECT p.id_punto, p.nombre, p.direccion, p.horario, co.nombre AS comuna,
-                  p.lat, p.lon,
+                  p.lat, p.lon, p.fuente, p.nota, p.coords_aproximadas,
                    GROUP_CONCAT(m.nombre SEPARATOR ', ') AS materiales
            FROM punto_limpio p
            JOIN comuna co ON co.id_comuna = p.id_comuna
            LEFT JOIN punto_material pm ON pm.id_punto = p.id_punto
            LEFT JOIN material m ON m.id_material = pm.id_material
            WHERE (%s IS NULL OR p.id_comuna = %s)
-           GROUP BY p.id_punto, p.nombre, p.direccion, p.horario, co.nombre, p.lat, p.lon""",
+           GROUP BY p.id_punto, p.nombre, p.direccion, p.horario, co.nombre,
+                    p.lat, p.lon, p.fuente, p.nota, p.coords_aproximadas""",
         (comuna, comuna),
     )
 

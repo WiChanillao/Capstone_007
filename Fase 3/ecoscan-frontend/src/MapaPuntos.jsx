@@ -173,9 +173,14 @@ export default function MapaPuntos({ puntos, ubicacion, puntoActivo, onSeleccion
           <div style="font-size:11px;font-weight:700;color:#047857">${escapar(p.comuna)}</div>
           <div style="font-size:14px;font-weight:800;margin:2px 0 6px">${escapar(p.nombre)}</div>
           <div style="font-size:12px">📍 ${escapar(p.direccion)}</div>
-          <div style="font-size:12px;margin-top:3px">🕒 ${escapar(p.horario)}</div>
+          <div style="font-size:12px;margin-top:3px">🕒 ${escapar(p.horario || 'Horario por confirmar')}</div>
           <div style="font-size:11px;font-weight:700;margin-top:4px;color:${color}">${estado}</div>
           <div style="font-size:11px;margin-top:6px;color:#475569">${(p.materiales || []).map((m) => escapar(m)).join(' · ')}</div>
+          ${p.fuente === 'listado_externo_2026-11-19' || p.coordsAproximadas ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">
+            ${p.fuente === 'listado_externo_2026-11-19' ? '<span style="font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;background:#fef3c7;color:#92400e">Externo · sin validar</span>' : ''}
+            ${p.coordsAproximadas ? '<span style="font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;background:#e2e8f0;color:#334155">Coordenada aproximada</span>' : ''}
+          </div>` : ''}
+          ${p.nota ? `<div style="font-size:10px;margin-top:6px;color:#64748b;font-style:italic;line-height:1.35">${escapar(p.nota)}</div>` : ''}
           <a href="${escapar(destino)}" target="_blank" rel="noopener noreferrer"
              style="display:inline-block;margin-top:8px;font-size:12px;font-weight:700;color:#047857">🧭 Cómo llegar en Google Maps</a>
         </div>
