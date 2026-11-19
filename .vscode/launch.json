@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "EcoScan: Backend (F5)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/ecoscan-backend/main.py",
+      "cwd": "${workspaceFolder}/ecoscan-backend",
+      "python": "${workspaceFolder}/ecoscan-backend/venv/Scripts/python.exe",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "EcoScan: Solo Frontend",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/ecoscan-frontend/node_modules/vite/bin/vite.js",
+      "cwd": "${workspaceFolder}/ecoscan-frontend",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "EcoScan: Full Stack (Backend + Frontend)",
+      "configurations": ["EcoScan: Backend (F5)", "EcoScan: Solo Frontend"],
+      "stopAll": true
+    }
+  ]
+}

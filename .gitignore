@@ -1,0 +1,34 @@
+# Entornos y secretos
+.env
+.env.local
+.env.*.local
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+yarn-error.log*
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# MySQL / respaldos locales
+*.sql.gz
+backups/*.gz
+logs/
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.err

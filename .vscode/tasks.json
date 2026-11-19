@@ -1,0 +1,107 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "EcoScan: Inicializar MySQL",
+      "type": "shell",
+      "command": "ecoscan-backend/venv/bin/python",
+      "args": ["scripts/init_local_db.py"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "windows": {
+        "command": "${workspaceFolder}/ecoscan-backend/venv/Scripts/python.exe",
+        "args": ["scripts/init_local_db.py"]
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "ecoscan" }
+    },
+    {
+      "label": "EcoScan: Backend (FastAPI)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["scripts/_vscode_backend.sh"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "windows": {
+        "command": "powershell.exe",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/scripts/_vscode_backend.ps1"
+        ]
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "ecoscan" }
+    },
+    {
+      "label": "EcoScan: Frontend (Vite)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev", "--", "--host", "0.0.0.0"],
+      "options": { "cwd": "${workspaceFolder}/ecoscan-frontend" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "ecoscan" }
+    },
+    {
+      "label": "EcoScan: FULL STACK (solo VS Code, sin CMD)",
+      "dependsOn": [
+        "EcoScan: Backend (FastAPI)",
+        "EcoScan: Frontend (Vite)"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "ecoscan" },
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "EcoScan: Arrancar todo (script externo / Docker)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["scripts/run.sh"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "windows": {
+        "command": "powershell.exe",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/scripts/run.ps1"
+        ]
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "ecoscan" }
+    },
+    {
+      "label": "EcoScan: DOCKER (compose up)",
+      "type": "shell",
+      "command": "docker",
+      "args": ["compose", "up", "--build", "-d"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "ecoscan" }
+    },
+    {
+      "label": "EcoScan: DOCKER (compose down)",
+      "type": "shell",
+      "command": "docker",
+      "args": ["compose", "down"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "ecoscan" }
+    },
+    {
+      "label": "EcoScan: Instalar dependencias",
+      "type": "shell",
+      "command": "python3 -m venv ecoscan-backend/venv && ecoscan-backend/venv/bin/pip install -r ecoscan-backend/requirements.txt && cd ecoscan-frontend && npm ci",
+      "options": { "cwd": "${workspaceFolder}" },
+      "windows": {
+        "command": "python -m venv ecoscan-backend/venv && ecoscan-backend\\venv\\Scripts\\python.exe -m pip install -r ecoscan-backend/requirements.txt && cd ecoscan-frontend && npm ci"
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "ecoscan" }
+    }
+  ]
+}
