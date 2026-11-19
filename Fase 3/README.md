@@ -153,6 +153,15 @@ Nunca subir claves al repositorio. Las credenciales de MySQL y los secretos van
 en `.env` (ignorado por Git y por los `.dockerignore`); la API key de Roboflow
 se inyecta por variable de entorno o en los Secretos de Colab. Ver `.env.example`.
 
+Cuaderno de entrenamiento (Google Colab):
+<https://colab.research.google.com/drive/1lK_ocnGYREm0CQUcNi4YHa4032lnwtAo>.
+Revisado el 19-11-2026: se retiró una clave literal que aparecía en la celda de
+entrenamiento y se corrigió la conclusión automática para exigir también
+`mAP@50 ≥ 0.65` en `test`. La clave debe rotarse (REC-64 / REC-122); las salidas
+guardadas del cuaderno difieren de la iteración final documentada (0.562) y no
+deben usarse para afirmar que el objetivo se alcanzó. Detalle en
+`EVIDENCIA_ECOLEARN_ACTUALIZADA_2026-11-19/14_COLAB/EVIDENCIA_COLAB.txt`.
+
 ## Equipo y gestión
 
 Jira: tablero **EcoLearn** (proyecto **REC**). Ramas: `main` (estable), `develop`,
