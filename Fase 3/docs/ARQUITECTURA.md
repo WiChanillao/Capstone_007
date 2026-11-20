@@ -35,10 +35,11 @@ flowchart TB
         RUTAS["APIRouter /db (rutas_db.py)<br/>14 endpoints de datos"]
         IMAGEN["Validacion de imagen<br/>MIME · 10 MB · 8000 px · EXIF · nitidez"]
         MODELO["Ultralytics YOLO · best.pt<br/>instancia global · 3 clases<br/>Aluminio · Carton · Plastico"]
-        ORM["SQLAlchemy<br/>HistorialEscaneo → tabla escaneos"]
-        PYMYSQL["PyMySQL<br/>consultar / ejecutar / guardar_inferencia"]
+        ORM["SQLAlchemy<br/>esquema y consulta de salud"]
+        PYMYSQL["PyMySQL<br/>rutas de datos y transacción de escaneo"]
         API --> IMAGEN --> MODELO
         API --> ORM
+        API --> PYMYSQL
         API --> RUTAS --> PYMYSQL
     end
 
@@ -97,12 +98,14 @@ sequenceDiagram
     YOLO-->>API: boxes (clase, confianza)
     API->>API: descarta confianza menor a 0.5
     alt Sin detecciones y nitidez menor al umbral
+        API-->>DB: intenta guardar inferencia BORROSA
         API-->>FE: 400 IMAGEN_BORROSA
     else Con detecciones o imagen nitida
-        API->>DB: INSERT IGNORE sesion + INSERT inferencia
+        Note over API,DB: Una transacción para sesión, escaneo e inferencias
         opt Hubo detecciones
-            API->>DB: INSERT escaneos (SQLAlchemy)
+            API->>DB: incluye escaneo si hay detecciones aceptadas
         end
+        API->>DB: confirma todo o revierte la transacción (PyMySQL)
         API-->>FE: 200 detecciones, conteo, confianza, calidad, latencia
     end
     FE->>FE: tarjetas por material, contenedor, pasos y videos
@@ -121,7 +124,7 @@ Las detecciones por debajo de `UMBRAL_CONFIANZA=0.5` se separan
 (`main.py:523-529`); si no hay detecciones y la nitidez es menor a
 `UMBRAL_NITIDEZ=50`, responde `400 IMAGEN_BORROSA` (`main.py:533-552`). En los
 demás casos registra la inferencia en MySQL (`main.py:538-603`) y devuelve el
-JSON con materiales detectados, conteo por clase, confianza, calidad de imagen
+JSON con materiales detectados, estado de guardado, conteo por clase, confianza, calidad de imagen
 y latencia (`main.py:610-622`). La UI muestra entonces tarjetas por material con
 contenedor, pasos y videos (`App.jsx:1311-1472`).
 
@@ -161,7 +164,7 @@ estáticos embebidos (`App.jsx:254-326,530-580`).
   cabeceras CSP (`main.py:161-184`).
 - El **`id_sesion` anónimo** en `localStorage`, sin cuentas ni login
   (`App.jsx:492-510`).
-- Las **dos capas de acceso a la misma BD**: SQLAlchemy/ORM para `escaneos`
+- Las **dos capas de acceso a la misma BD**: SQLAlchemy/ORM para esquema y consulta de salud
   (`main.py:242-261`) y PyMySQL directo para los 14 endpoints `/db/*`
   (`rutas_db.py:24-56`).
 - La **validación completa de imagen** (10 MB, 8000 px, HEIC, EXIF, nitidez)
@@ -243,3 +246,10 @@ Confirmado por búsqueda en todo el código y la documentación vigente:
 | CI sin deploy | `.github/workflows/ci.yml:1-48` |
 | Diagrama histórico | `../../Fase 2/Evidencia/Arquitectura_EcoLearn.png` |
 | Bloques ASCII sustituidos | `../README.md:20-71`, `DOCUMENTACION_GENERAL.md:60-107` |
+
+## Contratos de operacion
+
+- La aplicacion requiere pesos locales (best.pt por defecto). La falta del archivo detiene el arranque.
+- POST /predict acepta hasta 36 caracteres de sesion, igual que las columnas MySQL.
+- /health conserva HTTP 200 y comunica la disponibilidad de MySQL en mysql_conectado. Compose comprueba ese campo.
+- La exportacion de inferencias, la escritura directa de inferencias y la retencion se sirven desde el puerto local de FastAPI. nginx excluye esas rutas del proxy de la PWA.

@@ -35,6 +35,7 @@ except ImportError:
 
 # Importaciones para Base de Datos MySQL
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, text
+from sqlalchemy.engine import URL
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 app = FastAPI(title="EcoLearn Chile API")
@@ -197,7 +198,7 @@ async def validacion_entrada(request: Request, exc: RequestValidationError):
 
 
 # Rutas /db/... alimentadas desde MySQL ecoscan (REC-42, REC-47, REC-51)
-from rutas_db import router as db_router, guardar_inferencia, Inferencia, ejecutar
+from rutas_db import router as db_router, guardar_resultado_escaneo, Inferencia
 app.include_router(db_router)
 
 # Orígenes permitidos: siempre por variable de entorno, nunca comodín.
@@ -233,13 +234,20 @@ MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
 MYSQL_PORT = os.getenv("MYSQL_PORT", "3306")
 MYSQL_DB = os.getenv("MYSQL_DB", "ecoscan")
 
-MYSQL_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
+MYSQL_URL = URL.create(
+    "mysql+pymysql",
+    username=MYSQL_USER,
+    password=MYSQL_PASSWORD,
+    host=MYSQL_HOST,
+    port=int(MYSQL_PORT),
+    database=MYSQL_DB,
+)
 
 db_activa = False
 SessionLocal = None
 
 try:
-    engine = create_engine(MYSQL_URL, pool_pre_ping=True)
+    engine = create_engine(MYSQL_URL, pool_pre_ping=True, connect_args={"connect_timeout": 3})
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base = declarative_base()
 
@@ -327,12 +335,10 @@ except Exception as e:
 # ----------------------------------------------------
 # 🤖 SELECCIÓN DEL MODELO YOLO
 # ----------------------------------------------------
-# best.pt es el modelo entrenado del proyecto. Si no está, se usa el baseline
-# de Ultralytics, que descarga automáticamente: no depende de un archivo versionado.
+# Los pesos de entrega son locales. Un archivo faltante debe detener el arranque.
 MODEL_PATH = os.getenv("MODEL_PATH", "best.pt")
-if not os.path.exists(MODEL_PATH):
-    MODEL_PATH = "yolov8n.pt"
-    print("⚠️ best.pt no encontrado: usando baseline yolov8n.pt (descarga automática).")
+if not os.path.isfile(MODEL_PATH):
+    raise RuntimeError(f"No se encontró el archivo local de pesos: {MODEL_PATH}")
 UMBRAL_CONFIANZA = float(os.getenv("UMBRAL_CONFIANZA", "0.5"))
 # Referencia orientativa (NO validación con el split de test): 26 fotos reales
 # disponibles reescaladas a 640 px dan min 128.39, p05 324.68, mediana 2527.54;
@@ -381,11 +387,14 @@ def health():
     if db_activa and SessionLocal:
         try:
             db = SessionLocal()
-            estado["escaneos_registrados"] = db.query(HistorialEscaneo).count()
-            db.close()
+            try:
+                estado["escaneos_registrados"] = db.query(HistorialEscaneo).count()
+            finally:
+                db.close()
         except Exception as err:
             estado["status"] = "degraded"
-            estado["error_mysql"] = str(err)
+            estado["mysql_conectado"] = False
+            log_evento("error_health_mysql", tipo=type(err).__name__)
     return estado
 
 @app.get("/v1/models")
@@ -419,21 +428,16 @@ def detalle_modelo(modelo_id: str):
 async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
     inicio = time.perf_counter()
     sesion = (id_sesion or "").strip() or None
-    if sesion is not None and not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", sesion):
+    if sesion is not None and not re.fullmatch(r"[A-Za-z0-9_-]{1,36}", sesion):
         registrar_rechazo("ID_SESION_INVALIDO", campo="id_sesion")
         raise HTTPException(
             status_code=422,
             detail=error_detail(
                 "ID_SESION_INVALIDO",
-                "id_sesion debe tener entre 1 y 64 caracteres: letras, números, guion o guion bajo.",
+                "id_sesion debe tener entre 1 y 36 caracteres: letras, números, guion o guion bajo.",
                 "id_sesion",
             ),
         )
-    if db_activa and sesion:
-        try:
-            ejecutar("INSERT IGNORE INTO sesion (id_sesion) VALUES (%s)", (sesion,))
-        except Exception:
-            pass
     # Rechazar archivos > 10 MB antes de cargarlos en memoria. Se revisa la
     # cabecera Content-Length del parte y además se limita la lectura real,
     # porque la cabecera es declarada por el cliente y puede faltar o mentir.
@@ -534,16 +538,15 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
         registrar_rechazo("IMAGEN_BORROSA", campo="file", mime=mime,
                           bytes_archivo=len(contents), ancho=image.width,
                           alto=image.height, nitidez=nitidez)
-        try:
-            guardar_inferencia(Inferencia(
-                id_sesion=sesion,
-                id_material=None,
-                resultado="BORROSA",
-                confianza=None,
-                latencia_ms=int((time.perf_counter() - inicio) * 1000),
-            ))
-        except Exception as err:
-            log_evento("error_guardar_inferencia", etapa="IMAGEN_BORROSA", error=str(err))
+        if db_activa:
+            try:
+                guardar_resultado_escaneo(sesion, [Inferencia(
+                    id_sesion=sesion,
+                    resultado="BORROSA",
+                    latencia_ms=int((time.perf_counter() - inicio) * 1000),
+                )])
+            except Exception as err:
+                log_evento("error_guardar_inferencia", etapa="IMAGEN_BORROSA", tipo=type(err).__name__)
         raise HTTPException(
             status_code=400,
             detail=error_detail("IMAGEN_BORROSA",
@@ -551,63 +554,43 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
                                 "file"),
         )
 
-    # Solo cuenta como escaneo real si hubo detecciones aceptadas.
-    if db_activa and SessionLocal and detecciones:
-        try:
-            db = SessionLocal()
-            materiales_str = ", ".join(list(clases_unicas))
-            nuevo_registro = HistorialEscaneo(
-                materiales_detectados=materiales_str,
-                modelo_usado=MODEL_PATH,
-                total_objetos=len(detecciones),
-                id_sesion=(id_sesion or "").strip() or None,
-                cant_carton=conteo_clases.get("Carton", 0),
-                cant_aluminio=conteo_clases.get("Aluminio", 0),
-                cant_plastico=conteo_clases.get("Plastico", 0),
-            )
-            db.add(nuevo_registro)
-            db.commit()
-            db.close()
-        except Exception as err:
-            print(f"⚠️ Error al guardar registro en MySQL: {err}")
-
-    # REC-43: trazabilidad real de cada detección en la tabla inferencia.
+    escaneo_guardado = False
     if db_activa:
+        inferencias = [
+            Inferencia(
+                id_sesion=sesion,
+                id_material=id_material_por_clase.get(det["clase"]),
+                resultado=resultado,
+                confianza=det["confianza"],
+                latencia_ms=latencia_ms,
+            )
+            for resultado, grupo in (
+                ("OK", detecciones), ("CONFIANZA_BAJA", detecciones_rechazadas)
+            )
+            for det in grupo
+        ]
+        if not inferencias:
+            inferencias.append(Inferencia(
+                id_sesion=sesion, resultado="SIN_DETECCION", latencia_ms=latencia_ms
+            ))
+        escaneo = None
+        if detecciones:
+            escaneo = (
+                ", ".join(sorted(clases_unicas)), MODEL_PATH, len(detecciones), sesion,
+                conteo_clases.get("Carton", 0), conteo_clases.get("Aluminio", 0),
+                conteo_clases.get("Plastico", 0),
+            )
         try:
-            sesion = (id_sesion or "").strip() or None
-            if sesion:
-                ejecutar("INSERT IGNORE INTO sesion (id_sesion) VALUES (%s)", (sesion,))
-            for det in detecciones:
-                guardar_inferencia(Inferencia(
-                    id_sesion=sesion,
-                    id_material=id_material_por_clase.get(det["clase"]),
-                    resultado="OK",
-                    confianza=det["confianza"],
-                    latencia_ms=latencia_ms,
-                ))
-            for det in detecciones_rechazadas:
-                guardar_inferencia(Inferencia(
-                    id_sesion=sesion,
-                    id_material=id_material_por_clase.get(det["clase"]),
-                    resultado="CONFIANZA_BAJA",
-                    confianza=det["confianza"],
-                    latencia_ms=latencia_ms,
-                ))
-            if not detecciones and not detecciones_rechazadas:
-                guardar_inferencia(Inferencia(
-                    id_sesion=sesion,
-                    id_material=None,
-                    resultado="SIN_DETECCION",
-                    confianza=None,
-                    latencia_ms=latencia_ms,
-                ))
+            guardar_resultado_escaneo(sesion, inferencias, escaneo)
+            escaneo_guardado = escaneo is not None
         except Exception as err:
-            print(f"⚠️ Error al guardar inferencia en MySQL: {err}")
+            log_evento("error_persistencia_escaneo", tipo=type(err).__name__)
 
     log_evento("prediccion", sesion=id_sesion, aceptadas=len(detecciones),
                rechazadas=len(detecciones_rechazadas), latencia_ms=latencia_ms)
 
     return {
+        "escaneo_guardado": escaneo_guardado,
         "detecciones": detecciones,
         "detecciones_rechazadas": detecciones_rechazadas,
         "modelo_usado": MODEL_PATH,

@@ -83,10 +83,11 @@ flowchart TB
         RUTAS["APIRouter /db · rutas_db.py<br/>14 endpoints"]
         IMAGEN["Validación de imagen<br/>MIME · 10 MB · 8000 px · EXIF · nitidez"]
         MODELO["Ultralytics YOLO · best.pt<br/>3 clases: Aluminio, Cartón, Plástico"]
-        ORM["SQLAlchemy<br/>HistorialEscaneo → escaneos"]
-        PYMYSQL["PyMySQL<br/>consultar / ejecutar"]
+        ORM["SQLAlchemy<br/>esquema / health"]
+        PYMYSQL["PyMySQL<br/>consultas y transaccion de escaneo"]
         API --> IMAGEN --> MODELO
         API --> ORM
+        API --> PYMYSQL
         API --> RUTAS --> PYMYSQL
     end
 

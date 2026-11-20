@@ -89,15 +89,43 @@ class Inferencia(BaseModel):
     latencia_ms: int
 
 
+INSERT_INFERENCIA = """INSERT INTO inferencia
+    (id_inferencia, id_sesion, id_material, resultado, confianza, latencia_ms)
+    VALUES (%s,%s,%s,%s,%s,%s)"""
+
+
+def valores_inferencia(d: Inferencia):
+    return (str(uuid.uuid4()), d.id_sesion, d.id_material, d.resultado, d.confianza, d.latencia_ms)
+
+
 @router.post("/inferencias", status_code=201)
 def guardar_inferencia(d: Inferencia):
-    ejecutar(
-        """INSERT INTO inferencia
-           (id_inferencia, id_sesion, id_material, resultado, confianza, latencia_ms)
-           VALUES (%s,%s,%s,%s,%s,%s)""",
-        (str(uuid.uuid4()), d.id_sesion, d.id_material, d.resultado, d.confianza, d.latencia_ms),
-    )
+    ejecutar(INSERT_INFERENCIA, valores_inferencia(d))
     return {"ok": True}
+
+
+def guardar_resultado_escaneo(sesion, inferencias, escaneo=None):
+    """Guarda toda la evidencia de una imagen en una transacción de InnoDB."""
+    conn = pymysql.connect(**DB_CONFIG, connect_timeout=3, autocommit=False)
+    try:
+        with conn.cursor() as cur:
+            if sesion:
+                cur.execute("INSERT IGNORE INTO sesion (id_sesion) VALUES (%s)", (sesion,))
+            if escaneo is not None:
+                cur.execute(
+                    """INSERT INTO escaneos
+                    (fecha, materiales_detectados, modelo_usado, total_objetos, id_sesion,
+                     cant_carton, cant_aluminio, cant_plastico)
+                    VALUES (NOW(),%s,%s,%s,%s,%s,%s,%s)""",
+                    escaneo,
+                )
+            cur.executemany(INSERT_INFERENCIA, [valores_inferencia(d) for d in inferencias])
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 @router.get("/reporte/inferencias.csv")

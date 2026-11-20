@@ -786,8 +786,15 @@ export default function App() {
       } else {
         setElementosDetectados(Array.from(encontrados));
         setConfianzas(conf);
-        // La métrica se vuelve a leer desde MySQL: nadie la modifica a mano.
-        try { await refrescarImpacto(); } catch (e) { /* conserva el último valor válido */ }
+        if (data.escaneo_guardado === false) {
+          avisos.push('Se identificó el material, pero el escaneo no pudo guardarse. El impacto y el avance no se actualizaron.');
+        } else {
+          try {
+            await refrescarImpacto();
+          } catch {
+            avisos.push('El resultado está disponible. No se pudo actualizar el impacto en pantalla.');
+          }
+        }
       }
 
       if (data.calidad_imagen?.aviso === 'baja_nitidez') {
@@ -1073,7 +1080,7 @@ export default function App() {
                 </div>
 
                 <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 text-center">
-                  <span className="text-3xl sm:text-4xl font-black text-cyan-400 block mb-1">10</span>
+                  <span className="text-3xl sm:text-4xl font-black text-cyan-400 block mb-1">{puntosRM.length}</span>
                   <span className="text-[11px] font-bold text-slate-200 block">Puntos Limpios RM</span>
                   <p className="text-[10px] text-slate-400 mt-1">Con dirección, horario y ruta en Google Maps.</p>
                 </div>
