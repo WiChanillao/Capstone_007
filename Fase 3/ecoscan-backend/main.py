@@ -11,6 +11,7 @@ import io
 import json
 import re
 import time
+import ipaddress
 import hashlib
 import datetime
 import logging
@@ -53,6 +54,16 @@ MENSAJE_IMAGEN_INVALIDA = (
 )
 _solicitudes = defaultdict(deque)
 _bloqueo = threading.Lock()
+# Solo se confía en X-Real-IP / X-Forwarded-For cuando la petición entra desde
+# la red de nginx. Desde cualquier otro origen la cabecera se ignora.
+_RED_PROXY_CONFIABLE = os.getenv("RED_PROXY_CONFIABLE", "172.18.0.0/16")
+try:
+    _REDES_PROXY = [
+        ipaddress.ip_network(red.strip(), strict=False)
+        for red in _RED_PROXY_CONFIABLE.split(",") if red.strip()
+    ]
+except ValueError:
+    _REDES_PROXY = []
 
 # Logging estructurado simple (REC-71): una línea JSON por evento relevante.
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -73,6 +84,23 @@ def registrar_rechazo(codigo, campo, mime=None, bytes_archivo=None,
     """Registra cada rechazo sin guardar la imagen (solo metadata)."""
     log_evento("rechazo", codigo=codigo, campo=campo, mime=mime,
                bytes=bytes_archivo, ancho=ancho, alto=alto, **extra)
+
+
+def ip_real(cliente, cabeceras):
+    """IP del visitante: solo confía en las cabeceras si viene de la red de nginx."""
+    try:
+        ip_cliente = ipaddress.ip_address(cliente)
+    except ValueError:
+        return cliente
+    if not any(ip_cliente in red for red in _REDES_PROXY):
+        return cliente
+    candidata = (cabeceras.get("x-real-ip") or "").strip()
+    if not candidata:
+        candidata = (cabeceras.get("x-forwarded-for") or "").split(",")[0].strip()
+    try:
+        return str(ipaddress.ip_address(candidata))
+    except ValueError:
+        return cliente
 
 
 def mime_declarado(objeto):
@@ -100,7 +128,8 @@ def calcular_nitidez(imagen):
 
 @app.middleware("http")
 async def seguridad_y_limite(request: Request, call_next):
-    ip = request.client.host if request.client else "desconocida"
+    cliente = request.client.host if request.client else "desconocida"
+    ip = ip_real(cliente, request.headers)
     if request.url.path == "/predict":
         ahora = time.time()
         with _bloqueo:

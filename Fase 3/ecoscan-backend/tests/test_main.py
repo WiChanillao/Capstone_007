@@ -4,6 +4,7 @@ Las escrituras en MySQL se simulan con monkeypatch: las pruebas no modifican
 las 48 filas reales de la base ecoscan.
 """
 import io
+from collections import defaultdict, deque
 
 import numpy as np
 import pytest
@@ -136,6 +137,47 @@ def test_csp_sin_comodin_y_con_origenes_de_entorno():
     assert "*" not in connect
     for origen in main.ORIGENES_PERMITIDOS:
         assert origen in connect
+
+
+def test_ip_real_confia_en_cabecera_solo_desde_la_red_de_nginx():
+    """Desde la red de nginx se usa X-Real-IP; desde fuera se ignora."""
+    assert main.ip_real("172.18.0.4", {"x-real-ip": "10.0.0.7"}) == "10.0.0.7"
+    assert main.ip_real(
+        "172.18.0.4", {"x-forwarded-for": "10.0.0.8, 172.18.0.4"}
+    ) == "10.0.0.8"
+    # Origen externo: la cabecera falsificada no altera la clave.
+    assert main.ip_real("203.0.113.9", {"x-real-ip": "10.0.0.7"}) == "203.0.113.9"
+    # Cabecera mal formada: se conserva la IP del socket.
+    assert main.ip_real("172.18.0.4", {"x-real-ip": "no-es-una-ip"}) == "172.18.0.4"
+
+
+def test_rate_limit_no_comparte_cuota_entre_ips_reales(monkeypatch):
+    """Dos visitantes distintos detrás del mismo proxy tienen cuota independiente."""
+    monkeypatch.setattr(main, "_solicitudes", defaultdict(deque))
+    monkeypatch.setattr(main, "_LIMIT_MINUTO", 2)
+    monkeypatch.setattr(
+        main, "ip_real", lambda cliente, cabeceras: cabeceras.get("x-real-ip", cliente)
+    )
+    imagen = _imagen(nitida=True)
+    cuota_agotada = None
+    for _ in range(2):
+        cuota_agotada = client.post(
+            "/predict", files={"file": ("a.png", imagen, "image/png")},
+            headers={"x-real-ip": "10.0.0.7"},
+        )
+    assert cuota_agotada.status_code == 200
+    rechazada = client.post(
+        "/predict", files={"file": ("a.png", imagen, "image/png")},
+        headers={"x-real-ip": "10.0.0.7"},
+    )
+    assert rechazada.status_code == 429
+    assert rechazada.json()["detail"]["codigo"] == "DEMASIADAS_SOLICITUDES"
+    # La otra IP conserva su cuota a pesar de venir por el mismo proxy.
+    otra = client.post(
+        "/predict", files={"file": ("b.png", imagen, "image/png")},
+        headers={"x-real-ip": "10.0.0.8"},
+    )
+    assert otra.status_code == 200
 
 
 def test_predict_rechaza_archivo_que_no_es_imagen(monkeypatch):
