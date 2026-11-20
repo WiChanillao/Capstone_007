@@ -19,17 +19,56 @@ desafío verde.
 
 ## Arquitectura
 
-```
-Frontend (React 19 + Vite + PWA)
-        │  HTTP (JSON / multipart)
-        ▼
-Backend FastAPI  ── /predict ──▶  Modelo YOLO11n (best.pt)
-        │  /db/...  /impacto  /sesiones  /health  /v1/models
-        ▼
-MySQL 8  (base `ecoscan`)
+> Auditoría completa, diagrama de secuencia y evidencia por archivo:
+> [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md). Este bloque sustituye al
+> diagrama ASCII anterior y al PNG histórico `Fase 2/Evidencia/Arquitectura_EcoLearn.png`.
+
+```mermaid
+flowchart TB
+    subgraph CLIENTE["Cliente - navegador / PWA"]
+        USUARIO["Ciudadano<br/>cámara o galería"]
+        SPA["React 19 + Vite 8 + Tailwind<br/>App.jsx · MapaPuntos.jsx · trivia.js"]
+        SESION[("localStorage<br/>ecolearn_id_sesion")]
+        USUARIO --> SPA
+        SPA <--> SESION
+    end
+
+    subgraph FRONTEND["Contenedor frontend - nginx:alpine · 8080"]
+        NGINX["/api/ → http://backend:8000/<br/>client_max_body_size 12m"]
+        ESTATICO["SPA estática (dist/)"]
+        ESTATICO --- NGINX
+    end
+
+    subgraph BACKEND["Contenedor backend - python:3.13-slim · 8000"]
+        API["FastAPI main.py<br/>/ · /health · /version · /v1/models · /predict<br/>CORS · CSP · rate limit 30 req/IP/min"]
+        RUTAS["APIRouter /db · rutas_db.py<br/>14 endpoints"]
+        IMAGEN["Validación de imagen<br/>MIME · 10 MB · 8000 px · EXIF · nitidez"]
+        MODELO["Ultralytics YOLO · best.pt<br/>3 clases: Aluminio, Cartón, Plástico"]
+        ORM["SQLAlchemy<br/>HistorialEscaneo → escaneos"]
+        PYMYSQL["PyMySQL<br/>consultar / ejecutar"]
+        API --> IMAGEN --> MODELO
+        API --> ORM
+        API --> RUTAS --> PYMYSQL
+    end
+
+    MYSQL[("MySQL 8 · base ecoscan<br/>15 tablas · volumen mysql_data")]
+    MAPAS["Leaflet: OSM / CARTO / Esri<br/>enlaces a Google Maps"]
+    VIDEOS["iframe youtube-nocookie.com"]
+
+    SPA -->|"fetch /api · JSON / FormData"| NGINX
+    NGINX -->|"proxy_pass"| API
+    SPA -.-> MAPAS
+    SPA -.-> VIDEOS
+    ORM --> MYSQL
+    PYMYSQL --> MYSQL
+    MODELO -.->|"detecciones"| API
+    API -.->|"JSON"| SPA
 ```
 
-El frontend consume la API en `VITE_API_URL` (por defecto `/api`, mismo origen; nginx redirige a `backend:8000`). Así la app funciona también cuando se comparte por un túnel, sin depender del `127.0.0.1` del visitante.
+El frontend consume la API en `VITE_API_URL` (por defecto `/api`, mismo origen;
+`nginx.conf:9-16` redirige a `backend:8000`). Así la app funciona también cuando
+se comparte por un túnel, sin depender del `127.0.0.1` del visitante. No hay
+cuentas ni login: la sesión es un UUID anónimo en `localStorage`.
 
 ## Estructura de la carpeta `Fase 3`
 

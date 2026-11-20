@@ -9,6 +9,7 @@ repositorio para que todo quede disponible desde un solo clone.
 |---|---|
 | [`RESUMEN_AUDITORIA_2026-11-20.md`](RESUMEN_AUDITORIA_2026-11-20.md) | Resumen ordenado de lo revisado, creado y corregido. |
 | [`DOCUMENTACION_GENERAL.md`](DOCUMENTACION_GENERAL.md) | **Fuente única** de alcance real, nombres de módulos, flujos, API, datos y deuda conocida. |
+| [`ARQUITECTURA.md`](ARQUITECTURA.md) | Diagrama Mermaid canónico auditado contra el código, flujo de inferencia y brechas del diagrama histórico. |
 | [`AUDITORIA_JIRA.md`](AUDITORIA_JIRA.md) | Contraste del tablero REC (161 issues) contra `main @ af7d14d`. |
 | [`jira/`](jira/) | Contraste issue por issue, inventario, mapa de claves y backlog **aplicado en Jira el 20-11-2026** (30 cambios verificados). |
 | [`DECISIONES.md`](DECISIONES.md), [`ENTREGA.md`](ENTREGA.md) | Decisiones técnicas y guía de entrega; complementan la documentación general. |

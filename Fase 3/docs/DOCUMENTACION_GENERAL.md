@@ -59,20 +59,52 @@ Estos elementos se conservan en Jira y en la documentación histórica como deci
 
 ## 3. Arquitectura
 
-```text
-Navegador / PWA React 19 + Vite + Tailwind
-        │  fetch('/api/...')
-        ▼
-Nginx (frontend, puerto interno 8080)
-        │  proxy_pass http://backend:8000/
-        ▼
-FastAPI (main.py + rutas_db.py)
-   ├── YOLO11n best.pt  →  /predict
-   ├── validación, CSP, CORS, rate limit
-   └── MySQL 8 (ecoscan)
+> Diagrama canónico, flujo de inferencia y auditoría de brechas:
+> [`ARQUITECTURA.md`](ARQUITECTURA.md). El bloque ASCII anterior quedó sustituido.
+
+```mermaid
+flowchart TB
+    subgraph CLIENTE["Cliente - navegador / PWA"]
+        USUARIO["Ciudadano<br/>cámara o galería"]
+        SPA["React 19 + Vite 8 + Tailwind<br/>App.jsx · MapaPuntos.jsx · trivia.js"]
+        SESION[("localStorage<br/>ecolearn_id_sesion")]
+        USUARIO --> SPA
+        SPA <--> SESION
+    end
+
+    subgraph FRONTEND["Contenedor frontend - nginx:alpine · 8080"]
+        NGINX["/api/ → http://backend:8000/<br/>client_max_body_size 12m"]
+        ESTATICO["SPA estática (dist/)"]
+        ESTATICO --- NGINX
+    end
+
+    subgraph BACKEND["Contenedor backend - python:3.13-slim · 8000"]
+        API["FastAPI main.py<br/>/ · /health · /version · /v1/models · /predict<br/>CORS · CSP · rate limit 30 req/IP/min"]
+        RUTAS["APIRouter /db · rutas_db.py<br/>14 endpoints"]
+        IMAGEN["Validación de imagen<br/>MIME · 10 MB · 8000 px · EXIF · nitidez"]
+        MODELO["Ultralytics YOLO · best.pt<br/>3 clases: Aluminio, Cartón, Plástico"]
+        ORM["SQLAlchemy<br/>HistorialEscaneo → escaneos"]
+        PYMYSQL["PyMySQL<br/>consultar / ejecutar"]
+        API --> IMAGEN --> MODELO
+        API --> ORM
+        API --> RUTAS --> PYMYSQL
+    end
+
+    MYSQL[("MySQL 8 · base ecoscan<br/>15 tablas · volumen mysql_data")]
+    MAPAS["Leaflet: OSM / CARTO / Esri<br/>enlaces a Google Maps"]
+    VIDEOS["iframe youtube-nocookie.com"]
+
+    SPA -->|"fetch /api · JSON / FormData"| NGINX
+    NGINX -->|"proxy_pass"| API
+    SPA -.-> MAPAS
+    SPA -.-> VIDEOS
+    ORM --> MYSQL
+    PYMYSQL --> MYSQL
+    MODELO -.->|"detecciones"| API
+    API -.->|"JSON"| SPA
 ```
 
-Puertos publicados en Docker: MySQL `127.0.0.1:3307`, backend `127.0.0.1:8000`, frontend `127.0.0.1:5173`. Los tres servicios tienen healthchecks y los contenedores no ejecutan como root (`appuser`, `nginx`).
+Puertos publicados en Docker: MySQL `127.0.0.1:3307`, backend `127.0.0.1:8000`, frontend `127.0.0.1:5173`. Los tres servicios tienen healthchecks y los contenedores no ejecutan como root (`appuser`, `nginx`). Dentro de la red de Compose, el flujo es `nginx → backend:8000 → mysql:3306` (`docker-compose.yml:28` mapea `BACKEND_MYSQL_HOST` a `MYSQL_HOST`).
 
 Versiones principales: Python 3.13 en backend/CI, Node 22 en CI y `node:20-alpine` en la imagen frontend, MySQL 8.0, FastAPI 0.165.0, Ultralytics 8.4.215, React 19.2.x, Vite 8.3.x, Tailwind 3.4.x.
 

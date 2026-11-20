@@ -21,9 +21,9 @@ guardan como columnas `lat`/`lon` y Leaflet las consume en el cliente, por lo
 que no se requiere la extensión espacial de PostGIS. MySQL ya estaba en los
 entregables de Fases 1 y 2 y tiene imagen oficial para Docker.
 
-**Evidencia:** [`../README.md`](../README.md) (arquitectura, línea 23: `MySQL 8
-(base 'ecoscan')`), [`../docker-compose.yml`](../docker-compose.yml) (servicio
-`mysql:8.0`), [`../ecoscan-frontend/src/MapaPuntos.jsx`](../ecoscan-frontend/src/MapaPuntos.jsx)
+**Evidencia:** [`ARQUITECTURA.md`](ARQUITECTURA.md) (arquitectura real auditada:
+`MySQL 8 · base ecoscan`), [`../docker-compose.yml`](../docker-compose.yml)
+(servicio `mysql:8.0`), [`../ecoscan-frontend/src/MapaPuntos.jsx`](../ecoscan-frontend/src/MapaPuntos.jsx)
 (marcadores construidos con lat/lon del lado cliente).
 
 ## 2. YOLO11n con `best.pt` como modelo de producción
