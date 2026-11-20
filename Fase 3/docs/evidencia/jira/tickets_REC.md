@@ -165,7 +165,19 @@ los dos puntos de operación, la generalización y los umbrales no aplicados.
 con ticket por cambio y sin duplicar REC-64/122/105/140; evidencia sin datos
 personales y escaneo de secretos antes de commit; verificación con pytest,
 vitest y stacks aislados. **Evidencia:** `AGENTS.md` en la raíz.
-**Estado:** implementado, se versiona en Fase 3.
+**Estado:** versionado en los commits `9616280` y `aa20fb8`.
+
+### REC-170 (propuesta) — Bug — CI falla en pruebas unitarias del frontend
+**Descripción:** en `main` @ 62c73a2 y en `feature/umbrales-por-clase` @
+aa20fb8, el job `frontend` de *CI EcoLearn Chile* falla en el paso
+“Pruebas unitarias” (`npm run test:unit`); el job `backend` pasa.
+**Causa probable:** `.github/workflows/ci.yml` ejecuta `test:unit` en la línea
+44 antes de `npm run build` en la línea 48, y `src/sw.test.js` lee
+`dist/sw.js`, ausente en un checkout limpio. Localmente vitest pasa (18
+pruebas) si se ejecuta `npm run build` primero. **Sin acceso a los logs** (403,
+se requieren permisos de administrador). **Evidencia:** runs
+`44657570481` (main) y `44667984006` (feature). **Estado:** En curso, sin
+modificar el workflow sin autorización.
 
 ## 3. Tabla resumen
 
@@ -188,7 +200,8 @@ vitest y stacks aislados. **Evidencia:** `AGENTS.md` en la raíz.
 | REC-166 (prop.) | Tarea | Plan Colab E0-E3 | Plantilla lista |
 | REC-167 (prop.) | Historia | Umbrales por clase y “posible” | En curso |
 | REC-168 (prop.) | Tarea | DECISIONES.md / ENTREGA.md | Por verificar |
-| REC-169 (prop.) | Tarea | Reglas en AGENTS.md | Implementado, por versionar |
+| REC-169 (prop.) | Tarea | Reglas en AGENTS.md | Versionado |
+| REC-170 (prop.) | Bug | CI falla en `test:unit` del frontend | **En curso (CI fallido)** |
 
 ## 4. Cómo importar en Jira
 
@@ -199,10 +212,43 @@ vitest y stacks aislados. **Evidencia:** `AGENTS.md` en la raíz.
    `Description`→Description, `Labels`→Labels, `Priority`→Priority,
    `Status`→Status, `Epic Link`→Epic Link (el de REC-167 es REC-103; si el
    proyecto no permite épicos, dejarlo vacío).
-4. **Antes de importar**, buscar `REC-162`…`REC-169` por si ya se crearon;
+4. **Antes de importar**, buscar `REC-162`…`REC-170` por si ya se crearon;
    si existen, no importar esa fila y vincular al existente.
 5. Tras importar, anotar las claves reales y pegar el texto de la sección 1 en
    los tickets existentes. Adjuntar las capturas de
    `docs/evidencia/estado_pagina_2026-11-20/` a REC-140 y REC-162.
 6. No marcar nada como “Hecho” sin adjuntar la captura o la salida real de
    prueba indicada en cada ticket.
+
+## 5. Fase 4 — trazabilidad tras el push
+
+Ramas publicadas (sin `--force`, sin reescribir historial, **sin push de
+`main`**):
+
+- `experimento/generalizacion` →
+  https://github.com/WiChanillao/Capstone_007/tree/experimento/generalizacion
+- `feature/umbrales-por-clase` →
+  https://github.com/WiChanillao/Capstone_007/tree/feature/umbrales-por-clase
+
+| Ticket | Rama | Commits | CI | Evidencia / estado |
+|---|---|---|---|---|
+| REC-63 | `experimento/generalizacion` | `8f93638` | No aplica: `ci.yml` sólo dispara en `main`, `develop` y `feature/**` | `generalizacion.md`, `medicion_generalizacion.*`, `exp_geometria.*` |
+| REC-64 | `experimento/generalizacion` | `586fea9` | No aplica en esta rama | `docs/experimentos/*`, notebook de 7 celdas |
+| REC-140 / REC-169 | ambas | `9616280`, `aa20fb8` | Ver filas de cada rama | 12 capturas en `estado_pagina_2026-11-20/`, `AGENTS.md`, `tickets_REC.*` |
+| REC-103 / REC-167 | `feature/umbrales-por-clase` | `de3704e`, `aa20fb8` | Run `44667984006`: frontend **failure** en “Pruebas unitarias”, backend en curso | 42 pytest + 18 vitest locales, Docker 3/3 healthy → **En curso**, no cerrar con CI rojo |
+| REC-67 | `feature/umbrales-por-clase` | `de3704e`, `aa20fb8` | Ídem | `docker_umbrales.txt`, `/health` 200, `/predict` 200 |
+| REC-162 | sin commit (bug abierto) | — | — | 3 rondas repetidas en `resultados_navegador.json`; capturas `main_g_desafio_ronda1/2.png` |
+| REC-170 | sin commit (bug del workflow) | — | Run `44657570481` en `main` y `44667984006` en feature: frontend failure en “Pruebas unitarias” | `.github/workflows/ci.yml` líneas 43-48 → **En curso** |
+| REC-57 | ambas | pushes realizados | — | Sin PR abierta; pendiente del OK del usuario |
+
+**CI en `main` @ 62c73a2:** run `44657570481`, job `frontend` fallido en
+“Pruebas unitarias”, job `backend` correcto. Es un estado **preexistente** en
+`main`, no introducido por estos cambios; se registra en REC-170.
+
+**CI en `experimento/generalizacion`:** no se generó run porque el workflow no
+incluye ese patrón de rama. No es un fallo, pero conviene añadir el patrón si
+se quiere cobertura (cambio no realizado sin autorización).
+
+Las capturas se adjuntan a REC-140 y REC-162; las salidas de prueba a
+REC-103/REC-167, REC-104, REC-106 y REC-67. Ningún ticket se marca “Hecho”
+mientras el CI del frontend esté en rojo.
