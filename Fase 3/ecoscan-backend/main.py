@@ -40,6 +40,15 @@ app = FastAPI(title="EcoLearn Chile API")
 _LIMIT_MINUTO = int(os.getenv("LIMITE_PREDICT_MINUTO", "30"))
 # Límite de subida: 10 MB. Controlado por Content-Length y por lectura real.
 MAX_TAMANO_ARCHIVO = 10 * 1024 * 1024
+# Solo formatos de imagen declarados explícitamente; se valida el MIME y el
+# contenido real (verify), además del tamaño máximo en píxeles.
+MIME_IMAGENES_PERMITIDAS = {
+    "image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif",
+}
+MAX_DIMENSION_IMAGEN = 8000
+MENSAJE_IMAGEN_INVALIDA = (
+    "El archivo enviado no es una imagen válida. Sube una foto JPG, PNG, WEBP, HEIC o HEIF."
+)
 _solicitudes = defaultdict(deque)
 _bloqueo = threading.Lock()
 
@@ -300,19 +309,28 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
                     "mensaje": "La imagen supera el límite de 10 MB."},
         )
 
-    # Validar que el archivo sea realmente una imagen (REC-54: 400 controlado, no 500)
+    # Whitelist de MIME: el tipo declarado debe ser una imagen soportada.
+    mime = (file.content_type or "").split(";")[0].strip().lower()
+    if mime not in MIME_IMAGENES_PERMITIDAS:
+        raise HTTPException(status_code=400, detail=MENSAJE_IMAGEN_INVALIDA)
+
+    # Validar que el archivo sea realmente una imagen (REC-54: 400 controlado, no 500).
+    # verify() detecta contenido corrupto aunque el MIME declare lo contrario.
     try:
         imagen_cargada = Image.open(io.BytesIO(contents))
         imagen_cargada.verify()
     except Exception:
-        raise HTTPException(
-            status_code=400,
-            detail="El archivo enviado no es una imagen válida. Sube una foto JPG, PNG, WEBP, HEIC o HEIF."
-        )
+        raise HTTPException(status_code=400, detail=MENSAJE_IMAGEN_INVALIDA)
 
     # Abrir la imagen ajustando la rotación EXIF (Corrige fotos giradas de iPhone)
     image = Image.open(io.BytesIO(contents))
     image = ImageOps.exif_transpose(image).convert("RGB")
+    if image.width > MAX_DIMENSION_IMAGEN or image.height > MAX_DIMENSION_IMAGEN:
+        raise HTTPException(
+            status_code=400,
+            detail={"codigo": "DIMENSIONES_EXCEDIDAS",
+                    "mensaje": "La imagen supera el tamaño máximo de 8000x8000 píxeles."},
+        )
 
     # REC-104: rechazar fotos borrosas antes de clasificar.
     gris = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
