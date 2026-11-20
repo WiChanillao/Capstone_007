@@ -94,3 +94,17 @@ No puedo leer los logs de un job con la API: responde `403 Must have admin
 rights to Repository.` Sólo puedo consultar estado/conclusión por API pública;
 si el run verde no aparece, hay que revisarlo en la pestaña Actions o darme
 permisos de administrador sobre el repositorio.
+
+## 5. Resultado real en Actions (API pública, sin logs)
+
+Run **`44669949452`** — https://github.com/WiChanillao/Capstone_007/actions/runs/44669949452
+- Rama `fix/ci-orden-pasos`, SHA `4e1118a`, `status=completed`,
+  `conclusion=success`.
+- Job `frontend`: **success**. Pasos en orden: Instalar dependencias →
+  **Build** → Pruebas unitarias → Auditoría de dependencias, todos `success`.
+- Job `backend`: **success**. Pruebas unitarias y Auditoría de dependencias,
+  ambos `success`.
+
+Con esto REC-170 queda corregido y verificado en CI. Las 4 CVEs *moderate*
+seguían existiendo en la auditoría, pero no rompen el umbral `high`, igual que
+en la ejecución local; se mantienen registradas arriba como deuda.
