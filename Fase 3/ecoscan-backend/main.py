@@ -283,6 +283,19 @@ try:
     except Exception as err:
         print(f"⚠️ Aviso migración de inferencia: {err}")
 
+    # ck_inf_ok_material exigía id_material NULL para todo resultado distinto de
+    # OK, por lo que fallaba al guardar detecciones rechazadas por confianza.
+    # Ahora solo OK exige material; CONFIANZA_BAJA conserva la clase detectada.
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE inferencia DROP CHECK ck_inf_ok_material"))
+            conn.execute(text(
+                "ALTER TABLE inferencia ADD CONSTRAINT ck_inf_ok_material "
+                "CHECK (resultado <> 'OK' OR id_material IS NOT NULL)"
+            ))
+    except Exception as err:
+        print(f"⚠️ Aviso migración ck_inf_ok_material: {err}")
+
     db_activa = True
     print("🟢 Conexión exitosa a MySQL (Base de datos EcoScan activa).")
 except Exception as e:

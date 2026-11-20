@@ -28,6 +28,23 @@ def _imagen(nitida: bool) -> bytes:
     return buf.getvalue()
 
 
+class _Caja:
+    def __init__(self, clase, confianza):
+        self.cls = [clase]
+        self.conf = [confianza]
+
+
+class _ModeloFalso:
+    """Modelo determinista para probar el flujo sin depender de la inferencia real."""
+    names = {0: "Aluminio", 1: "Carton", 2: "Plastico"}
+
+    def __init__(self, cajas):
+        self.cajas = cajas
+
+    def __call__(self, imagen):
+        return [type("Resultado", (), {"boxes": self.cajas})()]
+
+
 def _sin_escritura(monkeypatch):
     """Aísla las pruebas de la BD real."""
     monkeypatch.setattr(main, "ejecutar", lambda *a, **k: None)
@@ -187,6 +204,22 @@ def test_predict_rechaza_archivo_que_no_es_imagen(monkeypatch):
     detalle = r.json()["detail"]
     assert detalle["codigo"] == "FORMATO_NO_VALIDO"
     assert detalle["campo"] == "file"
+
+
+def test_deteccion_rechazada_guarda_material_compatible_con_constraint(monkeypatch):
+    """CONFIANZA_BAJA conserva id_material: ck_inf_ok_material ya lo permite."""
+    guardados = []
+    monkeypatch.setattr(main, "db_activa", True)
+    monkeypatch.setattr(main, "ejecutar", lambda *a, **k: None)
+    monkeypatch.setattr(main, "guardar_inferencia", lambda dato: guardados.append(dato))
+    monkeypatch.setattr(main, "model", _ModeloFalso([_Caja(1, 0.27)]))
+    r = client.post(
+        "/predict",
+        data={"id_sesion": "sesion-rechazada"},
+        files={"file": ("foto.png", _imagen(nitida=True), "image/png")},
+    )
+    assert r.status_code == 200
+    assert any(g.resultado == "CONFIANZA_BAJA" and g.id_material == 1 for g in guardados)
 
 
 def test_predict_rechaza_foto_borrosa(monkeypatch):
