@@ -202,7 +202,12 @@ except Exception as e:
 # ----------------------------------------------------
 # 🤖 SELECCIÓN DEL MODELO YOLO
 # ----------------------------------------------------
-MODEL_PATH = "best.pt" if os.path.exists("best.pt") else "yolov8n.pt"
+# best.pt es el modelo entrenado del proyecto. Si no está, se usa el baseline
+# de Ultralytics, que descarga automáticamente: no depende de un archivo versionado.
+MODEL_PATH = os.getenv("MODEL_PATH", "best.pt")
+if not os.path.exists(MODEL_PATH):
+    MODEL_PATH = "yolov8n.pt"
+    print("⚠️ best.pt no encontrado: usando baseline yolov8n.pt (descarga automática).")
 UMBRAL_CONFIANZA = float(os.getenv("UMBRAL_CONFIANZA", "0.5"))
 UMBRAL_NITIDEZ = float(os.getenv("UMBRAL_NITIDEZ", "100"))
 print(f"🟢 Cargando modelo de visión artificial desde: {MODEL_PATH}")
