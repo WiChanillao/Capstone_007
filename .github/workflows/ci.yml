@@ -2,7 +2,7 @@ name: CI EcoLearn Chile
 
 on:
   push:
-    branches: [main, develop, 'feature/**']
+    branches: [main, develop, 'feature/**', 'fix/**']
   pull_request:
     branches: [main, develop]
 
@@ -40,9 +40,9 @@ jobs:
           cache-dependency-path: Fase 3/ecoscan-frontend/package-lock.json
       - name: Instalar dependencias
         run: npm ci
+      - name: Build
+        run: npm run build
       - name: Pruebas unitarias
         run: npm run test:unit
       - name: Auditoría de dependencias
         run: npm audit --audit-level=high
-      - name: Build
-        run: npm run build
