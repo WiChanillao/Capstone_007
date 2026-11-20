@@ -172,12 +172,15 @@ docker compose ps           → backend / frontend / mysql: Up (healthy)
 ### Estado Git
 
 ```
-HEAD        = 7b8750f
 origin/main = bafff77
-14 commits locales, sin push
+HEAD y número exacto de commits locales: consultar en el momento del push con
+  git rev-parse --short HEAD
+  git rev-list --count origin/main..HEAD
+  git log origin/main..HEAD --stat
 ```
+El recuento crece con cada commit documental, por lo que no se fija aquí un número que quedaría desactualizado. Sin push.
 
-Commits locales (en orden): `6d48da9`, `8b9c194`, `045b9f7`, `86be6f7`, `f82f420`, `9859e3e`, `69b4717`, `6cded14`, `974560f`, `48f2b52`, `c565005`, `e0204ac`, `cbd87b8`, `7b8750f`.
+Commits funcionales (en orden): `6d48da9`, `8b9c194`, `045b9f7`, `86be6f7`, `f82f420`, `9859e3e`, `69b4717`, `6cded14`, `974560f`, `e0204ac`, `7b8750f`. Commits documentales: `48f2b52`, `c565005`, `cbd87b8`, `60e2f89`, `ff6e9d7`, `11a6d03` y los posteriores que registren estas verificaciones.
 
 Sin versionar, creado solo para diagnóstico: `ecoscan-backend/tests/diagnostico_400.py`. **El dataset YOLO no se copió ni se versionó.**
 
