@@ -79,15 +79,16 @@ Rango observado en fotos reales con 200: **174.53 – 14873.57**. Las 3 fotos de
 | `6cded14` | El mapa local gana sobre `detail.mensaje` (evita textos internos/genéricos) | `App.jsx:770-778` |
 | `974560f` | Tests de los 9 cambios anteriores | ver FASE 4 |
 
-### Calibración del umbral
+### Calibración del umbral (solo orientativa; NO es validación con el split de test)
 
-Cálculo idéntico al del backend (grayscale, Laplaciano `CV_64F`, reescalado solo si el lado largo > 640 px) sobre **26 fotos reales disponibles**:
+Cálculo idéntico al del backend (grayscale, Laplaciano `CV_64F`, reescalado solo si el lado largo > 640 px) sobre **26 fotos reales disponibles**. **Ninguna de esas 26 fotos contiene un objeto liso como el caso reportado**: son fotos con textura, etiquetas o reflejos.
 
 - mínimo **128.39**, p05 **324.68**, mediana **2527.54**, máximo **14873.57**.
-- Con `UMBRAL_NITIDEZ=50`: **0/26 fotos rechazadas (0 %)**.
-- Con el umbral anterior de 100: también 0/26 en esta muestra, pero el caso sintético liso (20.6) sí se rechazaba. El nuevo valor mantiene margen para fotos legítimas de baja textura sin desproteger el caso claramente borroso (3.12–23.45).
+- Con `UMBRAL_NITIDEZ=50`, **ninguna de esas 26 habría sido rechazada por la regla de nitidez**. El caso liso con logo "IDEAL" (Laplaciano 20.6) **no está incluido** en la muestra; se reprodujo por separado con una imagen sintética equivalente.
+- **La regla de nitidez solo se evalúa cuando el modelo NO devuelve detecciones** (`main.py:509`): con detecciones se responde 200 y, como máximo, se añade `aviso: "baja_nitidez"` (`main.py:593-596`). Por eso el umbral 50 no puede rechazar una foto que el modelo sí clasificó.
+- El valor anterior (100) también habría aceptado estas 26 fotos; bajarlo a 50 solo amplía el margen para fotos de poca textura **cuando no hay detecciones**. Esto **no sustituye** la evaluación con el split oficial de test, que sigue pendiente (FASE 3).
 
-El valor sigue siendo configurable por entorno (`main.py:318`, `.env.example:24`).
+El valor es configurable por entorno (`main.py:318`, `.env.example:24`).
 
 ---
 
