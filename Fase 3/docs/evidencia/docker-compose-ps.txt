@@ -1,0 +1,7 @@
+$ docker compose ps --format table {{.Name}}	{{.Status}}	{{.Ports}}
+
+NAME                STATUS                        PORTS
+ecolearn-backend    Up About a minute (healthy)   127.0.0.1:8000->8000/tcp
+ecolearn-frontend   Up 10 minutes (healthy)       127.0.0.1:5173->8080/tcp
+ecolearn-mysql      Up 11 minutes (healthy)       127.0.0.1:3307->3306/tcp
+

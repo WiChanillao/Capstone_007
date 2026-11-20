@@ -1,0 +1,9 @@
+$ docker exec ecolearn-backend id
+
+uid=10001(appuser) gid=10001(appuser) groups=10001(appuser)
+
+
+$ docker exec ecolearn-frontend id
+
+uid=101(nginx) gid=101(nginx) groups=101(nginx)
+

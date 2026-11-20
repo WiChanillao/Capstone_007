@@ -1,0 +1,4 @@
+$ curl.exe -s -w HTTP=%{http_code}\n http://127.0.0.1:8000/health
+
+{"status":"ok","mysql_conectado":true,"modelo_activo":"best.pt","escaneos_registrados":48}HTTP=200
+

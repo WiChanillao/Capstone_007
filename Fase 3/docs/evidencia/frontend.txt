@@ -1,0 +1,4 @@
+$ curl.exe -s -o NUL -w HTTP=%{http_code} SIZE=%{size_download}\n http://127.0.0.1:5173/
+
+HTTP=200 SIZE=825
+
