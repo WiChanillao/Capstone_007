@@ -5,6 +5,18 @@ import MapaPuntos from './MapaPuntos.jsx';
 // Por defecto usa /api (mismo origen): funciona en local y cuando la app se comparte por túnel.
 const API_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
+// Etiqueta corta del material, tal como se muestra en el aviso "posible".
+const NOMBRE_MATERIAL = { carton: 'Cartón', aluminio: 'Aluminio', plastico: 'Plástico' };
+
+// Normaliza el nombre de clase del modelo a la clave usada en la guía.
+const materialDesdeClase = (clase) => {
+  const c = (clase || '').toLowerCase();
+  if (['carton', 'cartón', 'paper', 'cardboard', 'caja', 'papel'].some(k => c.includes(k))) return 'carton';
+  if (['lata', 'can', 'aluminio', 'metal'].some(k => c.includes(k))) return 'aluminio';
+  if (['plastico', 'plástico', 'plastic', 'botella', 'pet', 'hdpe'].some(k => c.includes(k))) return 'plastico';
+  return null;
+};
+
 // Error con código estable del backend: el catch genérico NO debe sobrescribirlo.
 class ErrorApi extends Error {
   constructor(codigo, mensaje, campo) {
@@ -433,6 +445,8 @@ export default function App() {
   const [errorEscaneo, setErrorEscaneo] = useState('');
   const [avisoEscaneo, setAvisoEscaneo] = useState('');
   const [confianzas, setConfianzas] = useState({});
+  // Detecciones de baja confianza: se muestran aparte, nunca como seguras.
+  const [posibles, setPosibles] = useState([]);
   const [ultimoArchivo, setUltimoArchivo] = useState(null);
   const [contenedores, setContenedores] = useState(CONTENEDORES_POR_DEFECTO);
 
@@ -748,6 +762,7 @@ export default function App() {
     setAvisoEscaneo('');
     setElementosDetectados([]);
     setConfianzas({});
+    setPosibles([]);
     setUltimoArchivo(file);
 
     const controller = new AbortController();
@@ -790,17 +805,24 @@ export default function App() {
       const encontrados = new Set();
       const conf = {};
       (data.detecciones || []).forEach((item) => {
-        const c = (item.clase || '').toLowerCase();
-        let material = null;
-        if (['carton', 'cartón', 'paper', 'cardboard', 'caja', 'papel'].some(k => c.includes(k))) material = 'carton';
-        else if (['lata', 'can', 'aluminio', 'metal'].some(k => c.includes(k))) material = 'aluminio';
-        else if (['plastico', 'plástico', 'plastic', 'botella', 'pet', 'hdpe'].some(k => c.includes(k))) material = 'plastico';
+        const material = materialDesdeClase(item.clase);
         if (material) {
           encontrados.add(material);
           const valor = Number(item.confianza) || 0;
           conf[material] = Math.max(conf[material] || 0, valor);
         }
       });
+
+      // Nivel "posible": nunca entra en elementosDetectados ni en conteos.
+      const posiblesVistos = new Set();
+      const listaPosibles = [];
+      (data.detecciones_posibles || []).forEach((item) => {
+        const material = materialDesdeClase(item.clase);
+        if (!material || posiblesVistos.has(material)) return;
+        posiblesVistos.add(material);
+        listaPosibles.push({ material, confianza: Number(item.confianza) || 0 });
+      });
+      setPosibles(listaPosibles);
 
       if (encontrados.size === 0) {
         avisos.push('No detecté residuos; acércate, mejora la luz o cambia el ángulo.');
@@ -1290,6 +1312,21 @@ export default function App() {
                 {avisoEscaneo && !errorEscaneo && !cargando && (
                   <div className="w-full max-w-md rounded-2xl border border-sky-500/30 bg-sky-950/20 p-3 text-left" role="status">
                     <p className="text-[11px] text-sky-100/80">ℹ️ {avisoEscaneo}</p>
+                  </div>
+                )}
+
+                {/* Nivel "posible": se muestra aparte, sin presentarlo como seguro */}
+                {posibles.length > 0 && !errorEscaneo && !cargando && (
+                  <div className="w-full max-w-md rounded-2xl border border-amber-500/30 bg-amber-950/20 p-3 text-left" role="note">
+                    <p className="text-[11px] font-bold text-amber-200">Resultados no confirmados:</p>
+                    <ul className="mt-1 space-y-1">
+                      {posibles.map((p) => (
+                        <li key={p.material} className="text-[11px] text-amber-100/90">
+                          ⚠️ Posible {NOMBRE_MATERIAL[p.material] || p.material} (confianza baja) · {Math.round(p.confianza * 100)}%
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-[10px] text-amber-200/70 mt-1">No se consideran seguros. Acércate y mejora la luz.</p>
                   </div>
                 )}
 

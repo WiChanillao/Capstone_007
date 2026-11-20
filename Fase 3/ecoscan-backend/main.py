@@ -321,6 +321,22 @@ if not os.path.exists(MODEL_PATH):
     MODEL_PATH = "yolov8n.pt"
     print("⚠️ best.pt no encontrado: usando baseline yolov8n.pt (descarga automática).")
 UMBRAL_CONFIANZA = float(os.getenv("UMBRAL_CONFIANZA", "0.5"))
+# Umbral de decisión por clase. Los defaults son 0,50 para las tres, de modo
+# que el comportamiento de decisión NO cambia hasta que se ajusten. El nivel
+# "posible" se reporta aparte; nunca cuenta como detección confirmada.
+UMBRALES_POR_CLASE = {
+    "Aluminio": float(os.getenv("UMBRAL_ALUMINIO", "0.5")),
+    "Carton": float(os.getenv("UMBRAL_CARTON", "0.5")),
+    "Plastico": float(os.getenv("UMBRAL_PLASTICO", "0.5")),
+}
+UMBRAL_POSIBLE = float(os.getenv("UMBRAL_POSIBLE", "0.2"))
+
+
+def umbral_para(clase: str) -> float:
+    """Umbral de decisión de una clase, con fallback al global."""
+    return UMBRALES_POR_CLASE.get(
+        clase, UMBRALES_POR_CLASE.get(str(clase).lower(), UMBRAL_CONFIANZA)
+    )
 # Referencia orientativa (NO validación con el split de test): 26 fotos reales
 # disponibles reescaladas a 640 px dan min 128.39, p05 324.68, mediana 2527.54;
 # ninguna contiene un objeto liso. El umbral 50 solo se evalúa cuando NO hay
@@ -489,12 +505,14 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
     # Si el modelo detecta el objeto, la foto es válida aunque tenga poca textura.
     nitidez = calcular_nitidez(image)
 
-    # Inferencia con YOLO
-    results = model(image)
+    # Inferencia con YOLO. imgsz explícito: el entrenamiento usó 640 y el
+    # backend no debe depender del default de la versión instalada.
+    results = model(image, imgsz=640)
     latencia_ms = int((time.perf_counter() - inicio) * 1000)
     
     detecciones = []
     detecciones_rechazadas = []
+    detecciones_posibles = []
     clases_unicas = set()
     conteo_clases = {"Aluminio": 0, "Carton": 0, "Plastico": 0}
     id_material_por_clase = {"Carton": 1, "Plastico": 2, "Aluminio": 3}
@@ -506,9 +524,13 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
             confidence = float(box.conf[0])
 
             item = {"clase": class_name, "confianza": round(confidence, 2)}
-            # REC-103: umbral mínimo de confianza para aceptar una detección.
-            if confidence < UMBRAL_CONFIANZA:
+            # REC-103 + umbrales por clase: sólo pasa si supera el umbral de
+            # su clase. Entre UMBRAL_POSIBLE y ese umbral se reporta como
+            # "posible" (confianza baja), nunca como detección confirmada.
+            if confidence < umbral_para(class_name):
                 detecciones_rechazadas.append(item)
+                if confidence >= UMBRAL_POSIBLE:
+                    detecciones_posibles.append(item)
                 continue
 
             detecciones.append(item)
@@ -592,15 +614,19 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
             print(f"⚠️ Error al guardar inferencia en MySQL: {err}")
 
     log_evento("prediccion", sesion=id_sesion, aceptadas=len(detecciones),
-               rechazadas=len(detecciones_rechazadas), latencia_ms=latencia_ms)
+               rechazadas=len(detecciones_rechazadas),
+               posibles=len(detecciones_posibles), latencia_ms=latencia_ms)
 
     return {
         "detecciones": detecciones,
         "detecciones_rechazadas": detecciones_rechazadas,
+        "detecciones_posibles": detecciones_posibles,
         "modelo_usado": MODEL_PATH,
         "id_sesion": id_sesion,
         "conteo_materiales": conteo_clases,
         "umbral_confianza": UMBRAL_CONFIANZA,
+        "umbrales_por_clase": dict(UMBRALES_POR_CLASE),
+        "umbral_posible": UMBRAL_POSIBLE,
         "latencia_ms": latencia_ms,
         "calidad_imagen": {
             "nitidez": nitidez,

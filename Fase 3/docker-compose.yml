@@ -30,6 +30,12 @@ services:
       MYSQL_DB: ${MYSQL_DB:-ecoscan}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
       UMBRAL_NITIDEZ: ${UMBRAL_NITIDEZ:-50}
+      UMBRAL_CONFIANZA: ${UMBRAL_CONFIANZA:-0.5}
+      # Umbrales por clase: 0,5 por defecto => la decisión no cambia.
+      UMBRAL_ALUMINIO: ${UMBRAL_ALUMINIO:-0.5}
+      UMBRAL_CARTON: ${UMBRAL_CARTON:-0.5}
+      UMBRAL_PLASTICO: ${UMBRAL_PLASTICO:-0.5}
+      UMBRAL_POSIBLE: ${UMBRAL_POSIBLE:-0.2}
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:

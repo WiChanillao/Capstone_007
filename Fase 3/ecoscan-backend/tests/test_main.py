@@ -40,8 +40,10 @@ class _ModeloFalso:
 
     def __init__(self, cajas):
         self.cajas = cajas
+        self.kwargs = None
 
-    def __call__(self, imagen):
+    def __call__(self, imagen, **kwargs):
+        self.kwargs = kwargs
         return [type("Resultado", (), {"boxes": self.cajas})()]
 
 
@@ -434,3 +436,89 @@ def test_predict_rechaza_dimensiones_excedidas(monkeypatch):
     )
     assert r.status_code == 400
     assert r.json()["detail"]["codigo"] == "DIMENSIONES_EXCEDIDAS"
+
+
+# --- Bloque 4: umbrales por clase y nivel "posible" -------------------------
+
+def test_inferencia_pasa_imgsz_640_explicito(monkeypatch):
+    """El backend fija el tamaño de inferencia, sin depender del default de YOLO."""
+    _sin_escritura(monkeypatch)
+    modelo = _ModeloFalso([_Caja(1, 0.83)])
+    monkeypatch.setattr(main, "model", modelo)
+    r = client.post(
+        "/predict", files={"file": ("nitida.png", _imagen(nitida=True), "image/png")}
+    )
+    assert r.status_code == 200
+    assert modelo.kwargs == {"imgsz": 640}
+
+
+def test_umbrales_por_clase_default_son_050_y_posible_020():
+    """Sin configuración, las tres clases deciden a 0,50: no cambia el negocio."""
+    assert main.UMBRALES_POR_CLASE == {
+        "Aluminio": 0.5, "Carton": 0.5, "Plastico": 0.5,
+    }
+    assert main.UMBRAL_POSIBLE == 0.2
+    assert main.umbral_para("Carton") == 0.5
+    assert main.umbral_para("Desconocida") == main.UMBRAL_CONFIANZA
+
+
+def test_umbral_para_respeta_valor_configurado_por_clase(monkeypatch):
+    monkeypatch.setattr(main, "UMBRALES_POR_CLASE", {
+        "Aluminio": 0.25, "Carton": 0.45, "Plastico": 0.20,
+    })
+    assert main.umbral_para("Aluminio") == 0.25
+    assert main.umbral_para("Carton") == 0.45
+    assert main.umbral_para("Plastico") == 0.20
+
+
+def test_umbrales_por_clase_deciden_cada_deteccion(monkeypatch):
+    """Cada clase aplica su umbral: 0,27 Aluminio pasa, 0,40 Cartón no, 0,22 Plástico pasa."""
+    _sin_escritura(monkeypatch)
+    monkeypatch.setattr(main, "UMBRALES_POR_CLASE", {
+        "Aluminio": 0.25, "Carton": 0.45, "Plastico": 0.20,
+    })
+    monkeypatch.setattr(main, "model", _ModeloFalso([
+        _Caja(0, 0.27), _Caja(1, 0.40), _Caja(2, 0.22),
+    ]))
+    r = client.post(
+        "/predict", files={"file": ("nitida.png", _imagen(nitida=True), "image/png")}
+    )
+    assert r.status_code == 200
+    cuerpo = r.json()
+    assert {d["clase"] for d in cuerpo["detecciones"]} == {"Aluminio", "Plastico"}
+    assert [d["clase"] for d in cuerpo["detecciones_rechazadas"]] == ["Carton"]
+    assert cuerpo["conteo_materiales"]["Aluminio"] == 1
+    assert cuerpo["conteo_materiales"]["Carton"] == 0
+    assert cuerpo["conteo_materiales"]["Plastico"] == 1
+
+
+def test_nivel_posible_no_cuenta_como_deteccion_confirmada(monkeypatch):
+    """0,30 Cartón es 'posible'; 0,10 queda sólo rechazado."""
+    _sin_escritura(monkeypatch)
+    monkeypatch.setattr(main, "model", _ModeloFalso([
+        _Caja(1, 0.30), _Caja(2, 0.10),
+    ]))
+    r = client.post(
+        "/predict", files={"file": ("nitida.png", _imagen(nitida=True), "image/png")}
+    )
+    assert r.status_code == 200
+    cuerpo = r.json()
+    assert cuerpo["detecciones"] == []
+    assert cuerpo["conteo_materiales"] == {
+        "Aluminio": 0, "Carton": 0, "Plastico": 0,
+    }
+    assert cuerpo["detecciones_posibles"] == [{"clase": "Carton", "confianza": 0.3}]
+    assert len(cuerpo["detecciones_rechazadas"]) == 2
+
+
+def test_respuesta_expone_configuracion_de_umbrales(monkeypatch):
+    """El frontend puede mostrar la configuración activa sin leer el .env."""
+    _sin_escritura(monkeypatch)
+    monkeypatch.setattr(main, "model", _ModeloFalso([]))
+    r = client.post(
+        "/predict", files={"file": ("nitida.png", _imagen(nitida=True), "image/png")}
+    )
+    assert r.status_code == 200
+    cuerpo = r.json()
+    assert cuerpo["umbrales_por_clase"] == main.UMBRALES_POR_CLASE
+    assert cuerpo["umbral_posible"] == main.UMBRAL_POSIBLE

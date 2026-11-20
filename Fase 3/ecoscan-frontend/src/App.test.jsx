@@ -144,6 +144,34 @@ describe('EcoLearn Chile (App)', () => {
     expect(screen.queryByRole('alert')).toBeNull();
   });
 
+  it('muestra "Posible <material> (confianza baja)" sin contarlo como detectado', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url) => {
+      const u = String(url);
+      if (u.includes('/predict')) {
+        return { ok: true, status: 200, json: async () => ({
+          detecciones: [],
+          detecciones_rechazadas: [{ clase: 'Carton', confianza: 0.34 }],
+          detecciones_posibles: [{ clase: 'Carton', confianza: 0.34 }],
+        }) };
+      }
+      if (u.includes('/db/sesiones')) {
+        return { ok: true, status: 200, json: async () => ({ id_sesion: 's-unitaria' }) };
+      }
+      return { ok: true, status: 200, json: async () => ({}) };
+    }));
+    const { container } = render(<App />);
+    fireEvent.click(screen.getAllByRole('button', { name: /Escáner IA/ })[0]);
+    const input = container.querySelector('input[type="file"]');
+    fireEvent.change(input, {
+      target: { files: [new File(['foto'], 'foto.jpg', { type: 'image/jpeg' })] },
+    });
+    const nota = await screen.findByRole('note');
+    expect(nota).toHaveTextContent('Posible Cartón (confianza baja)');
+    expect(nota).toHaveTextContent('34%');
+    expect(screen.queryByText(/Materiales Identificados/)).toBeNull();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
   it('muestra videos de reutilización por material y los abre sin autoplay', async () => {
     const { container } = render(<App />);
     fireEvent.click(screen.getAllByRole('button', { name: /Escáner IA/ })[0]);
