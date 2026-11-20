@@ -30,6 +30,7 @@ placeholders y hashes públicos de commits.
 | 10 | Evidencia visual |
 | 11 | Historial de correcciones funcionales (resumen) |
 | 12 | Estado honesto de pendientes |
+| 13 | Acceso compartido por túnel con API en mismo origen (`/api`) |
 
 ---
 
@@ -270,8 +271,40 @@ pytest 15/15 (luego 20 y finalmente 22), Lighthouse 1,00 en 4 categorías y
 - `mAP@50 = 0.562` es la métrica oficial; la meta `0.65` **no** está alcanzada.
   El reentrenamiento con T4, 100 épocas y `patience=20` dio `0.622` en
   validación y `0.527` en test, por lo que se descartó.
-- UAT/SUS con usuarios reales y dominio de producción/CORS quedan pendientes.
+- UAT/SUS con usuarios reales y dominio de producción propio quedan pendientes;
+  el acceso compartido por túnel ya funciona con la API en mismo origen.
 - Las direcciones, horarios y materiales de los 25 puntos externos están en
   validación; las coordenadas son aproximadas y están marcadas como tales.
 - Existe una clave de API histórica de Google en commits antiguos ya borrados
   del árbol actual. Requiere rotación; el historial no se reescribió.
+- Falta un dominio de producción propio; el enlace público usado en la demo es
+  un túnel temporal, no una URL permanente.
+
+---
+
+## 13. Acceso compartido sin exponer la API
+
+Problema detectado: el frontend compilado llamaba a `http://127.0.0.1:8000`.
+Esa dirección apunta a la máquina de quien abre el enlace, así que la interfaz
+cargaba pero las consultas fallaban por CORS/red.
+
+Corrección aplicada:
+
+- `VITE_API_URL` por defecto es `/api` (mismo origen), en `App.jsx`,
+  `docker-compose.yml`, `Dockerfile` y las plantillas `.env.example`.
+- `nginx.conf` redirige `/api/` a `backend:8000` y acepta imágenes de hasta 12 MB.
+- Los puertos de MySQL, backend y frontend siguen ligados a `127.0.0.1`;
+  solo el túnel publica el frontend.
+
+Verificación realizada (valores sanitizados):
+
+```
+docker compose -f docker-compose.yml up --build -d   # 3 servicios healthy
+curl http://127.0.0.1:5173/api/health                # HTTP 200
+curl https://<tunel>.trycloudflare.com/api/health    # HTTP 200
+{"status":"ok","mysql_conectado":true,"modelo_activo":"best.pt","escaneos_registrados":52}
+```
+
+El bundle servido contiene la ruta `/api` y ya no contiene `127.0.0.1:8000`.
+En el navegador, con el enlace público, `fetch('/api/health')` responde 200 y
+la consola no registra errores. `npm run build` OK y Vitest 5/5.

@@ -278,7 +278,7 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 |---|---|---|
 | Service worker PWA sirve bundle antiguo | La demo muestra una versión anterior | Abrir en incógnito; limpiar registros y caché; verificar el nombre del bundle |
 | Caché de `localhost:5173` en el navegador del evaluador | Misma versión obsoleta | Recarga forzada o incógnito |
-| Sin dominio de producción y CORS abierto solo a localhost | El compañero no entra por link | Demo asistida o túnel temporal con `CORS_ORIGINS` y `VITE_API_URL` recompilados (REC-105) |
+| Sin dominio de producción propio | El enlace público es un túnel temporal, no una URL permanente | API en mismo origen (`/api` + proxy nginx) ya verificada por túnel; queda pendiente contratar dominio propio |
 | Clave de Roboflow expuesta en copias antiguas | Riesgo de seguridad | Rotación pendiente del dueño; nunca pegar la clave en chat, Jira ni evidencia |
 | `mAP@50` inferior a 0,65 | Puede afectar evaluación | Declarar 0,562 con auditoría de fugas y plan de una variable a la vez; no modificar PPT ni afirmar 0,65 |
 | Puntos externos sin validar en terreno | Datos aproximados | Marcar `coords_aproximadas=1` y «por confirmar»; tickets REC-65/93/105/155 |

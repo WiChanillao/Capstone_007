@@ -23,7 +23,7 @@ Backend FastAPI  ── /predict ──▶  Modelo YOLO11n (best.pt)
 MySQL 8  (base `ecoscan`)
 ```
 
-El frontend consume la API en `VITE_API_URL` (por defecto `http://127.0.0.1:8000`).
+El frontend consume la API en `VITE_API_URL` (por defecto `/api`, mismo origen; nginx redirige a `backend:8000`). Así la app funciona también cuando se comparte por un túnel, sin depender del `127.0.0.1` del visitante.
 
 ## Estructura de la carpeta `Fase 3`
 

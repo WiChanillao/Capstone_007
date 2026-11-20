@@ -10,7 +10,7 @@ npm install
 npm run dev          # http://localhost:5173
 ```
 
-La URL del backend se toma de `VITE_API_URL` (copiar `.env.example` a `.env.local`).
+La URL del backend se toma de `VITE_API_URL` (por defecto `/api`, mismo origen; nginx la redirige a `backend:8000`). Para desarrollo sin Docker, copiar `.env.example` a `.env.local` y apuntar a `http://127.0.0.1:8000`.
 Por defecto apunta a `http://127.0.0.1:8000`.
 
 ## Comandos

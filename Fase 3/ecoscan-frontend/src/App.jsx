@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import MapaPuntos from './MapaPuntos.jsx';
 
-// URL del backend configurable por entorno (REC-105). Sin VITE_API_URL usa localhost.
-const API_URL = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000').replace(/\/$/, '');
+// URL del backend configurable por entorno (REC-105).
+// Por defecto usa /api (mismo origen): funciona en local y cuando la app se comparte por túnel.
+const API_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
 // Base de datos estricta de los 3 materiales soportados (EcoLearn Chile)
 const CONTENEDORES_POR_DEFECTO = {

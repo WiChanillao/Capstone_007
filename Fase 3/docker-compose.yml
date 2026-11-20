@@ -46,7 +46,7 @@ services:
     build:
       context: ./ecoscan-frontend
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://127.0.0.1:8000}
+        VITE_API_URL: ${VITE_API_URL:-/api}
     container_name: ecolearn-frontend
     ports:
       - "127.0.0.1:5173:8080"
