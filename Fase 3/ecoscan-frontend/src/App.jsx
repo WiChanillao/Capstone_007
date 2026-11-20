@@ -36,6 +36,18 @@ const GUIA_RESIDUOS_CHILE = {
     linksReutilizar: [
       { nombre: 'Traperos de Emaús', url: 'https://www.emaus.cl', desc: 'Donaciones de cajas y embalajes.' },
       { nombre: 'Fundación Basura', url: 'https://www.fundacionbasura.org', desc: 'Guías de reutilización y compostaje.' }
+    ],
+    videosReutilizar: [
+      {
+        id: 's73tbA8eP50',
+        titulo: 'Transforma cartón en muebles organizadores',
+        autor: 'kokoelkartonero'
+      },
+      {
+        id: 'xbXrEsQ5Gzg',
+        titulo: '3 manualidades para transformar cajas de zapatos',
+        autor: 'showdemanualidades'
+      }
     ]
   },
   aluminio: {
@@ -61,6 +73,18 @@ const GUIA_RESIDUOS_CHILE = {
     ],
     linksReutilizar: [
       { nombre: 'Fundación Basura', url: 'https://www.fundacionbasura.org', desc: 'Talleres de suprarreciclaje para latas.' }
+    ],
+    videosReutilizar: [
+      {
+        id: 'DqOcio35YmU',
+        titulo: '6 ideas para hacer macetas con latas',
+        autor: 'Galletasafortunadas'
+      },
+      {
+        id: 'z8E5ziNvr2A',
+        titulo: 'Cómo hacer macetas de latas de aluminio',
+        autor: 'Jardín y casa sin filtro'
+      }
     ]
   },
   plastico: {
@@ -86,6 +110,18 @@ const GUIA_RESIDUOS_CHILE = {
     ],
     linksReutilizar: [
       { nombre: 'Fundación Basura', url: 'https://www.fundacionbasura.org', desc: 'Guía para confeccionar ecoladrillos.' }
+    ],
+    videosReutilizar: [
+      {
+        id: 'lhhggoTyiPY',
+        titulo: '3 ideas con botellas de plástico recicladas',
+        autor: 'Creativos en Acción'
+      },
+      {
+        id: 'xCaI-5WVRlY',
+        titulo: '20 manualidades con botellas de plástico',
+        autor: 'GO GREEN'
+      }
     ]
   }
 };
@@ -260,12 +296,68 @@ function linkCómoLlegar(punto, ubicacion) {
 }
 
 // Reglas automáticas segun los habitos reales cargados desde MySQL.
+// El progreso NUNCA se marca a mano: solo se deriva de los escaneos.
 const REGLAS_DESAFIOS = {
   1: (s) => (s.materiales.plastico || 0) >= 3,                                  // bolsas reutilizables / compras
   2: (s) => (s.materiales.plastico || 0) >= 3,                                  // donacion de tapitas
   3: (s) => (s.materiales.plastico || 0) >= 1,                                  // ecoladrillo
   4: (s) => ['carton', 'plastico', 'aluminio'].every(m => (s.materiales[m] || 0) > 0) // separacion en origen
 };
+
+// Detalle interactivo de cada reto: meta, avance real, material relacionado y
+// pasos educativos. Las metas son las mismas que usan las reglas de arriba.
+const DETALLES_DESAFIOS = {
+  1: {
+    meta: 3,
+    progreso: (s) => s.materiales.plastico || 0,
+    material: 'Plástico',
+    unidad: 'escaneos de plástico',
+    pasos: ['Escanea un envase plástico en el Eco-Scanner.', 'Repite hasta completar 3 escaneos.', 'Lleva tu bolsa reutilizable a la feria o vega.'],
+  },
+  2: {
+    meta: 3,
+    progreso: (s) => s.materiales.plastico || 0,
+    material: 'Plástico',
+    unidad: 'escaneos de plástico',
+    pasos: ['Escanea tapitas y envases plásticos.', 'Junta las tapas limpias y secas.', 'Entrégalas en un punto de donación.'],
+  },
+  3: {
+    meta: 1,
+    progreso: (s) => s.materiales.plastico || 0,
+    material: 'Plástico',
+    unidad: 'escaneos de plástico',
+    pasos: ['Escanea una botella PET.', 'Límpiala y rellénala con plásticos flexibles.', 'Úsala como ecoladrillo en tu casa.'],
+  },
+  4: {
+    meta: 3,
+    progreso: (s) => ['carton', 'aluminio', 'plastico'].filter((m) => (s.materiales[m] || 0) > 0).length,
+    material: 'Todos',
+    unidad: 'materiales separados',
+    pasos: ['Escanea una pieza de cartón.', 'Escanea una lata de aluminio.', 'Escanea un envase plástico y lleva todo al punto limpio.'],
+  },
+};
+
+// Trivia educativa: es información, no modifica estadísticas ni desafíos.
+const TRIVIA_VERDE = [
+  {
+    pregunta: '¿Qué material se debe enjuagar y aplastar antes de reciclar?',
+    opciones: ['Cartón mojado', 'Botellas PET', 'Latas con comida'],
+    correcta: 1,
+    explicacion: 'El PET limpio y aplastado ocupa menos espacio y contamina menos el resto del papel.',
+  },
+  {
+    pregunta: '¿Dónde se entregan las tapitas plásticas en este proyecto?',
+    opciones: ['A cualquier contenedor de basura', 'A puntos de donación para hospitales', 'Al compostaje'],
+    correcta: 1,
+    explicacion: 'Las tapas se juntan y se donan a campañas solidarias; no van al compostaje.',
+  },
+  {
+    pregunta: '¿Cuántos materiales detecta el Eco-Scanner?',
+    opciones: ['Dos', 'Tres', 'Cinco'],
+    correcta: 1,
+    explicacion: 'El modelo detecta Cartón, Aluminio y Plástico (mAP@50 oficial 0.562).',
+  },
+];
 
 export default function App() {
   const [pestaña, setPestaña] = useState('inicio');
@@ -292,6 +384,15 @@ export default function App() {
   const [confianzas, setConfianzas] = useState({});
   const [ultimoArchivo, setUltimoArchivo] = useState(null);
   const [contenedores, setContenedores] = useState(CONTENEDORES_POR_DEFECTO);
+
+  // Interactividad del Desafío Verde (no altera los datos: solo navega y explica).
+  const [desafioAbierto, setDesafioAbierto] = useState(null);
+  const [retoActivo, setRetoActivo] = useState(null);
+  const [triviaIndice, setTriviaIndice] = useState(0);
+  const [triviaOpcion, setTriviaOpcion] = useState(null);
+  const [triviaAciertos, setTriviaAciertos] = useState(0);
+  const [triviaRespondidas, setTriviaRespondidas] = useState(0);
+  const [celebracion, setCelebracion] = useState(false);
 
   // Impacto del Eco-Simulador: solo lectura, calculado en MySQL desde los escaneos.
   const [impacto, setImpacto] = useState(null);
@@ -561,6 +662,33 @@ export default function App() {
   }));
   const completadosCount = desafiosAuto.filter(d => d.completado).length;
   const porcentajeDesafios = Math.round((completadosCount / (desafiosAuto.length || 1)) * 100);
+  const retoActivoActual = desafiosAuto.find(d => d.id === retoActivo) || null;
+
+  const responderTrivia = (indiceOpcion) => {
+    if (triviaOpcion !== null) return;
+    setTriviaOpcion(indiceOpcion);
+    setTriviaRespondidas((n) => n + 1);
+    if (indiceOpcion === TRIVIA_VERDE[triviaIndice].correcta) {
+      setTriviaAciertos((n) => n + 1);
+    }
+  };
+
+  const siguienteTrivia = () => {
+    setTriviaIndice((i) => (i + 1) % TRIVIA_VERDE.length);
+    setTriviaOpcion(null);
+  };
+
+  // Felicitación fugaz cuando un reto se completa solo con un escaneo nuevo.
+  const completadosPrevios = useRef(completadosCount);
+  useEffect(() => {
+    if (completadosCount > completadosPrevios.current) {
+      setCelebracion(true);
+      const temporizador = setTimeout(() => setCelebracion(false), 5000);
+      completadosPrevios.current = completadosCount;
+      return () => clearTimeout(temporizador);
+    }
+    completadosPrevios.current = completadosCount;
+  }, [completadosCount]);
 
   // Procesa la imagen mediante API backend (sin resultados falsos si falla)
   const procesarPrediccionBackend = async (file) => {
@@ -982,6 +1110,30 @@ export default function App() {
                   Activa la cámara web de tu ordenador o móvil para tomar una foto en tiempo real, o selecciona una foto desde tu galería.
                 </p>
 
+                {/* El reto elegido en Desafío Verde guía al usuario, sin marcar metas a mano */}
+                {retoActivoActual && (
+                  <div data-testid="reto-activo" className="w-full max-w-md flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-left">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-wide text-emerald-400">🎯 Reto activo</p>
+                      <p className="text-xs font-bold text-white">{retoActivoActual.titulo}</p>
+                      <p className="text-[11px] text-slate-400">
+                        {(() => {
+                          const d = DETALLES_DESAFIOS[retoActivoActual.id];
+                          return d ? `${Math.min(d.progreso(estadisticas), d.meta)} de ${d.meta} ${d.unidad}` : 'Escanea para avanzar';
+                        })()}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setRetoActivo(null)}
+                      aria-label="Cerrar reto activo"
+                      className="shrink-0 px-2 py-1 rounded-lg border border-slate-700 text-slate-400 hover:text-white text-xs cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+
                 {/* Input oculto para subir archivo */}
                 <input 
                   type="file" 
@@ -1187,6 +1339,52 @@ export default function App() {
                           ))}
                         </ul>
                       </div>
+
+                      {/* Videos de reutilización: se abren en el modal, sin autoplay */}
+                      {modoActual === 'reutilizar' && (
+                        <div className="bg-slate-950/50 rounded-2xl p-5 border border-slate-800/80 space-y-3">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                              🎬 Videos: cómo reutilizar {infoMat.nombre.toLowerCase()}
+                            </h4>
+                            <span className="text-[10px] text-slate-500">YouTube · sin autoplay</span>
+                          </div>
+                          <div
+                            data-testid={`videos-reutilizar-${matKey}`}
+                            className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                          >
+                            {(infoMat.videosReutilizar || []).map((video) => (
+                              <button
+                                key={video.id}
+                                type="button"
+                                data-testid={`video-reutilizar-${video.id}`}
+                                aria-label={`Ver video: ${video.titulo}`}
+                                onClick={() => setVideoAbierto(video)}
+                                className="group flex gap-3 p-2 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-emerald-500/40 text-left cursor-pointer transition-all"
+                              >
+                                <span className="relative shrink-0 w-28 h-16 rounded-lg overflow-hidden bg-black">
+                                  <img
+                                    src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
+                                    alt=""
+                                    loading="lazy"
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <span className="absolute inset-0 flex items-center justify-center bg-slate-950/30 text-lg group-hover:bg-slate-950/10">
+                                    ▶
+                                  </span>
+                                </span>
+                                <span className="min-w-0">
+                                  <span className="block text-[11px] font-bold text-white leading-snug">{video.titulo}</span>
+                                  <span className="block text-[10px] text-slate-400 mt-1">{video.autor} · YouTube</span>
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                          <p className="text-[10px] text-slate-500">
+                            Los videos se reproducen solo al abrirlos. Contenido de terceros; EcoLearn no se hace responsable de su contenido.
+                          </p>
+                        </div>
+                      )}
 
                       <div>
                         <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
@@ -1569,15 +1767,21 @@ export default function App() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-black text-white">🏆 Desafío Verde Sustentable</h2>
-                  <p className="text-xs text-slate-400 mt-1">No hay carga manual: tus hábitos y estadísticas se actualizan solos cuando escaneas una imagen en el Eco-Scanner.</p>
+                  <p className="text-xs text-slate-400 mt-1">Toca un reto para ver cómo lograrlo. No hay carga manual: el avance se calcula solo con tus escaneos.</p>
                   {porcentajeDesafios === 100 && (
                     <p className="text-[11px] font-black text-amber-300 mt-2">🥇 Insignia obtenida: Guardián Verde</p>
+                  )}
+                  {celebracion && (
+                    <p data-testid="celebracion" className="text-[11px] font-black text-emerald-300 mt-2">🎉 ¡Reto completado! Sigue escaneando.</p>
                   )}
                 </div>
 
                 <div className="bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800 text-right">
                   <span className="text-xs font-bold text-slate-400">Progreso:</span>
                   <span className="text-base font-black text-emerald-400 ml-2">{porcentajeDesafios}%</span>
+                  <div className="w-32 h-1.5 bg-slate-800 rounded-full mt-2 overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-300 rounded-full transition-all duration-500" style={{ width: `${porcentajeDesafios}%` }} />
+                  </div>
                   <p className="text-[10px] text-slate-400">Según tus escaneos</p>
                 </div>
               </div>
@@ -1602,32 +1806,151 @@ export default function App() {
               </div>
 
               <div className="space-y-3">
-                {desafiosAuto.map((desafio) => (
-                  <div
-                    key={desafio.id}
-                    className={`p-4 rounded-2xl border flex items-center justify-between gap-4 ${
-                      desafio.completado
-                        ? 'bg-emerald-950/20 border-emerald-500/40'
-                        : 'bg-slate-900/60 border-slate-800'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{desafio.icono}</span>
-                      <div>
-                        <h4 className={`text-sm font-bold ${desafio.completado ? 'text-emerald-300 line-through' : 'text-white'}`}>
-                          {desafio.titulo}
-                        </h4>
-                        <p className="text-xs text-slate-400">{desafio.desc}</p>
-                      </div>
-                    </div>
+                <h3 className="text-sm font-bold text-slate-300">Tus retos <span className="text-xs font-normal text-slate-500">— toca uno para abrirlo</span></h3>
+                {desafiosAuto.map((desafio) => {
+                  const detalle = DETALLES_DESAFIOS[desafio.id];
+                  const meta = detalle ? detalle.meta : 1;
+                  const progreso = detalle
+                    ? Math.min(detalle.progreso(estadisticas), meta)
+                    : (desafio.completado ? 1 : 0);
+                  const porcentajeReto = Math.round((progreso / meta) * 100);
+                  const abierto = desafioAbierto === desafio.id;
+                  return (
+                    <div
+                      key={desafio.id}
+                      data-testid={`desafio-card-${desafio.id}`}
+                      className={`rounded-2xl border overflow-hidden transition-all ${
+                        desafio.completado
+                          ? 'bg-emerald-950/20 border-emerald-500/40'
+                          : 'bg-slate-900/60 border-slate-800'
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        aria-expanded={abierto}
+                        aria-label={`Ver detalles de ${desafio.titulo}`}
+                        onClick={() => setDesafioAbierto(abierto ? null : desafio.id)}
+                        className="w-full p-4 flex items-center justify-between gap-4 text-left cursor-pointer hover:bg-slate-800/40 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{desafio.icono}</span>
+                          <div>
+                            <h4 className={`text-sm font-bold ${desafio.completado ? 'text-emerald-300 line-through' : 'text-white'}`}>
+                              {desafio.titulo}
+                            </h4>
+                            <p className="text-xs text-slate-400">{desafio.desc}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <div className={`w-6 h-6 rounded-lg border flex items-center justify-center ${
+                            desafio.completado ? 'bg-emerald-500 border-emerald-400 text-slate-950 font-black' : 'border-slate-700'
+                          }`}>
+                            {desafio.completado && '✓'}
+                          </div>
+                          <span className="text-slate-500 text-xs">{abierto ? '▲' : '▼'}</span>
+                        </div>
+                      </button>
 
-                    <div className={`w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 ${
-                      desafio.completado ? 'bg-emerald-500 border-emerald-400 text-slate-950 font-black' : 'border-slate-700'
-                    }`}>
-                      {desafio.completado && '✓'}
+                      {abierto && (
+                        <div data-testid={`desafio-detalle-${desafio.id}`} className="px-4 pb-4 pt-1 space-y-3 border-t border-slate-800/70">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                              <div className="h-full bg-emerald-400 rounded-full transition-all duration-500" style={{ width: `${porcentajeReto}%` }} />
+                            </div>
+                            <span className="text-[11px] font-bold text-emerald-300 shrink-0">{progreso}/{meta}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-400">
+                            {progreso} de {meta} {detalle ? detalle.unidad : 'escaneos'} · {porcentajeReto}%
+                          </p>
+                          {detalle && (
+                            <ol className="list-decimal list-inside space-y-1 text-xs text-slate-300">
+                              {detalle.pasos.map((paso, i) => <li key={i}>{paso}</li>)}
+                            </ol>
+                          )}
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            <button
+                              type="button"
+                              onClick={() => { setRetoActivo(desafio.id); setPestaña('escaner'); }}
+                              className="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black cursor-pointer"
+                            >
+                              Aceptar reto y escanear
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setMaterialSeleccionado(detalle ? detalle.material : 'Todos');
+                                setComunaSeleccionada('Todas');
+                                setPestaña('puntos_rm');
+                              }}
+                              className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 cursor-pointer"
+                            >
+                              Ver puntos limpios
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Trivia: interacción educativa, sin afectar el progreso real */}
+            <div className="bg-slate-950/60 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-black text-white">🎮 Reto rápido: trivia del reciclaje</h3>
+                  <p className="text-xs text-slate-400 mt-1">Responde para aprender: tus respuestas no cambian los desafíos ni las estadísticas.</p>
+                </div>
+                <span className="text-xs font-bold text-emerald-300">Aciertos: {triviaAciertos} / {triviaRespondidas}</span>
+              </div>
+
+              <div data-testid="trivia-pregunta" className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <p className="text-sm font-bold text-white">
+                  {triviaIndice + 1}. {TRIVIA_VERDE[triviaIndice].pregunta}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {TRIVIA_VERDE[triviaIndice].opciones.map((opcion, i) => {
+                    const respondida = triviaOpcion !== null;
+                    const esCorrecta = i === TRIVIA_VERDE[triviaIndice].correcta;
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        data-testid={`trivia-opcion-${i}`}
+                        disabled={respondida}
+                        onClick={() => responderTrivia(i)}
+                        className={`px-3 py-2 rounded-xl border text-xs font-bold text-left transition-colors ${
+                          respondida && esCorrecta
+                            ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
+                            : respondida && i === triviaOpcion
+                              ? 'bg-rose-500/20 border-rose-400 text-rose-200'
+                              : 'bg-slate-900 border-slate-700 text-slate-200 hover:border-emerald-500/50 cursor-pointer'
+                        }`}
+                      >
+                        {String.fromCharCode(65 + i)}) {opcion}
+                      </button>
+                    );
+                  })}
+                </div>
+                {triviaOpcion !== null && (
+                  <div data-testid="trivia-feedback" className="text-xs text-slate-300 bg-slate-900 rounded-xl p-3">
+                    <span className={`font-black ${triviaOpcion === TRIVIA_VERDE[triviaIndice].correcta ? 'text-emerald-300' : 'text-rose-300'}`}>
+                      {triviaOpcion === TRIVIA_VERDE[triviaIndice].correcta ? '✅ Correcto.' : '❌ No exactamente.'}
+                    </span>{' '}
+                    {TRIVIA_VERDE[triviaIndice].explicacion}
                   </div>
-                ))}
+                )}
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={siguienteTrivia}
+                    disabled={triviaOpcion === null}
+                    className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold text-slate-200 border border-slate-700 cursor-pointer"
+                  >
+                    Siguiente pregunta →
+                  </button>
+                </div>
               </div>
             </div>
           </div>

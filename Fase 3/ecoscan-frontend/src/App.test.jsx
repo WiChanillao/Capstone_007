@@ -23,6 +23,7 @@ beforeEach(() => {
     let datos = [];
     if (u.includes('/db/impacto')) datos = impacto;
     else if (u.includes('/db/sesiones')) datos = { id_sesion: 'sesion-unitaria' };
+    else if (u.includes('/predict')) datos = { detecciones: [{ clase: 'plastico', confianza: 0.9 }] };
     return { ok: true, status: 200, json: async () => datos };
   }));
 });
@@ -57,5 +58,26 @@ describe('EcoLearn Chile (App)', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /Eco-Simulador RM/ }));
     expect(await screen.findByText(/237 L/)).toBeInTheDocument();
+  });
+
+  it('muestra videos de reutilización por material y los abre sin autoplay', async () => {
+    const { container } = render(<App />);
+    fireEvent.click(screen.getAllByRole('button', { name: /Escáner IA/ })[0]);
+    const input = container.querySelector('input[type="file"]');
+    expect(input).not.toBeNull();
+    fireEvent.change(input, {
+      target: { files: [new File(['foto'], 'botella.jpg', { type: 'image/jpeg' })] },
+    });
+    expect(await screen.findByText(/Materiales Identificados/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /¿Cómo Reutilizar\?/ }));
+    expect(screen.getByTestId('videos-reutilizar-plastico')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Ver video: 3 ideas con botellas/ })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Ver video: 3 ideas con botellas/ }));
+    const modal = await screen.findByRole('dialog', { name: /3 ideas con botellas/ });
+    const iframe = modal.querySelector('iframe');
+    expect(iframe.getAttribute('src')).toContain('lhhggoTyiPY');
+    expect(iframe.getAttribute('src')).not.toContain('autoplay');
   });
 });
