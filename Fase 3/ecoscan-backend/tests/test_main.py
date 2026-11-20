@@ -206,6 +206,68 @@ def test_predict_rechaza_archivo_que_no_es_imagen(monkeypatch):
     assert detalle["campo"] == "file"
 
 
+def test_foto_lisa_con_detecciones_devuelve_200_con_aviso(monkeypatch):
+    """La nitidez baja NO rechaza si el modelo identificó el residuo."""
+    _sin_escritura(monkeypatch)
+    monkeypatch.setattr(main, "model", _ModeloFalso([_Caja(1, 0.89)]))
+    r = client.post(
+        "/predict",
+        files={"file": ("caja_lisa.png", _imagen(nitida=False), "image/png")},
+    )
+    assert r.status_code == 200
+    cuerpo = r.json()
+    assert cuerpo["detecciones"][0]["clase"] == "Carton"
+    assert cuerpo["calidad_imagen"]["aviso"] == "baja_nitidez"
+    assert cuerpo["calidad_imagen"]["nitidez"] < main.UMBRAL_NITIDEZ
+
+
+def test_foto_normal_incluye_calidad_sin_aviso(monkeypatch):
+    _sin_escritura(monkeypatch)
+    monkeypatch.setattr(main, "model", _ModeloFalso([_Caja(1, 0.83)]))
+    r = client.post(
+        "/predict",
+        files={"file": ("nitida.png", _imagen(nitida=True), "image/png")},
+    )
+    assert r.status_code == 200
+    calidad = r.json()["calidad_imagen"]
+    assert calidad["aviso"] is None
+    assert calidad["nitidez"] >= main.UMBRAL_NITIDEZ
+
+
+def test_todos_los_codigos_del_contrato_incluyen_codigo_mensaje_campo(monkeypatch):
+    """Los 4xx del propio endpoint cumplen el contrato (429 se prueba aparte)."""
+    _sin_escritura(monkeypatch)
+    monkeypatch.setattr(main, "_LIMIT_MINUTO", 10000)
+    respuestas = [
+        client.post("/predict", files={"file": ("x.txt", b"x", "text/plain")}),          # FORMATO_NO_VALIDO
+        client.post("/predict", files={"file": ("x.png", b"roto", "image/png")}),        # ARCHIVO_CORRUPTO
+        client.post("/predict", files={"file": ("x.png", b"x" * (main.MAX_TAMANO_ARCHIVO + 1), "image/png")}),  # 413
+        client.post("/predict", files={"file": ("x.png", _imagen(False), "image/png")}),  # IMAGEN_BORROSA
+        client.post("/predict", data={"id_sesion": "mala!"},
+                    files={"file": ("x.png", _imagen(True), "image/png")}),               # ID_SESION_INVALIDO
+    ]
+    codigos = []
+    for respuesta in respuestas:
+        assert respuesta.status_code in (400, 413, 422)
+        detalle = respuesta.json()["detail"]
+        assert set(detalle) == {"codigo", "mensaje", "campo"}
+        assert detalle["mensaje"] and detalle["campo"]
+        codigos.append(detalle["codigo"])
+    assert codigos == ["FORMATO_NO_VALIDO", "ARCHIVO_CORRUPTO", "ARCHIVO_MUY_PESADO",
+                       "IMAGEN_BORROSA", "ID_SESION_INVALIDO"]
+
+
+def test_rechazo_registra_codigo_mime_bytes_y_dimensiones(caplog, monkeypatch):
+    """El log de rechazo no guarda la imagen, solo metadata."""
+    monkeypatch.setattr(main, "_LIMIT_MINUTO", 10000)
+    with caplog.at_level("INFO", logger="ecoscan"):
+        client.post("/predict", files={"file": ("x.png", b"roto", "image/png")})
+    lineas = [r.message for r in caplog.records if '"evento": "rechazo"' in r.message]
+    assert lineas
+    assert "ARCHIVO_CORRUPTO" in lineas[0]
+    assert "mime" in lineas[0] and "bytes" in lineas[0]
+
+
 def test_deteccion_rechazada_guarda_material_compatible_con_constraint(monkeypatch):
     """CONFIANZA_BAJA conserva id_material: ck_inf_ok_material ya lo permite."""
     guardados = []

@@ -60,6 +60,90 @@ describe('EcoLearn Chile (App)', () => {
     expect(await screen.findByText(/237 L/)).toBeInTheDocument();
   });
 
+  it.each([
+    ['FORMATO_NO_VALIDO', /Formato no soportado/],
+    ['ARCHIVO_CORRUPTO', /está corrupto/, /no contiene una imagen/],
+    ['ARCHIVO_MUY_PESADO', /supera el límite de 10 MB/],
+    ['DIMENSIONES_EXCEDIDAS', /demasiado grande/],
+    ['IMAGEN_BORROSA', /poca definición/],
+    ['ID_SESION_INVALIDO', /problema con la sesión/],
+    ['DEMASIADAS_SOLICITUDES', /Demasiados análisis/],
+  ])('mapea el código %s a un mensaje accionable', async (codigo, ...patrones) => {
+    vi.stubGlobal('fetch', vi.fn(async (url) => {
+      const u = String(url);
+      if (u.includes('/predict')) {
+        return { ok: false, status: 400, json: async () => ({
+          detail: { codigo, mensaje: 'fallo interno', campo: 'file' },
+        }) };
+      }
+      if (u.includes('/db/sesiones')) {
+        return { ok: true, status: 200, json: async () => ({ id_sesion: 's-unitaria' }) };
+      }
+      return { ok: true, status: 200, json: async () => ({}) };
+    }));
+    const { container } = render(<App />);
+    fireEvent.click(screen.getAllByRole('button', { name: /Escáner IA/ })[0]);
+    const input = container.querySelector('input[type="file"]');
+    fireEvent.change(input, {
+      target: { files: [new File(['foto'], 'foto.jpg', { type: 'image/jpeg' })] },
+    });
+    const alerta = await screen.findByRole('alert');
+    for (const patron of patrones) expect(alerta).toHaveTextContent(patron);
+    expect(alerta).not.toHaveTextContent('fallo interno');
+  });
+
+  it('un 200 sin detecciones es un aviso, no un error', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url) => {
+      const u = String(url);
+      if (u.includes('/predict')) {
+        return { ok: true, status: 200, json: async () => ({
+          detecciones: [], detecciones_rechazadas: [],
+          calidad_imagen: { nitidez: 12.3, aviso: 'baja_nitidez' },
+        }) };
+      }
+      if (u.includes('/db/sesiones')) {
+        return { ok: true, status: 200, json: async () => ({ id_sesion: 's-unitaria' }) };
+      }
+      return { ok: true, status: 200, json: async () => ({}) };
+    }));
+    const { container } = render(<App />);
+    fireEvent.click(screen.getAllByRole('button', { name: /Escáner IA/ })[0]);
+    const input = container.querySelector('input[type="file"]');
+    fireEvent.change(input, {
+      target: { files: [new File(['foto'], 'foto.jpg', { type: 'image/jpeg' })] },
+    });
+    expect(await screen.findByRole('status')).toHaveTextContent(/No detecté residuos/);
+    expect(screen.getByRole('status')).toHaveTextContent(/poca definición/);
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('con detecciones y baja nitidez muestra el resultado y un aviso discreto', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url) => {
+      const u = String(url);
+      if (u.includes('/predict')) {
+        return { ok: true, status: 200, json: async () => ({
+          detecciones: [{ clase: 'Carton', confianza: 0.83 }],
+          detecciones_rechazadas: [],
+          calidad_imagen: { nitidez: 20.6, aviso: 'baja_nitidez' },
+        }) };
+      }
+      if (u.includes('/db/impacto')) return { ok: true, status: 200, json: async () => impacto };
+      if (u.includes('/db/sesiones')) {
+        return { ok: true, status: 200, json: async () => ({ id_sesion: 's-unitaria' }) };
+      }
+      return { ok: true, status: 200, json: async () => ({}) };
+    }));
+    const { container } = render(<App />);
+    fireEvent.click(screen.getAllByRole('button', { name: /Escáner IA/ })[0]);
+    const input = container.querySelector('input[type="file"]');
+    fireEvent.change(input, {
+      target: { files: [new File(['foto'], 'foto.jpg', { type: 'image/jpeg' })] },
+    });
+    expect(await screen.findByText(/Materiales Identificados/)).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(/poca definición/);
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
   it('muestra videos de reutilización por material y los abre sin autoplay', async () => {
     const { container } = render(<App />);
     fireEvent.click(screen.getAllByRole('button', { name: /Escáner IA/ })[0]);
