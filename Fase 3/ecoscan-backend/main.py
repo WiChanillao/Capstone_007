@@ -311,9 +311,11 @@ if not os.path.exists(MODEL_PATH):
     MODEL_PATH = "yolov8n.pt"
     print("⚠️ best.pt no encontrado: usando baseline yolov8n.pt (descarga automática).")
 UMBRAL_CONFIANZA = float(os.getenv("UMBRAL_CONFIANZA", "0.5"))
-# Calibrado sobre 26 fotos reales disponibles reescaladas a 640 px: min 128.39,
-# p05 324.68, mediana 2527.54. Con 50 se rechaza 0/26 (0 %) y se sigue
-# detectando el caso sintético "cartón liso con logo IDEAL" (20.6).
+# Referencia orientativa (NO validación con el split de test): 26 fotos reales
+# disponibles reescaladas a 640 px dan min 128.39, p05 324.68, mediana 2527.54;
+# ninguna contiene un objeto liso. El umbral 50 solo se evalúa cuando NO hay
+# detecciones: con detecciones se responde 200 y se añade aviso "baja_nitidez".
+# El caso liso "IDEAL" (20.6) se reprodujo aparte y no está en esas 26 fotos.
 LADO_NITIDEZ = 640
 UMBRAL_NITIDEZ = float(os.getenv("UMBRAL_NITIDEZ", "50"))
 print(f"🟢 Cargando modelo de visión artificial desde: {MODEL_PATH}")
