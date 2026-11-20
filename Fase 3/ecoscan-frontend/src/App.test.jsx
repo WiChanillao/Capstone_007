@@ -164,4 +164,24 @@ describe('EcoLearn Chile (App)', () => {
     expect(iframe.getAttribute('src')).toContain('lhhggoTyiPY');
     expect(iframe.getAttribute('src')).not.toContain('autoplay');
   });
+
+  it('el Desafío muestra 5 preguntas distintas, puntaje y botón Nueva ronda', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: /Desafío Verde RM/ }));
+    const vistas = [];
+
+    for (let i = 0; i < 5; i++) {
+      const texto = screen.getByTestId('trivia-pregunta').textContent;
+      expect(vistas).not.toContain(texto);
+      vistas.push(texto);
+      fireEvent.click(screen.getByTestId('trivia-opcion-0'));
+      expect(screen.getByTestId('trivia-feedback')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /Siguiente pregunta|Ver puntaje/ }));
+    }
+
+    expect(screen.getByTestId('trivia-fin')).toHaveTextContent(/Puntaje de la ronda/);
+    fireEvent.click(screen.getByRole('button', { name: /Nueva ronda/ }));
+    expect(screen.getByTestId('trivia-pregunta')).toBeInTheDocument();
+    expect(screen.queryByTestId('trivia-fin')).toBeNull();
+  });
 });
