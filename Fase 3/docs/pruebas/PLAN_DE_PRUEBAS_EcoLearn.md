@@ -164,7 +164,7 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 | ID | RF/RNF | Caso | Resultado esperado | Estado | Evidencia |
 |---|---|---|---|---|---|
 | CP-14 | RF-04 | 30 fotos reales (10 por material) enviadas una vez cada una | 27/30 exactas (90 %) | Ejecutado | Informe Fase 2, sección 6 |
-| CP-15 | RNF-02 | Métrica oficial en test de Roboflow | `mAP@50 = 0,562`; **no afirmar 0,65** | Ejecutado | Notebook CRISP-DM |
+| CP-15 | RNF-02 | Métrica oficial documentada en validación | `mAP@50 = 0,562`; **no afirmar 0,65** | Ejecutado | Notebook CRISP-DM |
 | CP-16 | RNF-02 | Comparar reentrenamiento 19-11 (T4, 100 épocas, `patience=20`) | Descartado: `0,622 valid / 0,527 test` | Ejecutado | Sección 14 de evidencia |
 | CP-17 | RNF-01 | Latencia punta a punta local | Media 109-112 ms, P95 128-133 ms ≤ 2 s | Ejecutado en local | Informe Fase 2; falta medición en producción |
 | CP-18 | RNF-40 | Auditoría de fugas entre train/valid/test | 1112 / 61 / 31, 0 duplicados y 0 intersecciones | Ejecutado | CRISP-DM |
@@ -233,7 +233,7 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 | E2E Cypress | 4/4 | 4/4 | OK |
 | Humo API | 8/8 | 8/8 | OK |
 | Exactitud en 30 fotos | ≥ 27/30 | 27/30 (90 %) | OK |
-| `mAP@50` en test | ≥ 0,65 (meta académica) | **0,562** | **No alcanzado** |
+| `mAP@50` en validación | ≥ 0,65 (meta académica) | **0,562** | **No alcanzado** |
 | Latencia `/predict` p95 local | ≤ 2 s | 128-133 ms | OK en local |
 | Marcadores en mapa | 35 | 35 | OK |
 | Errores de consola | 0 | 0 | OK |
@@ -287,7 +287,7 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 | Caché de `localhost:5173` en el navegador del evaluador | Misma versión obsoleta | Recarga forzada o incógnito |
 | Sin dominio de producción propio | El enlace público es un túnel temporal, no una URL permanente | API en mismo origen (`/api` + proxy nginx) ya verificada por túnel; queda pendiente contratar dominio propio |
 | Clave de Roboflow expuesta en copias antiguas | Riesgo de seguridad | Rotación pendiente del dueño; nunca pegar la clave en chat, Jira ni evidencia |
-| `mAP@50` inferior a 0,65 | Puede afectar evaluación | Declarar 0,562 con auditoría de fugas y plan de una variable a la vez; no modificar PPT ni afirmar 0,65 |
+| `mAP@50` inferior a 0,65 | Puede afectar evaluación | Declarar 0,562 con auditoría de fugas y plan de una variable a la vez; mantener la cifra y su partición consistentes en los entregables |
 | Puntos externos sin validar en terreno | Datos aproximados | Marcar `coords_aproximadas=1` y «por confirmar»; tickets REC-65/93/105/155 |
 | PC local sin `torch`/`ultralytics`/dataset | No se puede reentrenar localmente | Entrenar solo en Colab con T4 |
 

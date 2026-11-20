@@ -38,7 +38,7 @@ services:
       mysql:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      test: ["CMD", "python", "-c", "import json, sys, urllib.request as u; data = json.load(u.urlopen('http://127.0.0.1:8000/health', timeout=3)); sys.exit(0 if data.get('mysql_conectado') is True else 1)"]
       interval: 15s
       timeout: 5s
       retries: 10

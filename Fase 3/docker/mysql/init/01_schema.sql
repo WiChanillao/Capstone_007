@@ -82,10 +82,12 @@ CREATE TABLE `escaneos` (
   `modelo_usado` varchar(50) DEFAULT NULL,
   `total_objetos` int DEFAULT NULL,
   `id_sesion` varchar(36) DEFAULT NULL,
+  `id_solicitud` char(32) DEFAULT NULL,
   `cant_carton` int NOT NULL DEFAULT '0',
   `cant_aluminio` int NOT NULL DEFAULT '0',
   `cant_plastico` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_escaneos_solicitud` (`id_sesion`, `id_solicitud`),
   KEY `ix_escaneos_id` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

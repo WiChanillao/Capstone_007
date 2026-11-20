@@ -47,11 +47,7 @@ class _ModeloFalso:
 
 def _sin_escritura(monkeypatch):
     """Aísla las pruebas de la BD real."""
-    monkeypatch.setattr(main, "ejecutar", lambda *a, **k: None)
-    monkeypatch.setattr(main, "guardar_inferencia", lambda *a, **k: None)
-    # /predict inserta en escaneos usando SessionLocal directamente: se anula
-    # para que ninguna prueba altere las 48 filas reales de MySQL.
-    monkeypatch.setattr(main, "SessionLocal", None)
+    monkeypatch.setattr(main, "guardar_resultado_escaneo", lambda *a, **k: None)
 
 
 def test_raiz_expone_modelo_y_estado():
@@ -109,6 +105,28 @@ def test_health_reporta_degraded_sin_mysql(monkeypatch):
     body = r.json()
     assert body["status"] == "degraded"
     assert body["mysql_conectado"] is False
+
+
+def test_health_degrada_si_mysql_falla_despues_del_arranque(monkeypatch):
+    cierres = []
+
+    class SesionCaida:
+        def query(self, *_args):
+            raise RuntimeError("detalle interno")
+
+        def close(self):
+            cierres.append(True)
+
+    monkeypatch.setattr(main, "db_activa", True)
+    monkeypatch.setattr(main, "SessionLocal", SesionCaida)
+
+    respuesta = client.get("/health")
+
+    assert respuesta.status_code == 200
+    assert respuesta.json()["status"] == "degraded"
+    assert respuesta.json()["mysql_conectado"] is False
+    assert "error_mysql" not in respuesta.json()
+    assert cierres == [True]
 
 
 def test_cabeceras_de_seguridad_en_todas_las_respuestas():
@@ -300,8 +318,8 @@ def test_deteccion_rechazada_guarda_material_compatible_con_constraint(monkeypat
     """CONFIANZA_BAJA conserva id_material: ck_inf_ok_material ya lo permite."""
     guardados = []
     monkeypatch.setattr(main, "db_activa", True)
-    monkeypatch.setattr(main, "ejecutar", lambda *a, **k: None)
-    monkeypatch.setattr(main, "guardar_inferencia", lambda dato: guardados.append(dato))
+    monkeypatch.setattr(main, "guardar_resultado_escaneo",
+                        lambda sesion, datos, escaneo: guardados.extend(datos))
     monkeypatch.setattr(main, "model", _ModeloFalso([_Caja(1, 0.27)]))
     r = client.post(
         "/predict",
@@ -367,9 +385,9 @@ def test_predict_rechaza_archivo_mayor_a_10mb(monkeypatch):
     assert detalle["campo"] == "file"
 
 
-@pytest.mark.parametrize("sesion_invalida", ["sesion con espacio", "mala!", "x" * 65])
+@pytest.mark.parametrize("sesion_invalida", ["sesion con espacio", "mala!", "x" * 37])
 def test_predict_rechaza_id_sesion_invalido(monkeypatch, sesion_invalida):
-    """Caracteres no permitidos y longitud > 64 se rechazan con 422."""
+    """Caracteres no permitidos y longitud > 36 (límite del esquema MySQL) se rechazan con 422."""
     _sin_escritura(monkeypatch)
     r = client.post(
         "/predict",
@@ -434,3 +452,20 @@ def test_predict_rechaza_dimensiones_excedidas(monkeypatch):
     )
     assert r.status_code == 400
     assert r.json()["detail"]["codigo"] == "DIMENSIONES_EXCEDIDAS"
+
+
+@pytest.mark.parametrize("falla", [False, True])
+def test_predict_informa_si_el_escaneo_fue_guardado(monkeypatch, falla):
+    from unittest.mock import Mock
+
+    persistir = Mock(side_effect=RuntimeError if falla else None)
+    monkeypatch.setattr(main, "db_activa", True)
+    monkeypatch.setattr(main, "guardar_resultado_escaneo", persistir)
+    monkeypatch.setattr(main, "model", _ModeloFalso([_Caja(1, 0.90)]))
+
+    respuesta = client.post("/predict", files={"file": ("foto.png", _imagen(True), "image/png")})
+
+    assert respuesta.status_code == 200
+    assert respuesta.json()["escaneo_guardado"] is (not falla)
+    assert respuesta.json()["detecciones"][0]["clase"] == "Carton"
+    assert persistir.call_args.args[2][2] == 1

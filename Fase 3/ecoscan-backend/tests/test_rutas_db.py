@@ -123,3 +123,47 @@ async def test_reporte_csv(monkeypatch):
     cuerpo = "".join(str(p) for p in partes)
     assert "mes,material,resultado,total" in cuerpo
     assert "2026-11,Cartón y Papel,OK,3" in cuerpo
+
+
+@pytest.mark.parametrize("falla", [False, True])
+def test_guardar_resultado_es_atomico(monkeypatch, falla):
+    from unittest.mock import MagicMock
+
+    conn = MagicMock()
+    cursor = conn.cursor.return_value.__enter__.return_value
+    if falla:
+        cursor.executemany.side_effect = RuntimeError("fallo en inferencias")
+    monkeypatch.setattr(rutas_db.pymysql, "connect", lambda **kwargs: conn)
+    inferencia = rutas_db.Inferencia(id_sesion="demo", id_material=1, resultado="OK",
+                                     confianza=0.9, latencia_ms=50)
+    args = ("Carton", "best.pt", 1, "demo", 1, 0, 0, None)
+    if falla:
+        with pytest.raises(RuntimeError):
+            rutas_db.guardar_resultado_escaneo("demo", [inferencia], args)
+        conn.rollback.assert_called_once()
+        conn.commit.assert_not_called()
+    else:
+        rutas_db.guardar_resultado_escaneo("demo", [inferencia], args)
+        conn.commit.assert_called_once()
+        conn.rollback.assert_not_called()
+    assert "NOW()" in cursor.execute.call_args.args[0]
+    assert cursor.execute.call_count == 2
+    cursor.executemany.assert_called_once()
+    conn.close.assert_called_once()
+
+
+def test_reintento_no_duplica_inferencias(monkeypatch):
+    from unittest.mock import MagicMock
+
+    conn = MagicMock()
+    cursor = conn.cursor.return_value.__enter__.return_value
+    cursor.rowcount = 0
+    monkeypatch.setattr(rutas_db.pymysql, "connect", lambda **kwargs: conn)
+    inferencia = rutas_db.Inferencia(id_sesion="demo", id_material=1, resultado="OK", latencia_ms=50)
+    escaneo = ("Carton", "best.pt", 1, "demo", 1, 0, 0, "a" * 32)
+
+    rutas_db.guardar_resultado_escaneo("demo", [inferencia], escaneo)
+
+    assert "ON DUPLICATE KEY" in cursor.execute.call_args.args[0]
+    cursor.executemany.assert_not_called()
+    conn.commit.assert_called_once()

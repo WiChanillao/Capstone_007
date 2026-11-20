@@ -65,7 +65,7 @@ describe('EcoLearn Chile (App)', () => {
     ['ARCHIVO_CORRUPTO', /está corrupto/, /no contiene una imagen/],
     ['ARCHIVO_MUY_PESADO', /supera el límite de 10 MB/],
     ['DIMENSIONES_EXCEDIDAS', /demasiado grande/],
-    ['IMAGEN_BORROSA', /poca definición/],
+    ['IMAGEN_BORROSA', /foto está borrosa/, /Limpia la lente/],
     ['ID_SESION_INVALIDO', /problema con la sesión/],
     ['DEMASIADAS_SOLICITUDES', /Demasiados análisis/],
   ])('mapea el código %s a un mensaje accionable', async (codigo, ...patrones) => {
@@ -112,7 +112,7 @@ describe('EcoLearn Chile (App)', () => {
     fireEvent.change(input, {
       target: { files: [new File(['foto'], 'foto.jpg', { type: 'image/jpeg' })] },
     });
-    expect(await screen.findByRole('status')).toHaveTextContent(/No detecté residuos/);
+    expect(await screen.findByRole('status')).toHaveTextContent(/No se detectó un material compatible/);
     expect(screen.getByRole('status')).toHaveTextContent(/poca definición/);
     expect(screen.queryByRole('alert')).toBeNull();
   });

@@ -38,3 +38,10 @@ verificó por OCR, no por inspección visual.
 Los notebooks incorporados fueron revisados: no contienen la API key de
 Roboflow filtrada en copias antiguas. Si necesitas volver a entrenar, crea la
 variable `ROBOFLOW_API_KEY` en tu entorno o en los Secretos de Colab.
+
+## Revisi?n de la entrega
+
+- [Trazabilidad de los 30 indicadores de la pauta APT](REVISION_PAUTA_APT.md).
+- [Diagrama actualizado con el estilo visual de Fase 2](Arquitectura_EcoLearn_actualizada.png).
+- [Cierre tecnico y matriz de riesgo](CIERRE_TECNICO.md).
+- [Protocolo UAT y SUS pendiente de aplicación](pruebas/PROTOCOLO_UAT_SUS.md).
