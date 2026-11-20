@@ -32,3 +32,6 @@ logs/
 .DS_Store
 Thumbs.db
 *.err
+
+# Diagnóstico temporal (no versionar)
+Fase 3/ecoscan-backend/tests/diagnostico_400.py

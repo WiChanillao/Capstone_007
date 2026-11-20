@@ -1,0 +1,4 @@
+NAME                           IMAGE                        COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+ecolearn-main-aud-backend-1    ecolearn-main-aud-backend    "uvicorn main:app --…"   backend    23 seconds ago   Up 12 seconds (healthy)   127.0.0.1:8001->8000/tcp
+ecolearn-main-aud-frontend-1   ecolearn-main-aud-frontend   "/docker-entrypoint.…"   frontend   23 seconds ago   Up 6 seconds (healthy)    127.0.0.1:5174->8080/tcp
+ecolearn-main-aud-mysql-1      mysql:8.0                    "docker-entrypoint.s…"   mysql      23 seconds ago   Up 23 seconds (healthy)   127.0.0.1:3308->3306/tcp

@@ -1,0 +1,2 @@
+backend 127.0.0.1:8001/health -> 200 {"status":"ok","mysql_conectado":true,"modelo_activo":"best.pt","escaneos_registrados":48}
+frontend 127.0.0.1:5174/api/health -> 200 {"status":"ok","mysql_conectado":true,"modelo_activo":"best.pt","escaneos_registrados":48}
