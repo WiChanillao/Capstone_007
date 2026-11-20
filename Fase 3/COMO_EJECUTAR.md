@@ -2,7 +2,7 @@
 
 ## Problema que tenías
 
-VS Code estaba usando un **Python 3.14 global** (`C:\Users\Grove\...`) en vez del entorno virtual del proyecto. Por eso salía:
+VS Code estaba usando un **Python 3.14 global** de otro equipo en vez del entorno virtual del proyecto. Por eso salía:
 
 ```
 ModuleNotFoundError: No module named 'fastapi'
