@@ -1,26 +1,43 @@
 # Capstone 007 — EcoLearn Chile / EcoScan
 
-Todo el proyecto (código, documentación, evidencias, Docker y presentación final)
-está agrupado en la carpeta **[`Fase 3/`](Fase%203/)**.
+Proyecto de título organizado por etapas. El recorrido se lee de arriba abajo:
+**Fase 1 → Fase 2 → Fase 3**. La implementación vigente y la entrega final
+están en [`Fase 3/`](Fase%203/).
+
+## Progreso por etapas
+
+| Etapa | Carpeta | Qué contiene | Estado |
+|---|---|---|---|
+| 1 — Definición | [`Fase 1/`](Fase%201/) | Guía y formatos del proyecto, autoevaluaciones, diarios y presentación de definición | Entregable histórico, conservado sin cambios |
+| 2 — Desarrollo | [`Fase 2/`](Fase%202/) | Guías, diarios, arquitectura, SQL y CRISP-DM originales | Entregable histórico; la fuente vigente de requisitos está en Fase 3 |
+| 3 — Implementación y entrega | [`Fase 3/`](Fase%203/) | Código, Docker, documentación canónica, auditoría Jira, pruebas y presentación final | **Vigente** |
+
+Cada etapa tiene su propio `README.md` de entrada. Las carpetas `Fase 1` y
+`Fase 2` se elevaron a la raíz desde `Fase 3/` sin reescribir el historial:
+Git las registra como renombrados en commits nuevos.
 
 ## Estructura
 
 ```text
-.github/                 CI de GitHub Actions (debe permanecer en la raíz)
+.github/                 CI de GitHub Actions (permanece en la raíz)
+Fase 1/                  Definición del proyecto (entregables originales)
+Fase 2/                  Desarrollo y evidencia histórica
 Fase 3/
 ├── ecoscan-backend/     API FastAPI, YOLO11n, MySQL y pruebas
 ├── ecoscan-frontend/    App React + Vite + Tailwind (Menú Principal + 4 módulos)
-├── docs/                CRISP-DM, requisitos, BPMN, modelo de datos, PPT final
+├── docs/                Documentación canónica, requisitos, BPMN, pruebas, auditoría Jira
+├── docs/evidencia/      Capturas y registros de evidencia
 ├── docker/              Scripts de inicialización de MySQL
 ├── scripts/             Arranque reproducible y verificación Docker
-├── Fase 1/, Fase 2/     Entregables originales integrados sin borrar
 ├── .vscode/             Configuración: abre la carpeta Fase 3 en VS Code
 ├── docker-compose.yml   MySQL 8 + backend + frontend con healthchecks
 └── README.md            Guía completa de instalación, uso y evidencia
 ```
 
-`.gitignore` y `.gitattributes` también permanecen en la raíz porque Git los
-aplica a todo el repositorio.
+`.gitignore` y `.gitattributes` permanecen en la raíz porque Git los aplica a
+todo el repositorio. `.gitattributes` además indica a GitHub Linguist qué
+archivos son evidencia o datos, para que el desglose de lenguajes refleje el
+código real del proyecto.
 
 ## Acceso rápido
 

@@ -67,7 +67,7 @@ Rango observado en fotos reales con 200: **174.53 – 14873.57**. Las 3 fotos de
 - Los 429 aparecían porque **todos los visitantes comparten la IP de nginx** (`172.18.0.4`): `request.client.host` en `main.py:41,63-69` (versión anterior).
 - `except: pass` al guardar la inferencia `BORROSA` ocultaba errores de BD.
 - El `detail` de algunos 400 era un **string**, no `{"codigo","mensaje","campo"}`.
-- `ck_inf_ok_material` en `Fase 2/Evidencia/BASE DE DATOS/01_EcoScan_Esquema_MySQL.sql:171` exigía `(resultado='OK') = (id_material IS NOT NULL)`, por lo que fallaba al guardar `CONFIANZA_BAJA` con la clase detectada.
+- `ck_inf_ok_material` en `../../Fase 2/Evidencia/BASE DE DATOS/01_EcoScan_Esquema_MySQL.sql:171` exigía `(resultado='OK') = (id_material IS NOT NULL)`, por lo que fallaba al guardar `CONFIANZA_BAJA` con la clase detectada.
 
 ---
 

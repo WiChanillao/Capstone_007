@@ -44,7 +44,7 @@ Todo el proyecto está agrupado aquí. Todos los comandos de esta guía se ejecu
 | `docker-compose.yml` | Stack completo: MySQL 8.0 (host 3307), backend (8000), frontend Nginx (5173) con *healthchecks* |
 | `scripts/` | `run.ps1` / `run.sh` / `run.bat` (arranque reproducible), `verificar_docker.ps1`, `instalar_docker.ps1`, `init_local_db.py` |
 | `docs/` | CRISP-DM, requisitos (100 RF/RNF), BPMN, modelo de datos, informe de pruebas |
-| `Fase 1/`, `Fase 2/` | Entregables originales integrados sin borrar el historial |
+| `../Fase 1/`, `../Fase 2/` | Entregables originales en la raíz del repo; se elevaron sin borrar el historial |
 | `.github/workflows/ci.yml` (en la raíz del repo) | CI: pytest + cobertura + pip-audit; frontend: `build` → `test:unit` → `npm audit` (PR 1) |
 | `.env.example` | Variables de entorno (copiar a `.env`) |
 
@@ -190,7 +190,7 @@ Jira: tablero **EcoLearn** (proyecto **REC**). Ramas: `main` (estable), `develop
 
 Repo público: <https://github.com/WiChanillao/Capstone_007>. En `main` están
 tanto las evidencias de Fase 1 y Fase 2 (guías, diarios, PPT, CRISP-DM,
-requisitos, BPMN, SQL e informe de pruebas) como el código de la app,
-Docker Compose, CI y los scripts. El historial original de documentación se
-integró sin borrarlo; el notebook de Fase 2 publicado usa variables de entorno
-para la API key de Roboflow.
+requisitos, BPMN, SQL e informe de pruebas), ahora en las carpetas `Fase 1/` y
+`Fase 2/` de la raíz, como el código de la app, Docker Compose, CI y los
+scripts. El historial original se integró sin borrarlo; el notebook de Fase 2
+publicado usa variables de entorno para la API key de Roboflow.
