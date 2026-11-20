@@ -9,6 +9,7 @@ load_dotenv(dotenv_path=Path(__file__).resolve().parent.parent / '.env', overrid
 
 import io
 import json
+import re
 import time
 import hashlib
 import datetime
@@ -282,6 +283,12 @@ def detalle_modelo(modelo_id: str):
 async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
     inicio = time.perf_counter()
     sesion = (id_sesion or "").strip() or None
+    if sesion is not None and not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", sesion):
+        raise HTTPException(
+            status_code=422,
+            detail={"codigo": "ID_SESION_INVALIDO",
+                    "mensaje": "id_sesion debe tener entre 1 y 64 caracteres: letras, números, guion o guion bajo."},
+        )
     if db_activa and sesion:
         try:
             ejecutar("INSERT IGNORE INTO sesion (id_sesion) VALUES (%s)", (sesion,))
