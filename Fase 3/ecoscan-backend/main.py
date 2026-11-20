@@ -116,7 +116,9 @@ app.add_middleware(
 # ----------------------------------------------------
 # Ajusta el usuario, contraseña y nombre de BD según la configuración de tu compañero:
 MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "admin")  # Pongan aquí la clave de MySQL
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+if not MYSQL_PASSWORD:
+    raise RuntimeError("Define MYSQL_PASSWORD en .env")
 MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
 MYSQL_PORT = os.getenv("MYSQL_PORT", "3306")
 MYSQL_DB = os.getenv("MYSQL_DB", "ecoscan")

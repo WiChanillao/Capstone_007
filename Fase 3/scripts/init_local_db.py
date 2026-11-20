@@ -26,11 +26,14 @@ def cargar_env():
 
 
 def conectar(sin_db=True):
+    password = os.getenv("MYSQL_PASSWORD")
+    if not password:
+        raise RuntimeError("Define MYSQL_PASSWORD en .env")
     kwargs = dict(
         host=os.getenv("MYSQL_HOST", "localhost"),
         port=int(os.getenv("MYSQL_PORT", "3306")),
         user=os.getenv("MYSQL_USER", "root"),
-        password=os.getenv("MYSQL_PASSWORD", "admin"),
+        password=password,
         client_flag=pymysql.constants.CLIENT.MULTI_STATEMENTS,
         autocommit=True,
     )

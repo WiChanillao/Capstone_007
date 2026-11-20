@@ -16,7 +16,9 @@ from pathlib import Path
 host = os.getenv("MYSQL_HOST", "localhost")
 port = os.getenv("MYSQL_PORT", "3306")
 user = os.getenv("MYSQL_USER", "root")
-password = os.getenv("MYSQL_PASSWORD", "admin")
+password = os.getenv("MYSQL_PASSWORD")
+if not password:
+    raise RuntimeError("Define MYSQL_PASSWORD en .env")
 db = os.getenv("MYSQL_DB", "ecoscan")
 destino = Path(os.getenv("DIRECTORIO_BACKUPS", Path(__file__).parent / "backups"))
 destino.mkdir(parents=True, exist_ok=True)

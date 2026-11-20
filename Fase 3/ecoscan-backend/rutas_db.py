@@ -17,11 +17,15 @@ from pydantic import BaseModel
 
 router = APIRouter(prefix="/db", tags=["mysql"])
 
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+if not MYSQL_PASSWORD:
+    raise RuntimeError("Define MYSQL_PASSWORD en .env")
+
 DB_CONFIG = dict(
     host=os.getenv("MYSQL_HOST", "localhost"),
     port=int(os.getenv("MYSQL_PORT", "3306")),
     user=os.getenv("MYSQL_USER", "root"),
-    password=os.getenv("MYSQL_PASSWORD", "admin"),
+    password=MYSQL_PASSWORD,
     database=os.getenv("MYSQL_DB", "ecoscan"),
     charset="utf8mb4",
     cursorclass=pymysql.cursors.DictCursor,
