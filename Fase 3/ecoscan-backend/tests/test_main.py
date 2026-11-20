@@ -174,3 +174,29 @@ def test_predict_rechaza_id_sesion_invalido(monkeypatch, sesion_invalida):
     )
     assert r.status_code == 422
     assert r.json()["detail"]["codigo"] == "ID_SESION_INVALIDO"
+
+
+def test_predict_rechaza_mime_no_permitido(monkeypatch):
+    """Un PDF con MIME application/pdf se rechaza con 400 antes de abrirlo."""
+    _sin_escritura(monkeypatch)
+    r = client.post(
+        "/predict",
+        files={"file": ("documento.pdf", b"%PDF-1.7 contenido de prueba", "application/pdf")},
+    )
+    assert r.status_code == 400
+    assert "no es una imagen válida" in r.json()["detail"]
+
+
+def test_predict_rechaza_dimensiones_excedidas(monkeypatch):
+    """Una imagen por encima del limite de 8000x8000 se rechaza con 400."""
+    _sin_escritura(monkeypatch)
+    assert main.MAX_DIMENSION_IMAGEN == 8000
+    # Se baja el limite durante la prueba para no asignar ~192 MB: la imagen
+    # de 224x224 excede el limite reducido y recorre el mismo codigo de error.
+    monkeypatch.setattr(main, "MAX_DIMENSION_IMAGEN", 100)
+    r = client.post(
+        "/predict",
+        files={"file": ("gran_de.png", _imagen(nitida=True), "image/png")},
+    )
+    assert r.status_code == 400
+    assert r.json()["detail"]["codigo"] == "DIMENSIONES_EXCEDIDAS"
