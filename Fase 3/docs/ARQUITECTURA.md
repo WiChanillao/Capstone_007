@@ -191,9 +191,7 @@ estáticos embebidos (`App.jsx:254-326,530-580`).
   entidades `Usuario`, `Rol`, `hash password`, tokens y consentimiento. **No
   hay autenticación ni cuentas** (`DOCUMENTACION_GENERAL.md:12,46,52`;
   `DECISIONES.md:46`).
-- `docs/presentacion/EcoLearn_Presentacion_Final_Fase3.pptx` (slide 5) dice
-  "5 pestañas"; la UI real es **Menú Principal + 4 módulos**
-  (`DOCUMENTACION_GENERAL.md:113`).
+- `docs/presentacion/EcoLearn_Presentacion_Final_Fase3.pptx` presenta el diagrama actualizado y los cuatro modulos.
 - `docs/README.md:22` documenta la discrepancia: el modelo de datos dice 14
   tablas y el DDL crea 15 (`jira/CONTRASTE_161.md:50`).
 - `docs/DECISIONES.md:24` apuntaba a "arquitectura, línea 23" de `Fase 3/README.md`;

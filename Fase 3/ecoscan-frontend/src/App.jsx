@@ -1171,7 +1171,7 @@ export default function App() {
                 </h2>
 
                 <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-md">
-                  Activa la cámara web de tu ordenador o móvil para tomar una foto en tiempo real, o selecciona una foto desde tu galería.
+                  Fotografía un solo objeto de cerca, con buena luz y sobre un fondo liso. Puedes usar la cámara o elegir una foto de tu galería.
                 </p>
 
                 {/* El reto elegido en Desafío Verde guía al usuario, sin marcar metas a mano */}

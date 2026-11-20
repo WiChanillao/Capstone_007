@@ -149,8 +149,8 @@ npm run dev                     # http://localhost:5173
 
 ## Presentación final
 
-[`docs/presentacion/EcoLearn_Presentacion_Final_Fase3.pptx`](docs/presentacion/)
-(16 diapositivas): problema, solución, arquitectura, CRISP-DM, resultados,
+[`docs/presentacion/EcoLearn_Presentacion_Final_Fase3.pptx`](docs/presentacion/EcoLearn_Presentacion_Final_Fase3.pptx)
+(11 diapositivas): problema, solución, arquitectura, CRISP-DM, resultados,
 capturas del demo, retrospectiva, gestión y trabajo futuro. Usa los nombres y
 la tecnología reales de la app.
 
