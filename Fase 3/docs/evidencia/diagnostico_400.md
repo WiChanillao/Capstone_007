@@ -229,8 +229,8 @@ Tras el arreglo, 31 `POST /predict` por grupo (sin body; el middleware cuenta an
 ### 5. Revisión de los commits antes de push
 
 - `git log origin/main..HEAD --stat`: **14 commits**, 8 archivos tocados: `.env.example`, `docs/evidencia/diagnostico_400.md`, `backend/main.py`, `backend/tests/test_main.py`, `frontend/src/App.jsx`, `frontend/src/App.test.jsx`, `frontend/src/sw.test.js`, `frontend/vite.config.js`.
-- Diff completo (1231 líneas): **0 coincidencias** de tokens de Google, claves de API, tokens de GitHub, credenciales de Roboflow, rutas personales de Windows ni carpetas de dependencias instaladas.
-- `password=` aparece **1 vez** como contexto del hunk (placeholder `cambiar_esta_clave` en `.env.example`); ningún valor real de `MYSQL_PASSWORD` ni `MYSQL_ROOT_PASSWORD` figura en el diff. Los demás valores coincidentes son defaults públicos ya documentados en `.env.example`.
+- Diff completo (1231 líneas): **0 coincidencias** de tokens de Google, claves de API, tokens de GitHub, credenciales de proveedores externos, rutas personales de Windows ni carpetas de dependencias instaladas.
+- La única coincidencia del patrón `password` seguido de `=` en el diff es el valor de ejemplo `cambiar_esta_clave` en el encabezado del hunk de `.env.example`; ningún valor real de contraseña figura en el diff. Los demás valores coincidentes son defaults públicos ya documentados en `.env.example`.
 - No entran en el push: `diagnostico_400.py`, el dataset, `.env`, `node_modules`. `best.pt` no fue modificado ni aparece en el diff.
 - Este informe: 0 rutas absolutas, 0 secretos, 0 valores de `.env`.
 
