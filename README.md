@@ -26,7 +26,8 @@ Fase 3/
 ├── ecoscan-backend/     API FastAPI, YOLO11n, MySQL y pruebas
 ├── ecoscan-frontend/    App React + Vite + Tailwind (Menú Principal + 4 módulos)
 ├── docs/                Documentación canónica, requisitos, BPMN, pruebas, auditoría Jira
-├── docs/evidencia/      Capturas y registros de evidencia
+├── docs/evidencia/      Ejecuciones y capturas de la app (capturas/)
+├── docs/pruebas/        Plan de pruebas y su evidencia visual (evidencia_visual/)
 ├── docker/              Scripts de inicialización de MySQL
 ├── scripts/             Arranque reproducible y verificación Docker
 ├── .vscode/             Configuración: abre la carpeta Fase 3 en VS Code

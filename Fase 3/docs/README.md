@@ -21,6 +21,7 @@ repositorio para que todo quede disponible desde un solo clone.
 | `modelo-datos/` | Modelo lógico/relacional (DOCX) y `diagrama_relacional.png` (documentan 14 tablas; el esquema real de `docker/mysql/init/01_schema.sql` tiene **15**). |
 | `pruebas/` | `PLAN_DE_PRUEBAS_EcoLearn.xlsx` (**formato oficial**, v1.3: 8 columnas, 40 casos, hoja `Evidencia` con 14 capturas) y `PLAN_DE_PRUEBAS_EcoLearn.md` (detalle técnico, v1.3): son la **fuente vigente de criterios de aceptación**. `PLAN_DE_PRUEBAS_EcoLearn_CON_EVIDENCIA.docx`/`.pdf` (41 páginas) e `Informe_de_pruebas_EcoScan.docx` son instantáneas históricas: no redefinen el alcance actual. |
 | `bd/` | Scripts SQL originales de esquema y datos (el stack Docker usa además `docker/mysql/init/`). |
+| [`evidencia/`](evidencia/) | Ejecuciones y capturas. [`evidencia/capturas/`](evidencia/capturas/) reúne las imágenes que antes estaban sueltas en la raíz de `Fase 3/`; [`pruebas/evidencia_visual/`](pruebas/evidencia_visual/) contiene las capturas citadas por el plan de pruebas. |
 
 ## Diagrama de estructura y Docker
 

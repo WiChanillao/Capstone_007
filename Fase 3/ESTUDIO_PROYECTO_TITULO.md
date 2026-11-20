@@ -56,7 +56,7 @@ La app expone **Menú Principal + 4 módulos de usuario** (el impacto está inte
 - Prueba de una sola foto: al subir `IMG_8834.jpg` con el contador en cero, el resultado fue **1 escaneo, 1 aluminio y 0 % de progreso**; es decir, una foto suma una sola medición y no completa insignias por sí sola.
 - Regresión visual corregida (REC-139): se eliminaron los `backdrop-filter`/`blur` residuales que quedaban en `.btn-secondary` y en la etiqueta “Cámara Activa”. Tras 3 ciclos de scroll a 1912×1068, la franja vacía máxima es de 160 px (antes era de ~860 px).
 
-Evidencia visual: `APP_Limpia_Menu.png`, `APP_Desafio_auto_inicial.png`, `APP_Desafio_auto_100.png`, `APP_Una_Foto_Automatico.png`, `REG_Menu_Principal_top.png`, `BUG_Scroll_corregido.png`.
+Evidencia visual: [APP_Limpia_Menu.png](docs/evidencia/capturas/APP_Limpia_Menu.png), [APP_Desafio_auto_inicial.png](docs/evidencia/capturas/APP_Desafio_auto_inicial.png), [APP_Desafio_auto_100.png](docs/evidencia/capturas/APP_Desafio_auto_100.png), [APP_Una_Foto_Automatico.png](docs/evidencia/capturas/APP_Una_Foto_Automatico.png), [REG_Menu_Principal_top.png](docs/evidencia/capturas/REG_Menu_Principal_top.png), [BUG_Scroll_corregido.png](docs/evidencia/capturas/BUG_Scroll_corregido.png).
 
 ---
 
@@ -170,11 +170,13 @@ Y decir explícitamente en la defensa:
 
 ## 6. Archivos de evidencia relacionados
 
-- `APP_Limpia_Menu.png` — app sin notas internas ni pestaña de trazabilidad.
-- `APP_Desafio_auto_inicial.png` — progreso en 0 antes de escanear.
-- `APP_Desafio_auto_100.png` — progreso 100 % tras 10 escaneos reales.
-- `APP_Una_Foto_Automatico.png` — una sola foto suma 1 escaneo y 0 % de progreso; sin carga manual.
-- `REG_Menu_Principal_top.png` — menú sin franja negra tras la regresión.
-- `BUG_Scroll_franja_negra.png` / `BUG_Scroll_corregido.png` — regresión visual y corrección original.
-- `APP_Puntos_MySQL.png` / `APP_Desafio_MySQL.png` — datos reales desde MySQL.
+Las capturas están centralizadas en [`docs/evidencia/capturas/`](docs/evidencia/capturas/).
+
+- [`APP_Limpia_Menu.png`](docs/evidencia/capturas/APP_Limpia_Menu.png) — app sin notas internas ni pestaña de trazabilidad.
+- [`APP_Desafio_auto_inicial.png`](docs/evidencia/capturas/APP_Desafio_auto_inicial.png) — progreso en 0 antes de escanear.
+- [`APP_Desafio_auto_100.png`](docs/evidencia/capturas/APP_Desafio_auto_100.png) — progreso 100 % tras 10 escaneos reales.
+- [`APP_Una_Foto_Automatico.png`](docs/evidencia/capturas/APP_Una_Foto_Automatico.png) — una sola foto suma 1 escaneo y 0 % de progreso; sin carga manual.
+- [`REG_Menu_Principal_top.png`](docs/evidencia/capturas/REG_Menu_Principal_top.png) — menú sin franja negra tras la regresión.
+- [`BUG_Scroll_franja_negra.png`](docs/evidencia/capturas/BUG_Scroll_franja_negra.png) / [`BUG_Scroll_corregido.png`](docs/evidencia/capturas/BUG_Scroll_corregido.png) — regresión visual y corrección original.
+- [`APP_Puntos_MySQL.png`](docs/evidencia/capturas/APP_Puntos_MySQL.png) / [`APP_Desafio_MySQL.png`](docs/evidencia/capturas/APP_Desafio_MySQL.png) — datos reales desde MySQL.
 - `COMO_EJECUTAR.md` — requisitos previos y comandos (Docker verificado: 3/3 contenedores `healthy`).
