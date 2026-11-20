@@ -7,6 +7,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        // Nombre de caché versionado. cleanupOutdatedCaches() se registra en
+        // activate y elimina las precachés del bundle anterior sin limpieza manual.
+        cacheId: 'ecolearn-v2-',
+        cleanupOutdatedCaches: true,
+      },
       manifest: {
         name: 'EcoLearn Chile — Clasificador Inteligente',
         short_name: 'EcoLearn',
