@@ -58,12 +58,14 @@
 - `Fase 3/docs/evidencia/diagnostico_400.md`: contexto de la FASE 3 pendiente.
 - `Fase 3/docs/evidencia/EVIDENCIA_DOCKER.md`: código de error `ARCHIVO_MUY_PESADO` vigente.
 - `Fase 3/docs/pruebas/PLAN_DE_PRUEBAS_EcoLearn.md` **y `.xlsx`** (v1.3): Menú + 4 módulos, 15 tablas, `IMAGEN_BORROSA`, umbral `0,50` y estados de `REC-92`/`REC-103`/`REC-104` corregidos sin cambiar los 40 IDs de caso.
+- `Fase 3/docs/requisitos/EcoScan_Requisitos_Funcionales.xlsx`: estados reconciliados con `main` (RF-05/06, RNF-03/11/21 implementados; RF-15/16/18/20/22/RF-44 ajustados por `REC-140`); se eliminó la copia duplicada de `Fase 2/Evidencia/`.
+- `Fase 3/ecoscan-backend/.env.example`: `UMBRAL_NITIDEZ=50`, alineado con `main.py`, `docker-compose.yml` y la plantilla raíz.
 
 ## 6. Estado final y pendientes de autorización
 
-- **No se hicieron push, PR ni merge.** PR 3 sigue intacto.
-- No se modificó Jira: el backlog propuesto está listo para revisar y aplicar sólo si se autoriza.
+- **Commit `d85d5cd` subido a `origin/main`** (sin PR ni merge adicionales; PR 3 intacto).
+- No se modificó Jira: el backlog propuesto sigue listo para revisar y aplicar sólo si se autoriza.
 - No se borraron volúmenes ni se ejecutó `docker compose down -v`.
 - No se escribieron credenciales ni tokens; sólo se listan nombres de variables.
-- Cambios locales preexistentes sin commitear se conservan: `docker-compose.yml`, `main.py` (CSP `/docs`) y `tests/diagnostico_400.py` (sin versionar).
-- Pendiente de decisión: importar/cerrar tickets propuestos, consolidar XLSX de requisitos, decidir si se commitea la CSP de `/docs` y `BACKEND_MYSQL_HOST`, e importar en Bizagi los modelos `02`–`14`.
+- `tests/diagnostico_400.py` continúa sin versionarse, según su propia cabecera «NO versionar».
+- Pendiente de decisión: aplicar los 30 cambios propuestos en Jira e importar en Bizagi los modelos `02`–`14`.

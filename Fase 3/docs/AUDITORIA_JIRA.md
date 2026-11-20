@@ -115,8 +115,8 @@ El máximo real es `REC-161`. Por tanto **no existen** `REC-162`, `REC-163`, `RE
 - `docs/ENTREGA.md` hablaba de “5 pestañas” e “Impacto” como pestaña separada. **Corregido**: Menú Principal + 4 módulos, impacto integrado en el Eco-Simulador RM.
 - `docs/DECISIONES.md` y `docs/README.md` citaban 14 tablas. **Corregido**: el esquema real tiene **15** (`banner_impacto`, `comuna`, `contenedor`, `escaneos`, `habito`, `habito_cumplido`, `inferencia`, `instruccion`, `item_simulador`, `material`, `paso_instruccion`, `punto_limpio`, `punto_material`, `recurso_externo`, `sesion`).
 - El plan de pruebas (XLSX y Markdown) y `EVIDENCIA_DOCKER.md` citaban códigos y estados obsoletos (`BORROSA`, `ARCHIVO_MUY_GRANDE`, RF-05 pendiente, RF-25 “fuera de alcance”). **Corregido en v1.3**: `IMAGEN_BORROSA`, `ARCHIVO_MUY_PESADO`, umbral `0,50` y multi-detección del backend, sin cambiar los 40 IDs de caso.
-- **Pendiente:** los XLSX de requisitos siguen marcando RF-05/RF-06, RNF-03, RNF-11 y RNF-21 como “A verificar/Pendiente/Propuesto” mientras Jira y el código los dan por implementados; RF-15–22/RF-44 siguen como “Implementado” aunque los sliders/casillas fueron sustituidos por REC-140.
-- **Pendiente:** existen dos XLSX de requisitos byte-idénticos (`docs/requisitos/` y `Fase 2/Evidencia/`); actualizar sólo uno deja el otro contradictorio.
+- **Corregido:** el XLSX de requisitos marca RF-05/RF-06, RNF-03, RNF-11 y RNF-21 como implementados (REC-103/104/106, `/health`, Docker) y ajustó RF-15/16/18/20/22/RF-44 a `Parcial`/`Pendiente` según `REC-140` (impacto automático, sin sliders ni casillas). RF-17, RF-19 y RF-21 permanecen implementados con evidencia en `App.jsx`.
+- **Corregido:** se eliminó la copia byte-idéntica de `Fase 2/Evidencia/EcoLearn_Requisitos_Funcionales.xlsx`; la fuente única es [`docs/requisitos/EcoScan_Requisitos_Funcionales.xlsx`](requisitos/EcoScan_Requisitos_Funcionales.xlsx) y la carpeta histórica conserva un README puntero.
 - `AGENTS.md` se cita como versionado en artefactos históricos, pero **no existe en `main`**.
 
 ---

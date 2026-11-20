@@ -169,7 +169,7 @@ No se registran valores reales de `.env`. Nombres presentes en las plantillas y 
 - Frontend: `VITE_API_URL`.
 - Entrenamiento: `ROBOFLOW_API_KEY`.
 
-Plantillas: [`../.env.example`](../.env.example) y [`../ecoscan-backend/.env.example`](../ecoscan-backend/.env.example). Hay una discrepancia histórica en `UMBRAL_NITIDEZ` entre ambas plantillas y el valor por defecto de `main.py`: unificar antes de congelar la entrega.
+Plantillas: [`../.env.example`](../.env.example) y [`../ecoscan-backend/.env.example`](../ecoscan-backend/.env.example). **Unificadas el 20-11-2026:** ambas usan `UMBRAL_NITIDEZ=50`, igual que el valor por defecto de `main.py` y de `docker-compose.yml`.
 
 Variables **obligatorias** para el compose: al menos `MYSQL_ROOT_PASSWORD` y `MYSQL_PASSWORD`; `MYSQL_DATABASE`/`MYSQL_DB` debe resolver a `ecoscan`. El compose falla explícitamente si falta la contraseña root.
 

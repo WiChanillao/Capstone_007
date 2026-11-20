@@ -8,7 +8,7 @@
 | Fecha | 19-11-2026; revisado 20-11-2026 |
 | Estado | Vigente |
 | Responsable de elaboración | Equipo EcoLearn Chile |
-| Documentos relacionados | `Informe_de_pruebas_EcoScan.docx`, `EcoLearn_Requisitos_Funcionales.xlsx`, `README.md`, `EVIDENCIA_DOCKER.md` |
+| Documentos relacionados | `Informe_de_pruebas_EcoScan.docx`, [`EcoScan_Requisitos_Funcionales.xlsx`](../requisitos/EcoScan_Requisitos_Funcionales.xlsx) (fuente única, estados vigentes), `README.md`, `EVIDENCIA_DOCKER.md` |
 
 > **Actualización 20-11-2026:** se conservan los 40 casos y sus IDs (`CP-01`…
 > `CP-40`). Sólo se corrigen denominaciones y estados que quedaron desfasados
@@ -58,7 +58,7 @@ Sirve para tres cosas concretas:
 
 | Documento | Uso en este plan |
 |---|---|
-| `EcoLearn_Requisitos_Funcionales.xlsx` (Fase 2) | Línea base de 100 requisitos: RF-01..RF-60 y RNF-01..RNF-40. |
+| [`EcoScan_Requisitos_Funcionales.xlsx`](../requisitos/EcoScan_Requisitos_Funcionales.xlsx) | Línea base vigente de 100 requisitos: RF-01..RF-60 y RNF-01..RNF-40, con estados reconciliados el 20-11-2026. Sustituye a la copia duplicada de Fase 2. |
 | `Informe_de_pruebas_EcoScan.docx` (09-10-2026) | Resultados de BD, API y modelo: 8/8 pruebas de humo, 27/30 fotos exactas, latencias y caso límite pendiente. |
 | `Fase 3/README.md` | Stack reproducible y comandos de arranque. |
 | `06_DOCKER/EVIDENCIA_DOCKER.txt` | Secciones 15 a 24: codificación, mapa, ampliación, alineación, zoom y galería. |

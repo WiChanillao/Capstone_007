@@ -16,7 +16,7 @@ repositorio para que todo quede disponible desde un solo clone.
 | Carpeta | Contenido |
 |---|---|
 | `crisp-dm/` | `capstone_CRISDM_limpio.ipynb` (notebook de referencia) y `CrispDM_Ecolearn.ipynb` (versión final con validación/test y métricas por clase). La credencial de Roboflow **no** está incrustada: se lee desde Secrets de Colab / variable de entorno `ROBOFLOW_API_KEY`. |
-| `requisitos/` | `EcoScan_Requisitos_Funcionales.xlsx` — 100 requisitos (RF-01..RF-60, RNF-01..RNF-40). |
+| `requisitos/` | `EcoScan_Requisitos_Funcionales.xlsx` — **fuente única vigente** de los 100 requisitos (RF-01..RF-60, RNF-01..RNF-40), con estados reconciliados el 20-11-2026 contra `main @ af7d14d`. La copia de `Fase 2/Evidencia/` se consolidó aquí. |
 | `bpmn/` | `EcoScan_Procesos_BPMN_v4_extendidos.bpmn` — 14 procesos BPMN (referencia histórica). El paquete vigente es v3, con 14 modelos BPMN 2.0 independientes para Bizagi Modeler 4.3.0008. |
 | `modelo-datos/` | Modelo lógico/relacional (DOCX) y `diagrama_relacional.png` (documentan 14 tablas; el esquema real de `docker/mysql/init/01_schema.sql` tiene **15**). |
 | `pruebas/` | `PLAN_DE_PRUEBAS_EcoLearn.xlsx` (**formato oficial**, v1.3: 8 columnas, 40 casos, hoja `Evidencia` con 14 capturas) y `PLAN_DE_PRUEBAS_EcoLearn.md` (detalle técnico, v1.3): son la **fuente vigente de criterios de aceptación**. `PLAN_DE_PRUEBAS_EcoLearn_CON_EVIDENCIA.docx`/`.pdf` (41 páginas) e `Informe_de_pruebas_EcoScan.docx` son instantáneas históricas: no redefinen el alcance actual. |

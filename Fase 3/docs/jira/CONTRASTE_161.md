@@ -65,7 +65,7 @@ Clasificaciones usadas: **Alineado**, **Alineado con matiz**, **Entregable docum
 | REC-53 | Finalizada | Alineado | Medición de latencia de la API (promedio ~110 ms, P95 ~130 ms) | Latencia documentada en README | Mantener |
 | REC-54 | Finalizada | Alineado | Corregir error 500 con archivo que no es imagen → respuesta 400 controlada | 400 controlado en main.py | Mantener |
 | REC-55 | Finalizada | Alineado | README, .gitignore y estructura de carpetas del repositorio | README raíz y .gitignore | Mantener |
-| REC-56 | Finalizada | Alineado con matiz | Crear requirements.txt y .env.example sin credenciales | .env.example sin valores; hay dos copias con UMBRAL_NITIDEZ distinto | Unificar plantillas |
+| REC-56 | Finalizada | Alineado | Crear requirements.txt y .env.example sin credenciales | Plantillas unificadas: UMBRAL_NITIDEZ=50 en ambas copias y en main.py | Cerrado |
 | REC-57 | Finalizada | Alineado | Publicar repositorio en GitHub y subir toda la documentación | Repo público Capstone_007 | Mantener |
 | REC-58 | Finalizada | Entregable documental | Grabar video de demostración end-to-end | Video referenciado en evidencia | Mantener |
 | REC-59 | Finalizada | Entregable documental | Extraer capturas del video y nombrarlas por ticket | Capturas en docs/pruebas/evidencia_visual | Mantener |
