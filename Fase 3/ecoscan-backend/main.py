@@ -55,7 +55,9 @@ MENSAJE_IMAGEN_INVALIDA = (
 _solicitudes = defaultdict(deque)
 _bloqueo = threading.Lock()
 # Solo se confía en X-Real-IP / X-Forwarded-For cuando la petición entra desde
-# la red de nginx. Desde cualquier otro origen la cabecera se ignora.
+# la red de nginx. Se excluye el gateway (x.y.0.1): es la IP de las conexiones
+# reenviadas por el puerto publicado, no de nginx, y aceptarla permitiría
+# falsificar la cuota del rate limit desde fuera del contenedor.
 _RED_PROXY_CONFIABLE = os.getenv("RED_PROXY_CONFIABLE", "172.18.0.0/16")
 try:
     _REDES_PROXY = [
@@ -86,13 +88,21 @@ def registrar_rechazo(codigo, campo, mime=None, bytes_archivo=None,
                bytes=bytes_archivo, ancho=ancho, alto=alto, **extra)
 
 
+def es_proxy_confiable(ip_cliente):
+    """Nginx sí; el gateway de la red (primera IP usable) no."""
+    for red in _REDES_PROXY:
+        if ip_cliente in red and ip_cliente != red.network_address + 1:
+            return True
+    return False
+
+
 def ip_real(cliente, cabeceras):
     """IP del visitante: solo confía en las cabeceras si viene de la red de nginx."""
     try:
         ip_cliente = ipaddress.ip_address(cliente)
     except ValueError:
         return cliente
-    if not any(ip_cliente in red for red in _REDES_PROXY):
+    if not es_proxy_confiable(ip_cliente):
         return cliente
     candidata = (cabeceras.get("x-real-ip") or "").strip()
     if not candidata:

@@ -168,6 +168,34 @@ def test_ip_real_confia_en_cabecera_solo_desde_la_red_de_nginx():
     assert main.ip_real("172.18.0.4", {"x-real-ip": "no-es-una-ip"}) == "172.18.0.4"
 
 
+def test_ip_real_ignora_el_gateway_del_puerto_publicado():
+    """El gateway no es nginx: no puede falsificar la IP ni la cuota."""
+    assert main.ip_real("172.18.0.1", {"x-real-ip": "10.0.0.7"}) == "172.18.0.1"
+    assert main.ip_real(
+        "172.18.0.1", {"x-forwarded-for": "10.0.0.8, 172.18.0.4"}
+    ) == "172.18.0.1"
+
+
+def test_rate_limit_gateway_no_altera_cuota_con_xff(monkeypatch):
+    """Cabeceras falsas desde el gateway siguen gastando la misma cuota."""
+    monkeypatch.setattr(main, "_solicitudes", defaultdict(deque))
+    monkeypatch.setattr(main, "_LIMIT_MINUTO", 2)
+    imagen = _imagen(nitida=True)
+    cliente_gateway = TestClient(main.app, client=("172.18.0.1", 5000))
+    for ip_falsa in ("10.0.0.7", "10.0.0.8"):
+        r = cliente_gateway.post(
+            "/predict", files={"file": ("a.png", imagen, "image/png")},
+            headers={"x-real-ip": ip_falsa},
+        )
+        assert r.status_code == 200
+    rechazada = cliente_gateway.post(
+        "/predict", files={"file": ("a.png", imagen, "image/png")},
+        headers={"x-real-ip": "10.0.0.9"},
+    )
+    assert rechazada.status_code == 429
+    assert rechazada.json()["detail"]["codigo"] == "DEMASIADAS_SOLICITUDES"
+
+
 def test_rate_limit_no_comparte_cuota_entre_ips_reales(monkeypatch):
     """Dos visitantes distintos detrás del mismo proxy tienen cuota independiente."""
     monkeypatch.setattr(main, "_solicitudes", defaultdict(deque))
