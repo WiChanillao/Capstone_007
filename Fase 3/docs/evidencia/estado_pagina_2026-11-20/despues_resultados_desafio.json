@@ -1,0 +1,95 @@
+{
+  "fecha": "2026-11-20T03:50:44.325Z",
+  "url": "http://127.0.0.1:5176",
+  "rama": "fix/desafio-preguntas @ 88e72b1 (desde 62c73a2)",
+  "navegador": "Chrome headless aislado (Playwright en AppData/Local/Temp/opencode/headless)",
+  "rondas": [
+    {
+      "ronda": 1,
+      "preguntas": [
+        {
+          "n": 1,
+          "texto": "1. ¿Dónde se muestran los horarios de los puntos limpios en la app? A) En un archivo descargable B) En el listado de Puntos Limpios RM, junto a cada punto C) Sólo en el mapa sin texto Siguiente pregunta →"
+        },
+        {
+          "n": 2,
+          "texto": "2. ¿Qué contagio evita la guía al limpiar cartón y papel? A) Grasas o restos de comida B) Polvo de la caja C) Etiquetas de envío Siguiente pregunta →"
+        },
+        {
+          "n": 3,
+          "texto": "3. ¿Qué hacer con la tapa y la etiqueta de una botella si son de otro material? A) Dejarlas puestas siempre B) Retirarlas C) Quemarlas Siguiente pregunta →"
+        },
+        {
+          "n": 4,
+          "texto": "4. ¿En qué comuna está el Punto Limpio Ciudad Satélite? A) Maipú B) Ñuñoa C) La Florida Siguiente pregunta →"
+        },
+        {
+          "n": 5,
+          "texto": "5. ¿Qué se debe retirar del cartón antes de reciclarlo? A) Cintas adhesivas, corchetes o plásticos pegados B) La tinta de impresión C) El logo del fabricante Ver puntaje →"
+        }
+      ],
+      "puntaje": "Puntaje de la ronda 1: 2 / 5 Viste 5 de 25 preguntas del banco. Nueva ronda →",
+      "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/despues_desafio_ronda1.png",
+      "capturaPuntaje": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/despues_desafio_ronda1_puntaje.png"
+    },
+    {
+      "ronda": 2,
+      "preguntas": [
+        {
+          "n": 1,
+          "texto": "1. ¿Cuántos materiales detecta el Eco-Scanner? A) Dos B) Tres C) Cinco Siguiente pregunta →"
+        },
+        {
+          "n": 2,
+          "texto": "2. Según la configuración de esta app, ¿qué contenedor corresponde al plástico? A) Azul B) Amarillo C) Gris Siguiente pregunta →"
+        },
+        {
+          "n": 3,
+          "texto": "3. ¿Qué secuencia se indica para una lata de aluminio? A) Vaciar, enjuagar, secar y aplastar suavemente B) Congelar, pintar y enterrar C) Lavar con aceite y dejar llena Siguiente pregunta →"
+        },
+        {
+          "n": 4,
+          "texto": "4. ¿Qué reutilización de latas aparece en la app? A) Macetero decorativo o portalápices B) Batería casera C) Envase para líquidos calientes Siguiente pregunta →"
+        },
+        {
+          "n": 5,
+          "texto": "5. ¿Qué reutilización de cartón sugiere la app para huertos? A) Base para compostaje o mantillo B) Combustible para barbacoa C) Relleno de contenedores Ver puntaje →"
+        }
+      ],
+      "puntaje": "Puntaje de la ronda 2: 2 / 5 Viste 10 de 25 preguntas del banco. Nueva ronda →",
+      "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/despues_desafio_ronda2.png",
+      "capturaPuntaje": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/despues_desafio_ronda2_puntaje.png"
+    },
+    {
+      "ronda": 3,
+      "preguntas": [
+        {
+          "n": 1,
+          "texto": "1. ¿Cómo se llama el punto limpio de Santiago Centro en la app? A) Parque Araucano B) Parque Forestal C) Parque Inés de Suárez Siguiente pregunta →"
+        },
+        {
+          "n": 2,
+          "texto": "2. Según la configuración de esta app, ¿qué contenedor corresponde al cartón? A) Azul B) Amarillo C) Gris Siguiente pregunta →"
+        },
+        {
+          "n": 3,
+          "texto": "3. Según los enlaces de la app, ¿qué empresa es planta de reciclaje y transformación de plásticos? A) Comberplast Chile B) Traperos de Emaús C) Fundación Basura Siguiente pregunta →"
+        },
+        {
+          "n": 4,
+          "texto": "4. ¿Qué organización ofrece talleres de suprarreciclaje para latas en los enlaces? A) Fundación Basura B) TriCiclos Chile C) Kyklos Chile Siguiente pregunta →"
+        },
+        {
+          "n": 5,
+          "texto": "5. ¿Por qué se recomienda aplastar la botella antes de depositarla? A) Para ocupar menos espacio B) Para cambiar su color C) Para que pese más Ver puntaje →"
+        }
+      ],
+      "puntaje": "Puntaje de la ronda 3: 1 / 5 Viste 15 de 25 preguntas del banco. Nueva ronda →",
+      "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/despues_desafio_ronda3.png",
+      "capturaPuntaje": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/despues_desafio_ronda3_puntaje.png"
+    }
+  ],
+  "consola": [],
+  "sinRepeticionDentroDeRonda": true,
+  "rondasDistintas": true
+}

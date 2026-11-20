@@ -1,0 +1,129 @@
+{
+  "fecha": "2026-11-20T03:24:20.054Z",
+  "stacks": {
+    "main": {
+      "url": "http://127.0.0.1:5174",
+      "consola": [],
+      "casos": {
+        "a": {
+          "esperado": "Menú principal con 5 pestañas",
+          "texto": "🌱 EcoLearn Chile RM v2.5 Clasificación IA: Cartón • Plástico • Aluminio Ley REP Chile 20.920 🏠 Menú Principal 📸 Escáner IA 📍 Puntos Limpios RM 📊 Eco-Simulador RM 🏆 Desafío Verde RM PLATAFORMA EDUCATIVA & AMBIENTAL ",
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/main_a_menu.png"
+        },
+        "b": {
+          "esperado": "Detección de lata y resultado",
+          "texto": "🌱 EcoLearn Chile RM v2.5 Clasificación IA: Cartón • Plástico • Aluminio Ley REP Chile 20.920 🏠 Menú Principal 📸 Escáner IA 📍 Puntos Limpios RM 📊 Eco-Simulador RM 🏆 Desafío Verde RM ⏳ IMPACTO AMBIENTAL SANTIAGO Tiempos Extremos de Degradación Una botella plástica PET tarda más de 500 años en descomponerse. En Chile, menos del 10% del plástico consumido se recicla. ➡️ Siguiente ✨ Detección Int",
+          "detectado": true,
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/main_b_lata_nitida.png"
+        },
+        "c": {
+          "esperado": "Mensaje claro sin objetos (sin \"revisa tu conexión\")",
+          "texto": "🌱 EcoLearn Chile RM v2.5 Clasificación IA: Cartón • Plástico • Aluminio Ley REP Chile 20.920 🏠 Menú Principal 📸 Escáner IA 📍 Puntos Limpios RM 📊 Eco-Simulador RM 🏆 Desafío Verde RM ⏳ IMPACTO AMBIENTAL SANTIAGO Tiempos Extremos de Degradación Una botella plástica PET tarda más de 500 años en descomponerse. En Chile, menos del 10% del plástico consumido se recicla. ➡️ Siguiente ✨ Detección Int",
+          "mensajeClaro": true,
+          "sinErrorConexion": true,
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/main_c_sin_objetos.png"
+        },
+        "d": {
+          "esperado": "Detección con aviso de baja nitidez",
+          "texto": "🌱 EcoLearn Chile RM v2.5 Clasificación IA: Cartón • Plástico • Aluminio Ley REP Chile 20.920 🏠 Menú Principal 📸 Escáner IA 📍 Puntos Limpios RM 📊 Eco-Simulador RM 🏆 Desafío Verde RM ⏳ IMPACTO AMBIENTAL SANTIAGO Tiempos Extremos de Degradación Una botella plástica PET tarda más de 500 años en descomponerse. En Chile, menos del 10% del plástico consumido se recicla. ➡️ Siguiente ✨ Detección Inteligente YOLOv11 Usa tu cámara o sube una imagen Activa la cámara web de tu ordenador o móvil para t",
+          "avisoNitidez": true,
+          "detectado": true,
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/main_d_baja_nitidez.png"
+        },
+        "f": {
+          "esperado": "Listado de Puntos Limpios RM",
+          "texto": "🌱 EcoLearn Chile RM v2.5 Clasificación IA: Cartón • Plástico • Aluminio Ley REP Chile 20.920 🏠 Menú Principal 📸 Escáner IA 📍 Puntos Limpios RM 📊 Eco-Simulador RM 🏆 Desafío Verde RM 📍 Puntos Limpios RM Estaciones de reciclaje en la Región Metropolitana. Comuna: Todas Maipú Santiago Centro Prov",
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/main_f_puntos_limpios.png"
+        },
+        "g": {
+          "esperado": "3 rondas con preguntas distintas (no repetir)",
+          "rondas": [
+            {
+              "n": 1,
+              "ronda": 1,
+              "pregunta": "1. ¿Qué material se debe enjuagar y aplastar antes de reciclar? A) Cartón mojado B) Botellas PET C) Latas con comida Siguiente pregunta →"
+            },
+            {
+              "n": 2,
+              "ronda": 1,
+              "pregunta": "2. ¿Dónde se entregan las tapitas plásticas en este proyecto? A) A cualquier contenedor de basura B) A puntos de donación para hospitales C) Al compostaje Siguiente pregunta →"
+            },
+            {
+              "n": 3,
+              "ronda": 1,
+              "pregunta": "3. ¿Cuántos materiales detecta el Eco-Scanner? A) Dos B) Tres C) Cinco Siguiente pregunta →"
+            },
+            {
+              "n": 4,
+              "ronda": 2,
+              "pregunta": "1. ¿Qué material se debe enjuagar y aplastar antes de reciclar? A) Cartón mojado B) Botellas PET C) Latas con comida Siguiente pregunta →"
+            },
+            {
+              "n": 5,
+              "ronda": 2,
+              "pregunta": "2. ¿Dónde se entregan las tapitas plásticas en este proyecto? A) A cualquier contenedor de basura B) A puntos de donación para hospitales C) Al compostaje Siguiente pregunta →"
+            },
+            {
+              "n": 6,
+              "ronda": 2,
+              "pregunta": "3. ¿Cuántos materiales detecta el Eco-Scanner? A) Dos B) Tres C) Cinco Siguiente pregunta →"
+            },
+            {
+              "n": 7,
+              "ronda": 3,
+              "pregunta": "1. ¿Qué material se debe enjuagar y aplastar antes de reciclar? A) Cartón mojado B) Botellas PET C) Latas con comida Siguiente pregunta →"
+            },
+            {
+              "n": 8,
+              "ronda": 3,
+              "pregunta": "2. ¿Dónde se entregan las tapitas plásticas en este proyecto? A) A cualquier contenedor de basura B) A puntos de donación para hospitales C) Al compostaje Siguiente pregunta →"
+            },
+            {
+              "n": 9,
+              "ronda": 3,
+              "pregunta": "3. ¿Cuántos materiales detecta el Eco-Scanner? A) Dos B) Tres C) Cinco Siguiente pregunta →"
+            }
+          ],
+          "seRepiten": true,
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/main_g_desafio_ronda1.png"
+        }
+      }
+    },
+    "feature": {
+      "url": "http://127.0.0.1:5175",
+      "consola": [],
+      "casos": {
+        "a": {
+          "esperado": "Menú principal con 5 pestañas",
+          "texto": "🌱 EcoLearn Chile RM v2.5 Clasificación IA: Cartón • Plástico • Aluminio Ley REP Chile 20.920 🏠 Menú Principal 📸 Escáner IA 📍 Puntos Limpios RM 📊 Eco-Simulador RM 🏆 Desafío Verde RM PLATAFORMA EDUCATIVA & AMBIENTAL ",
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/feature_a_menu.png"
+        },
+        "b": {
+          "esperado": "Detección de lata y resultado",
+          "texto": "🌱 EcoLearn Chile RM v2.5 Clasificación IA: Cartón • Plástico • Aluminio Ley REP Chile 20.920 🏠 Menú Principal 📸 Escáner IA 📍 Puntos Limpios RM 📊 Eco-Simulador RM 🏆 Desafío Verde RM ⏳ IMPACTO AMBIENTAL SANTIAGO Tiempos Extremos de Degradación Una botella plástica PET tarda más de 500 años en descomponerse. En Chile, menos del 10% del plástico consumido se recicla. ➡️ Siguiente ✨ Detección Int",
+          "detectado": true,
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/feature_b_lata_nitida.png"
+        },
+        "c": {
+          "esperado": "Mensaje claro sin objetos (sin \"revisa tu conexión\")",
+          "texto": "🌱 EcoLearn Chile RM v2.5 Clasificación IA: Cartón • Plástico • Aluminio Ley REP Chile 20.920 🏠 Menú Principal 📸 Escáner IA 📍 Puntos Limpios RM 📊 Eco-Simulador RM 🏆 Desafío Verde RM ⏳ IMPACTO AMBIENTAL SANTIAGO Tiempos Extremos de Degradación Una botella plástica PET tarda más de 500 años en descomponerse. En Chile, menos del 10% del plástico consumido se recicla. ➡️ Siguiente ✨ Detección Int",
+          "mensajeClaro": true,
+          "sinErrorConexion": true,
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/feature_c_sin_objetos.png"
+        },
+        "e": {
+          "esperado": "Posible Cartón (confianza baja) sin sumar al conteo",
+          "texto": "🌱 EcoLearn Chile RM v2.5 Clasificación IA: Cartón • Plástico • Aluminio Ley REP Chile 20.920 🏠 Menú Principal 📸 Escáner IA 📍 Puntos Limpios RM 📊 Eco-Simulador RM 🏆 Desafío Verde RM ⏳ IMPACTO AMBIENTAL SANTIAGO Tiempos Extremos de Degradación Una botella plástica PET tarda más de 500 años en descomponerse. En Chile, menos del 10% del plástico consumido se recicla. ➡️ Siguiente ✨ Detección Inteligente YOLOv11 Usa tu cámara o sube una imagen Activa la cámara web de tu ordenador o móvil para t",
+          "nota": "Resultados no confirmados: ⚠️ Posible Cartón (confianza baja) · 35% No se consideran seguros. Acércate y mejora la luz.",
+          "noSuma": true,
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/feature_e_posible.png"
+        },
+        "f": {
+          "esperado": "Listado de Puntos Limpios RM",
+          "texto": "🌱 EcoLearn Chile RM v2.5 Clasificación IA: Cartón • Plástico • Aluminio Ley REP Chile 20.920 🏠 Menú Principal 📸 Escáner IA 📍 Puntos Limpios RM 📊 Eco-Simulador RM 🏆 Desafío Verde RM 📍 Puntos Limpios RM Estaciones de reciclaje en la Región Metropolitana. Comuna: Todas Maipú Santiago Centro Prov",
+          "captura": "Fase 3/docs/evidencia/estado_pagina_2026-11-20/feature_f_puntos_limpios.png"
+        }
+      }
+    }
+  }
+}

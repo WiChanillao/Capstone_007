@@ -1,5 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import MapaPuntos from './MapaPuntos.jsx';
+import {
+  crearEstadoTrivia,
+  preguntaActual,
+  responderEnTrivia,
+  avanzarEnTrivia,
+  iniciarRonda,
+} from './trivia.js';
 
 // URL del backend configurable por entorno (REC-105).
 // Por defecto usa /api (mismo origen): funciona en local y cuando la app se comparte por túnel.
@@ -388,26 +395,7 @@ const DETALLES_DESAFIOS = {
 };
 
 // Trivia educativa: es información, no modifica estadísticas ni desafíos.
-const TRIVIA_VERDE = [
-  {
-    pregunta: '¿Qué material se debe enjuagar y aplastar antes de reciclar?',
-    opciones: ['Cartón mojado', 'Botellas PET', 'Latas con comida'],
-    correcta: 1,
-    explicacion: 'El PET limpio y aplastado ocupa menos espacio y contamina menos el resto del papel.',
-  },
-  {
-    pregunta: '¿Dónde se entregan las tapitas plásticas en este proyecto?',
-    opciones: ['A cualquier contenedor de basura', 'A puntos de donación para hospitales', 'Al compostaje'],
-    correcta: 1,
-    explicacion: 'Las tapas se juntan y se donan a campañas solidarias; no van al compostaje.',
-  },
-  {
-    pregunta: '¿Cuántos materiales detecta el Eco-Scanner?',
-    opciones: ['Dos', 'Tres', 'Cinco'],
-    correcta: 1,
-    explicacion: 'El modelo detecta Cartón, Aluminio y Plástico (mAP@50 oficial 0.562).',
-  },
-];
+// El banco de 25 preguntas y la lógica de rondas viven en ./trivia.js (REC-162).
 
 export default function App() {
   const [pestaña, setPestaña] = useState('inicio');
@@ -439,10 +427,7 @@ export default function App() {
   // Interactividad del Desafío Verde (no altera los datos: solo navega y explica).
   const [desafioAbierto, setDesafioAbierto] = useState(null);
   const [retoActivo, setRetoActivo] = useState(null);
-  const [triviaIndice, setTriviaIndice] = useState(0);
-  const [triviaOpcion, setTriviaOpcion] = useState(null);
-  const [triviaAciertos, setTriviaAciertos] = useState(0);
-  const [triviaRespondidas, setTriviaRespondidas] = useState(0);
+  const [trivia, setTrivia] = useState(() => crearEstadoTrivia({ semilla: Date.now() }));
   const [celebracion, setCelebracion] = useState(false);
 
   // Impacto del Eco-Simulador: solo lectura, calculado en MySQL desde los escaneos.
@@ -715,19 +700,13 @@ export default function App() {
   const porcentajeDesafios = Math.round((completadosCount / (desafiosAuto.length || 1)) * 100);
   const retoActivoActual = desafiosAuto.find(d => d.id === retoActivo) || null;
 
-  const responderTrivia = (indiceOpcion) => {
-    if (triviaOpcion !== null) return;
-    setTriviaOpcion(indiceOpcion);
-    setTriviaRespondidas((n) => n + 1);
-    if (indiceOpcion === TRIVIA_VERDE[triviaIndice].correcta) {
-      setTriviaAciertos((n) => n + 1);
-    }
-  };
+  const responderTrivia = (indiceOpcion) =>
+    setTrivia((estado) => responderEnTrivia(estado, indiceOpcion));
 
-  const siguienteTrivia = () => {
-    setTriviaIndice((i) => (i + 1) % TRIVIA_VERDE.length);
-    setTriviaOpcion(null);
-  };
+  const siguienteTrivia = () => setTrivia((estado) => avanzarEnTrivia(estado));
+
+  const nuevaRondaTrivia = () => setTrivia((estado) => iniciarRonda(estado));
+  const preguntaTrivia = preguntaActual(trivia);
 
   // Felicitación fugaz cuando un reto se completa solo con un escaneo nuevo.
   const completadosPrevios = useRef(completadosCount);
@@ -1977,56 +1956,81 @@ export default function App() {
                   <h3 className="text-lg font-black text-white">🎮 Reto rápido: trivia del reciclaje</h3>
                   <p className="text-xs text-slate-400 mt-1">Responde para aprender: tus respuestas no cambian los desafíos ni las estadísticas.</p>
                 </div>
-                <span className="text-xs font-bold text-emerald-300">Aciertos: {triviaAciertos} / {triviaRespondidas}</span>
+                <div className="text-right">
+                  <span className="text-xs font-bold text-emerald-300">Aciertos: {trivia.aciertos} / {trivia.respondidas}</span>
+                  <p className="text-[11px] text-slate-500">
+                    Ronda {trivia.rondaNumero} · {Math.min(trivia.indice + 1, trivia.porRonda)}/{trivia.porRonda}
+                  </p>
+                </div>
               </div>
 
-              <div data-testid="trivia-pregunta" className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
-                <p className="text-sm font-bold text-white">
-                  {triviaIndice + 1}. {TRIVIA_VERDE[triviaIndice].pregunta}
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  {TRIVIA_VERDE[triviaIndice].opciones.map((opcion, i) => {
-                    const respondida = triviaOpcion !== null;
-                    const esCorrecta = i === TRIVIA_VERDE[triviaIndice].correcta;
-                    return (
-                      <button
-                        key={i}
-                        type="button"
-                        data-testid={`trivia-opcion-${i}`}
-                        disabled={respondida}
-                        onClick={() => responderTrivia(i)}
-                        className={`px-3 py-2 rounded-xl border text-xs font-bold text-left transition-colors ${
-                          respondida && esCorrecta
-                            ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                            : respondida && i === triviaOpcion
-                              ? 'bg-rose-500/20 border-rose-400 text-rose-200'
-                              : 'bg-slate-900 border-slate-700 text-slate-200 hover:border-emerald-500/50 cursor-pointer'
-                        }`}
-                      >
-                        {String.fromCharCode(65 + i)}) {opcion}
-                      </button>
-                    );
-                  })}
-                </div>
-                {triviaOpcion !== null && (
-                  <div data-testid="trivia-feedback" className="text-xs text-slate-300 bg-slate-900 rounded-xl p-3">
-                    <span className={`font-black ${triviaOpcion === TRIVIA_VERDE[triviaIndice].correcta ? 'text-emerald-300' : 'text-rose-300'}`}>
-                      {triviaOpcion === TRIVIA_VERDE[triviaIndice].correcta ? '✅ Correcto.' : '❌ No exactamente.'}
-                    </span>{' '}
-                    {TRIVIA_VERDE[triviaIndice].explicacion}
+              {trivia.terminada ? (
+                <div data-testid="trivia-fin" className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+                  <p className="text-sm font-bold text-white">
+                    Puntaje de la ronda {trivia.rondaNumero}: {trivia.aciertos} / {trivia.respondidas}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Viste {trivia.vistas.length} de {trivia.banco.length} preguntas del banco.
+                  </p>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={nuevaRondaTrivia}
+                      className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white cursor-pointer"
+                    >
+                      Nueva ronda →
+                    </button>
                   </div>
-                )}
-                <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={siguienteTrivia}
-                    disabled={triviaOpcion === null}
-                    className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold text-slate-200 border border-slate-700 cursor-pointer"
-                  >
-                    Siguiente pregunta →
-                  </button>
                 </div>
-              </div>
+              ) : (
+                <div data-testid="trivia-pregunta" className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+                  <p className="text-sm font-bold text-white">
+                    {trivia.indice + 1}. {preguntaTrivia.pregunta}
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    {preguntaTrivia.opciones.map((opcion, i) => {
+                      const respondida = trivia.opcion !== null;
+                      const esCorrecta = i === preguntaTrivia.correcta;
+                      return (
+                        <button
+                          key={i}
+                          type="button"
+                          data-testid={`trivia-opcion-${i}`}
+                          disabled={respondida}
+                          onClick={() => responderTrivia(i)}
+                          className={`px-3 py-2 rounded-xl border text-xs font-bold text-left transition-colors ${
+                            respondida && esCorrecta
+                              ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
+                              : respondida && i === trivia.opcion
+                                ? 'bg-rose-500/20 border-rose-400 text-rose-200'
+                                : 'bg-slate-900 border-slate-700 text-slate-200 hover:border-emerald-500/50 cursor-pointer'
+                          }`}
+                        >
+                          {String.fromCharCode(65 + i)}) {opcion}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {trivia.opcion !== null && (
+                    <div data-testid="trivia-feedback" className="text-xs text-slate-300 bg-slate-900 rounded-xl p-3">
+                      <span className={`font-black ${trivia.opcion === preguntaTrivia.correcta ? 'text-emerald-300' : 'text-rose-300'}`}>
+                        {trivia.opcion === preguntaTrivia.correcta ? '✅ Correcto.' : '❌ No exactamente.'}
+                      </span>{' '}
+                      {preguntaTrivia.explicacion}
+                    </div>
+                  )}
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={siguienteTrivia}
+                      disabled={trivia.opcion === null}
+                      className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold text-slate-200 border border-slate-700 cursor-pointer"
+                    >
+                      {trivia.indice + 1 === trivia.porRonda ? 'Ver puntaje →' : 'Siguiente pregunta →'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
