@@ -6,3 +6,23 @@
 *.json text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+
+# GitHub Linguist: el desglose debe reflejar el código escrito, no evidencia,
+# datos ni artefactos generados. Los archivos siguen versionados y renderizando.
+*.ipynb linguist-detectable=false
+*.json linguist-detectable=false
+*.csv linguist-detectable=false
+*.svg linguist-detectable=false
+package-lock.json linguist-generated=true
+
+# Binarios de modelo/evidencia: se versionan, pero no son código fuente.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.docx binary
+*.pptx binary
+*.xlsx binary
+*.pt binary
+*.mwb binary
+*.bak binary
