@@ -24,6 +24,7 @@ aplica a todo el repositorio.
 
 ## Acceso rápido
 
+- **Entrega para evaluación:** [`Fase 3/docs/ENTREGA.md`](Fase%203/docs/ENTREGA.md)
 - Guía completa: [`Fase 3/README.md`](Fase%203/README.md)
 - Arranque rápido: [`Fase 3/INICIO_RAPIDO.md`](Fase%203/INICIO_RAPIDO.md)
 - Presentación final: [`Fase 3/docs/presentacion/EcoLearn_Presentacion_Final_Fase3.pptx`](Fase%203/docs/presentacion/EcoLearn_Presentacion_Final_Fase3.pptx)
