@@ -224,7 +224,8 @@ El orden `build → test:unit` y el trigger `fix/**` son el fix de PR 1; no volv
 | [`jira/BACKLOG_PROPUESTO.md`](jira/BACKLOG_PROPUESTO.md) | Propuesta original y **backlog ejecutado en Jira el 20-11-2026** (30 cambios) |
 | [`jira/CAMBIOS_JIRA_PROPUESTOS.csv`](jira/CAMBIOS_JIRA_PROPUESTOS.csv) | 30 filas ejecutadas en Jira el 20-11-2026 |
 | [`jira/CRITERIOS_ACEPTACION.md`](jira/CRITERIOS_ACEPTACION.md) | AC reales del plan de pruebas y dónde pegarlos |
-| [`pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx`](pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx) | 40 casos con columna “Criterios de aceptación” |
+| [`pruebas/MATRIZ_DE_PRUEBAS_EcoLearn_Oficial.xlsx`](pruebas/MATRIZ_DE_PRUEBAS_EcoLearn_Oficial.xlsx) | **Matriz oficial vigente**: 92 casos, trazabilidad `REC-1`…`REC-161` y dashboard con 3 gráficos |
+| [`pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx`](pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx) | 40 casos con columna “Criterios de aceptación” (fuente histórica de AC) |
 
 **Ningún issue de Jira tiene campo de criterios de aceptación.** Los AC vigentes se toman del plan de pruebas; no se inventan criterios nuevos. El 20-11-2026 se aplicaron como comentarios en 17 tickets abiertos, con referencia al plan en las épicas `REC-20`, `REC-21` y `REC-24`. Las claves `REC-162`, `REC-167` y `REC-170` no existen: el máximo real es `REC-161`; se trataron como “verificado, sin cambio”. El bug del Desafío y el fix de CI están mergeados en PR 2 y PR 1 respectivamente; los umbrales por clase siguen fuera de `main`.
 

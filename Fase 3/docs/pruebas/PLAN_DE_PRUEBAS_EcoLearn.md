@@ -307,7 +307,7 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 
 ## 15. Entregables
 
-1. `Fase 3/docs/pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx` (**formato oficial de entrega**: misma estructura de 8 columnas y listas desplegables de `2.1.3 Plantilla básica plan de pruebas.xlsx`, con 40 casos y hoja `Evidencia` con 14 capturas reales).
+1. `Fase 3/docs/pruebas/MATRIZ_DE_PRUEBAS_EcoLearn_Oficial.xlsx` (**matriz oficial de entrega**: 92 casos, 4 hojas y trazabilidad completa de los 161 issues de Jira). `PLAN_DE_PRUEBAS_EcoLearn.xlsx` (v1.3, 40 casos, 8 columnas y hoja `Evidencia` con 14 capturas) se conserva como fuente histórica de criterios de aceptación.
 2. `Fase 3/docs/pruebas/PLAN_DE_PRUEBAS_EcoLearn.md` (este documento, detalle técnico).
 3. Copias en evidencia: `07_DOCUMENTACION/PLAN_DE_PRUEBAS_EcoLearn.xlsx`, `.md` y `.docx`.
 4. `Informe_de_pruebas_EcoScan.docx` (resultados de ejecución Fase 2).

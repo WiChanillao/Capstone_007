@@ -99,6 +99,7 @@ está en [`evidencia/EVIDENCIA_DOCKER.md`](evidencia/EVIDENCIA_DOCKER.md).
 - Índice general del repositorio: [`README.md` raíz](../../README.md)
 - Decisiones técnicas y limitaciones: [`DECISIONES.md`](DECISIONES.md)
 - Evidencia Docker y de seguridad: [`evidencia/`](evidencia/)
-- Plan de pruebas oficial (Excel): [`pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx`](pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx)
+- Matriz de pruebas oficial (Excel, 92 casos + trazabilidad de 161 issues): [`pruebas/MATRIZ_DE_PRUEBAS_EcoLearn_Oficial.xlsx`](pruebas/MATRIZ_DE_PRUEBAS_EcoLearn_Oficial.xlsx)
+- Plan de pruebas histórico (AC de 40 casos): [`pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx`](pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx)
 - Presentación final: [`presentacion/EcoLearn_Presentacion_Final_Fase3.pptx`](presentacion/EcoLearn_Presentacion_Final_Fase3.pptx)
 - CRISP-DM y resultados: [`crisp-dm/`](crisp-dm/)
