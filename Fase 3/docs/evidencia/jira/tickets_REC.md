@@ -1,5 +1,10 @@
 # Tickets REC — Fase 2 (2026-11-20)
 
+> **Archivo histórico.** Para importar, usar **`tickets_nuevos.csv`** (sólo
+> tickets nuevos), **`comentarios_existentes.md`** (comentarios para los
+> tickets ya existentes) y **`revision_claves_rec.md`**. El CSV combinado
+> `tickets_REC.csv` se conserva como registro de Fase 2, **no debe importarse**.
+
 **Modo importación:** no hay conector MCP de Atlassian ni variables
 `JIRA_EMAIL` / `JIRA_API_TOKEN` en la sesión. **No se pidió el token.** Los
 tickets nuevos llevan una clave **propuesta** (`REC-162` en adelante): Jira
