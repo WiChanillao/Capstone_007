@@ -1,0 +1,123 @@
+{
+  "weights": "best.pt",
+  "dataset": "AppData/Local/Temp/opencode/dataset_capstone_v1i",
+  "originales": "Desktop/Nueva carpeta (2)/Capstone-20261005T193438Z-1-001/Capstone/fotos entrenamiento",
+  "conf": 0.5,
+  "tolerancia": 0.02,
+  "emparejadas": {
+    "valid": 61,
+    "test": 31
+  },
+  "no_emparejadas": {
+    "valid": [],
+    "test": []
+  },
+  "resultados": {
+    "valid": {
+      "dataset_stretch": {
+        "map50": 0.43985113679339016,
+        "recall": {
+          "Aluminio": 0.3714612853317519,
+          "Carton": 0.6470588235294118,
+          "Plastico": 0.2857142857142857
+        },
+        "ap50": {
+          "Aluminio": 0.36642857142857144,
+          "Carton": 0.660047619047619,
+          "Plastico": 0.2930772199039799
+        }
+      },
+      "original_letterbox": {
+        "map50": 0.4078032429558745,
+        "recall": {
+          "Aluminio": 0.375,
+          "Carton": 0.6078431372549019,
+          "Plastico": 0.35714285714285715
+        },
+        "ap50": {
+          "Aluminio": 0.36642857142857144,
+          "Carton": 0.5871002050580998,
+          "Plastico": 0.2698809523809524
+        }
+      },
+      "original_stretch": {
+        "map50": 0.4513390330792986,
+        "recall": {
+          "Aluminio": 0.375,
+          "Carton": 0.6470588235294118,
+          "Plastico": 0.4523809523809524
+        },
+        "ap50": {
+          "Aluminio": 0.36,
+          "Carton": 0.6371909424724602,
+          "Plastico": 0.3568261567654357
+        }
+      }
+    },
+    "test": {
+      "dataset_stretch": {
+        "map50": 0.4369444444444444,
+        "recall": {
+          "Aluminio": 0.5,
+          "Carton": 0.4482758620689655,
+          "Plastico": 0.4166666666666667
+        },
+        "ap50": {
+          "Aluminio": 0.495,
+          "Carton": 0.445,
+          "Plastico": 0.37083333333333335
+        }
+      },
+      "original_letterbox": {
+        "map50": 0.4401683501683502,
+        "recall": {
+          "Aluminio": 0.5,
+          "Carton": 0.5172413793103449,
+          "Plastico": 0.375
+        },
+        "ap50": {
+          "Aluminio": 0.495,
+          "Carton": 0.49500000000000005,
+          "Plastico": 0.3305050505050505
+        }
+      },
+      "original_stretch": {
+        "map50": 0.475063492063492,
+        "recall": {
+          "Aluminio": 0.625,
+          "Carton": 0.4482758620689655,
+          "Plastico": 0.4583333333333333
+        },
+        "ap50": {
+          "Aluminio": 0.6033333333333333,
+          "Carton": 0.445,
+          "Plastico": 0.3768571428571429
+        }
+      }
+    }
+  },
+  "diagnostico": {
+    "valid": {
+      "delta_B_minus_A": -0.032,
+      "delta_C_minus_A": 0.0115,
+      "C_parecido_a_A": true,
+      "B_cae": true,
+      "desajuste_confirmado": true
+    },
+    "test": {
+      "delta_B_minus_A": 0.0032,
+      "delta_C_minus_A": 0.0381,
+      "C_parecido_a_A": false,
+      "B_cae": false,
+      "desajuste_confirmado": false
+    }
+  },
+  "diagnostico_global": {
+    "splits_cumplen_regla": [
+      "valid"
+    ],
+    "direccion_C_mayor_igual_A_mayor_igual_B": false,
+    "lectura": "evidencia parcial: coincide en valid, no supera tolerancia en test"
+  },
+  "temporales_fuera_repo": "AppData/Local/Temp/opencode/geometria_capstone"
+}

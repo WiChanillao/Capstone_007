@@ -1,0 +1,26 @@
+{
+  "train_nitido": {
+    "zip": "C:/Users/bruno diaz/AppData/Local/Temp/opencode/paquetes_colab/train_nitido.zip",
+    "bytes": 17981803,
+    "MB": 17.15,
+    "sha256": "faad99aae01f44d529c71fb6bfd277e40164c146e1b1c2da1ce5809461feb31b",
+    "imagenes": {
+      "train": 215,
+      "valid": 61,
+      "test": 31
+    },
+    "data_yaml": "path: '.' + train/valid/test relativos"
+  },
+  "split_por_escenas": {
+    "zip": "C:/Users/bruno diaz/AppData/Local/Temp/opencode/paquetes_colab/split_por_escenas.zip",
+    "bytes": 17981803,
+    "MB": 17.15,
+    "sha256": "2625cd55f4fe7b420195e758210613f152a410df02ce7eda348c70330bb9136d",
+    "imagenes": {
+      "train": 215,
+      "valid": 61,
+      "test": 31
+    },
+    "data_yaml": "path: '.' + train/valid/test relativos"
+  }
+}

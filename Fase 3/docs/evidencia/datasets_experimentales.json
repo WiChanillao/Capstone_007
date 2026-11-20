@@ -1,0 +1,89 @@
+{
+  "semilla": 42,
+  "dataset_origen": "AppData/Local/Temp/opencode/dataset_capstone_v1i",
+  "salida": "AppData/Local/Temp/opencode/datasets_experimentales",
+  "train_nitido": {
+    "train": {
+      "imagenes": 215,
+      "instancias": {
+        "Aluminio": 79,
+        "Carton": 143,
+        "Plastico": 142
+      }
+    },
+    "valid": {
+      "imagenes": 61,
+      "instancias": {
+        "Aluminio": 16,
+        "Carton": 51,
+        "Plastico": 42
+      }
+    },
+    "test": {
+      "imagenes": 31,
+      "instancias": {
+        "Aluminio": 8,
+        "Carton": 29,
+        "Plastico": 24
+      }
+    }
+  },
+  "split_por_escenas": {
+    "train": {
+      "imagenes": 215,
+      "instancias": {
+        "Aluminio": 79,
+        "Carton": 169,
+        "Plastico": 129
+      }
+    },
+    "valid": {
+      "imagenes": 61,
+      "instancias": {
+        "Aluminio": 20,
+        "Carton": 29,
+        "Plastico": 49
+      }
+    },
+    "test": {
+      "imagenes": 31,
+      "instancias": {
+        "Aluminio": 4,
+        "Carton": 25,
+        "Plastico": 30
+      }
+    }
+  },
+  "grupos_escena": {
+    "total": 88,
+    "ventana_s": 10,
+    "ventana_seq": 10,
+    "tamanios": {
+      "1": 30,
+      "2": 28,
+      "6": 1,
+      "10": 16,
+      "3": 10,
+      "7": 1,
+      "9": 2
+    },
+    "imagenes_por_split": {
+      "train": 215,
+      "valid": 61,
+      "test": 31
+    },
+    "objetivos": {
+      "train": 215,
+      "valid": 61,
+      "test": 31
+    }
+  },
+  "nitidez_train_elegidas": {
+    "lap_min": 10.9,
+    "lap_medio": 832.2
+  },
+  "fuga": {
+    "grupos_repartidos_en_varios_splits": 0,
+    "originales_compartidos_entre_splits": 0
+  }
+}
