@@ -323,9 +323,11 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
                     "mensaje": "La imagen supera el límite de 10 MB."},
         )
 
-    # Whitelist de MIME: el tipo declarado debe ser una imagen soportada.
+    # Whitelist de MIME: varios navegadores móviles etiquetan las fotos reales
+    # como application/octet-stream. En ese caso no se confía en la etiqueta:
+    # Image.open().verify() más abajo decide si el contenido es una imagen.
     mime = (file.content_type or "").split(";")[0].strip().lower()
-    if mime not in MIME_IMAGENES_PERMITIDAS:
+    if mime not in MIME_IMAGENES_PERMITIDAS and mime != "application/octet-stream":
         raise HTTPException(status_code=400, detail=MENSAJE_IMAGEN_INVALIDA)
 
     # Validar que el archivo sea realmente una imagen (REC-54: 400 controlado, no 500).

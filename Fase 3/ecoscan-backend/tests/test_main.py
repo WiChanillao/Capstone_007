@@ -187,6 +187,32 @@ def test_predict_rechaza_mime_no_permitido(monkeypatch):
     assert "no es una imagen válida" in r.json()["detail"]
 
 
+def test_predict_acepta_octet_stream_si_el_contenido_es_imagen(monkeypatch):
+    """Fotos reales de celular pueden llegar como application/octet-stream."""
+    _sin_escritura(monkeypatch)
+    r = client.post(
+        "/predict",
+        data={"id_sesion": "sesion-octet-stream"},
+        files={"file": ("foto_celular.jpg", _imagen(nitida=True), "application/octet-stream")},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["id_sesion"] == "sesion-octet-stream"
+    for clave in ("detecciones", "detecciones_rechazadas", "conteo_materiales"):
+        assert clave in body
+
+
+def test_predict_rechaza_octet_stream_si_el_contenido_no_es_imagen(monkeypatch):
+    """La etiqueta octet-stream no abre la puerta a archivos que no son imágenes."""
+    _sin_escritura(monkeypatch)
+    r = client.post(
+        "/predict",
+        files={"file": ("falso.jpg", b"esto no es una imagen", "application/octet-stream")},
+    )
+    assert r.status_code == 400
+    assert "no es una imagen válida" in r.json()["detail"]
+
+
 def test_predict_rechaza_dimensiones_excedidas(monkeypatch):
     """Una imagen por encima del limite de 8000x8000 se rechaza con 400."""
     _sin_escritura(monkeypatch)
