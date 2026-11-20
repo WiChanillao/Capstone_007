@@ -6,6 +6,7 @@ las 48 filas reales de la base ecoscan.
 import io
 
 import numpy as np
+import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
@@ -137,3 +138,39 @@ def test_predict_devuelve_estructura_con_imagen_nitida(monkeypatch):
         assert clave in body
     assert body["id_sesion"] == "sesion-de-prueba-unitaria"
     assert body["umbral_confianza"] == main.UMBRAL_CONFIANZA
+
+
+def test_predict_rechaza_archivo_corrupto(monkeypatch):
+    """MIME válido pero contenido corrupto: verify() debe dar 400, no 500."""
+    _sin_escritura(monkeypatch)
+    r = client.post(
+        "/predict",
+        files={"file": ("corrupto.png", b"contenido que no es una imagen", "image/png")},
+    )
+    assert r.status_code == 400
+    assert "no es una imagen válida" in r.json()["detail"]
+
+
+def test_predict_rechaza_archivo_mayor_a_10mb(monkeypatch):
+    """La cabecera Content-Length y la lectura limitada deben dar 413."""
+    _sin_escritura(monkeypatch)
+    datos = b"x" * (main.MAX_TAMANO_ARCHIVO + 1)
+    r = client.post(
+        "/predict",
+        files={"file": ("grande.png", datos, "image/png")},
+    )
+    assert r.status_code == 413
+    assert r.json()["detail"]["codigo"] == "ARCHIVO_MUY_GRANDE"
+
+
+@pytest.mark.parametrize("sesion_invalida", ["sesion con espacio", "mala!", "x" * 65])
+def test_predict_rechaza_id_sesion_invalido(monkeypatch, sesion_invalida):
+    """Caracteres no permitidos y longitud > 64 se rechazan con 422."""
+    _sin_escritura(monkeypatch)
+    r = client.post(
+        "/predict",
+        data={"id_sesion": sesion_invalida},
+        files={"file": ("nitida.png", _imagen(nitida=True), "image/png")},
+    )
+    assert r.status_code == 422
+    assert r.json()["detail"]["codigo"] == "ID_SESION_INVALIDO"
