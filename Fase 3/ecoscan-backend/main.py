@@ -78,8 +78,7 @@ async def seguridad_y_limite(request: Request, call_next):
     respuesta.headers["Permissions-Policy"] = "camera=(self), geolocation=(self), microphone=()"
     respuesta.headers["Content-Security-Policy"] = (
         "default-src 'self'; img-src 'self' data: blob:; "
-        "connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 "
-        "http://localhost:5173 http://127.0.0.1:5173; "
+        "connect-src 'self' " + " ".join(ORIGENES_PERMITIDOS) + "; "
         "style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'"
     )
     return respuesta
@@ -96,19 +95,25 @@ def log_evento(evento, **campos):
 from rutas_db import router as db_router, guardar_inferencia, Inferencia, ejecutar
 app.include_router(db_router)
 
-# Habilitar CORS para permitir peticiones desde React (http://localhost:5173)
-# "*" con allow_credentials=True no es válido en navegadores; se declaran los orígenes reales.
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+# Orígenes permitidos: siempre por variable de entorno, nunca comodín.
+# Para compartir la app por túnel se añade esa URL a CORS_ORIGINS en .env.
+def origenes_permitidos():
+    return [
         o.strip() for o in os.getenv(
             "CORS_ORIGINS",
             "http://localhost:5173,http://127.0.0.1:5173"
         ).split(",") if o.strip()
-    ],
+    ]
+
+
+ORIGENES_PERMITIDOS = origenes_permitidos()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ORIGENES_PERMITIDOS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
 )
 
 # ----------------------------------------------------

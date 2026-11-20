@@ -107,6 +107,37 @@ def test_cabeceras_de_seguridad_en_todas_las_respuestas():
         assert cabecera in r.headers
 
 
+def test_origenes_se_leen_de_variable_incluido_un_tunel(monkeypatch):
+    """La URL del túnel se configura por entorno; nunca con comodín."""
+    monkeypatch.setenv(
+        "CORS_ORIGINS", "https://demo.trycloudflare.com, http://localhost:5173"
+    )
+    origenes = main.origenes_permitidos()
+    assert origenes == ["https://demo.trycloudflare.com", "http://localhost:5173"]
+    assert "*" not in origenes
+
+
+def test_cors_acepta_solo_origen_configurado():
+    origen = main.ORIGENES_PERMITIDOS[0]
+    r = client.get("/health", headers={"Origin": origen})
+    assert r.headers.get("access-control-allow-origin") == origen
+
+    r = client.get(
+        "/health", headers={"Origin": "https://no-configurado.trycloudflare.com"}
+    )
+    assert r.status_code == 200
+    assert "access-control-allow-origin" not in r.headers
+
+
+def test_csp_sin_comodin_y_con_origenes_de_entorno():
+    r = client.get("/health")
+    connect = r.headers["content-security-policy"].split("connect-src ")[1].split(";")[0]
+    assert connect.startswith("'self'")
+    assert "*" not in connect
+    for origen in main.ORIGENES_PERMITIDOS:
+        assert origen in connect
+
+
 def test_predict_rechaza_archivo_que_no_es_imagen(monkeypatch):
     _sin_escritura(monkeypatch)
     r = client.post("/predict", files={"file": ("mal.txt", b"no imagen", "text/plain")})
