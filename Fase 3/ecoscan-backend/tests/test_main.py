@@ -142,7 +142,9 @@ def test_predict_rechaza_archivo_que_no_es_imagen(monkeypatch):
     _sin_escritura(monkeypatch)
     r = client.post("/predict", files={"file": ("mal.txt", b"no imagen", "text/plain")})
     assert r.status_code == 400
-    assert "no es una imagen válida" in r.json()["detail"]
+    detalle = r.json()["detail"]
+    assert detalle["codigo"] == "FORMATO_NO_VALIDO"
+    assert detalle["campo"] == "file"
 
 
 def test_predict_rechaza_foto_borrosa(monkeypatch):
@@ -179,7 +181,9 @@ def test_predict_rechaza_archivo_corrupto(monkeypatch):
         files={"file": ("corrupto.png", b"contenido que no es una imagen", "image/png")},
     )
     assert r.status_code == 400
-    assert "no es una imagen válida" in r.json()["detail"]
+    detalle = r.json()["detail"]
+    assert detalle["codigo"] == "ARCHIVO_CORRUPTO"
+    assert detalle["campo"] == "file"
 
 
 def test_predict_rechaza_archivo_mayor_a_10mb(monkeypatch):
@@ -191,7 +195,9 @@ def test_predict_rechaza_archivo_mayor_a_10mb(monkeypatch):
         files={"file": ("grande.png", datos, "image/png")},
     )
     assert r.status_code == 413
-    assert r.json()["detail"]["codigo"] == "ARCHIVO_MUY_GRANDE"
+    detalle = r.json()["detail"]
+    assert detalle["codigo"] == "ARCHIVO_MUY_PESADO"
+    assert detalle["campo"] == "file"
 
 
 @pytest.mark.parametrize("sesion_invalida", ["sesion con espacio", "mala!", "x" * 65])
@@ -215,7 +221,9 @@ def test_predict_rechaza_mime_no_permitido(monkeypatch):
         files={"file": ("documento.pdf", b"%PDF-1.7 contenido de prueba", "application/pdf")},
     )
     assert r.status_code == 400
-    assert "no es una imagen válida" in r.json()["detail"]
+    detalle = r.json()["detail"]
+    assert detalle["codigo"] == "FORMATO_NO_VALIDO"
+    assert detalle["campo"] == "file"
 
 
 def test_predict_acepta_octet_stream_si_el_contenido_es_imagen(monkeypatch):
@@ -241,7 +249,9 @@ def test_predict_rechaza_octet_stream_si_el_contenido_no_es_imagen(monkeypatch):
         files={"file": ("falso.jpg", b"esto no es una imagen", "application/octet-stream")},
     )
     assert r.status_code == 400
-    assert "no es una imagen válida" in r.json()["detail"]
+    detalle = r.json()["detail"]
+    assert detalle["codigo"] == "ARCHIVO_CORRUPTO"
+    assert detalle["campo"] == "file"
 
 
 def test_predict_rechaza_dimensiones_excedidas(monkeypatch):

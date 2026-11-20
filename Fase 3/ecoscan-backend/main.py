@@ -17,6 +17,7 @@ import logging
 import threading
 from collections import defaultdict, deque
 from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from ultralytics import YOLO
@@ -53,6 +54,34 @@ MENSAJE_IMAGEN_INVALIDA = (
 _solicitudes = defaultdict(deque)
 _bloqueo = threading.Lock()
 
+# Logging estructurado simple (REC-71): una línea JSON por evento relevante.
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+logger = logging.getLogger("ecoscan")
+
+
+def log_evento(evento, **campos):
+    logger.info(json.dumps({"evento": evento, **campos}, ensure_ascii=False, default=str))
+
+
+def error_detail(codigo, mensaje, campo):
+    """Contrato único de error para toda respuesta 4xx de la API."""
+    return {"codigo": codigo, "mensaje": mensaje, "campo": campo}
+
+
+def registrar_rechazo(codigo, campo, mime=None, bytes_archivo=None,
+                      ancho=None, alto=None, **extra):
+    """Registra cada rechazo sin guardar la imagen (solo metadata)."""
+    log_evento("rechazo", codigo=codigo, campo=campo, mime=mime,
+               bytes=bytes_archivo, ancho=ancho, alto=alto, **extra)
+
+
+def mime_declarado(objeto):
+    contenido = getattr(objeto, "content_type", None)
+    if contenido is None:
+        cabeceras = getattr(objeto, "headers", None)
+        contenido = cabeceras.get("content-type") if cabeceras is not None else None
+    return (contenido or "").split(";")[0].strip().lower() or None
+
 
 @app.middleware("http")
 async def seguridad_y_limite(request: Request, call_next):
@@ -64,9 +93,14 @@ async def seguridad_y_limite(request: Request, call_next):
             while cola and ahora - cola[0] > 60:
                 cola.popleft()
             if len(cola) >= _LIMIT_MINUTO:
+                registrar_rechazo("DEMASIADAS_SOLICITUDES", campo="ip", ip=ip)
                 return JSONResponse(
                     status_code=429,
-                    content={"detail": "Demasiadas predicciones. Espera un minuto e inténtalo de nuevo."},
+                    content={"detail": error_detail(
+                        "DEMASIADAS_SOLICITUDES",
+                        "Demasiados análisis en un minuto. Espera un momento y vuelve a intentarlo.",
+                        "ip",
+                    )},
                 )
             cola.append(ahora)
     respuesta = await call_next(request)
@@ -84,12 +118,16 @@ async def seguridad_y_limite(request: Request, call_next):
     return respuesta
 
 
-# Logging estructurado simple (REC-71): una línea JSON por evento relevante.
-logging.basicConfig(level=logging.INFO, format="%(message)s")
-logger = logging.getLogger("ecoscan")
+@app.exception_handler(RequestValidationError)
+async def validacion_entrada(request: Request, exc: RequestValidationError):
+    """FastAPI devuelve 422 con un array; lo convertimos al contrato del proyecto."""
+    registrar_rechazo("FORMATO_NO_VALIDO", campo="file", mime=mime_declarado(request))
+    return JSONResponse(
+        status_code=422,
+        content={"detail": error_detail(
+            "FORMATO_NO_VALIDO", "Falta el archivo 'file' en la petición.", "file")},
+    )
 
-def log_evento(evento, **campos):
-    logger.info(json.dumps({"evento": evento, **campos}, ensure_ascii=False, default=str))
 
 # Rutas /db/... alimentadas desde MySQL ecoscan (REC-42, REC-47, REC-51)
 from rutas_db import router as db_router, guardar_inferencia, Inferencia, ejecutar
@@ -296,10 +334,14 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
     inicio = time.perf_counter()
     sesion = (id_sesion or "").strip() or None
     if sesion is not None and not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", sesion):
+        registrar_rechazo("ID_SESION_INVALIDO", campo="id_sesion")
         raise HTTPException(
             status_code=422,
-            detail={"codigo": "ID_SESION_INVALIDO",
-                    "mensaje": "id_sesion debe tener entre 1 y 64 caracteres: letras, números, guion o guion bajo."},
+            detail=error_detail(
+                "ID_SESION_INVALIDO",
+                "id_sesion debe tener entre 1 y 64 caracteres: letras, números, guion o guion bajo.",
+                "id_sesion",
+            ),
         )
     if db_activa and sesion:
         try:
@@ -314,43 +356,60 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
     except (TypeError, ValueError):
         longitud = 0
     if longitud > MAX_TAMANO_ARCHIVO:
+        registrar_rechazo("ARCHIVO_MUY_PESADO", campo="file", mime=mime_declarado(file),
+                          bytes_archivo=longitud)
         raise HTTPException(
             status_code=413,
-            detail={"codigo": "ARCHIVO_MUY_GRANDE",
-                    "mensaje": "La imagen supera el límite de 10 MB."},
+            detail=error_detail("ARCHIVO_MUY_PESADO",
+                                "La imagen supera el límite de 10 MB.", "file"),
         )
 
     contents = await file.read(MAX_TAMANO_ARCHIVO + 1)
     if len(contents) > MAX_TAMANO_ARCHIVO:
+        registrar_rechazo("ARCHIVO_MUY_PESADO", campo="file", mime=mime_declarado(file),
+                          bytes_archivo=len(contents))
         raise HTTPException(
             status_code=413,
-            detail={"codigo": "ARCHIVO_MUY_GRANDE",
-                    "mensaje": "La imagen supera el límite de 10 MB."},
+            detail=error_detail("ARCHIVO_MUY_PESADO",
+                                "La imagen supera el límite de 10 MB.", "file"),
         )
 
     # Whitelist de MIME: varios navegadores móviles etiquetan las fotos reales
     # como application/octet-stream. En ese caso no se confía en la etiqueta:
     # Image.open().verify() más abajo decide si el contenido es una imagen.
-    mime = (file.content_type or "").split(";")[0].strip().lower()
+    mime = mime_declarado(file) or ""
     if mime not in MIME_IMAGENES_PERMITIDAS and mime != "application/octet-stream":
-        raise HTTPException(status_code=400, detail=MENSAJE_IMAGEN_INVALIDA)
+        registrar_rechazo("FORMATO_NO_VALIDO", campo="file", mime=mime,
+                          bytes_archivo=len(contents))
+        raise HTTPException(
+            status_code=400,
+            detail=error_detail("FORMATO_NO_VALIDO", MENSAJE_IMAGEN_INVALIDA, "file"),
+        )
 
     # Validar que el archivo sea realmente una imagen (REC-54: 400 controlado, no 500).
     # verify() detecta contenido corrupto aunque el MIME declare lo contrario.
     try:
         imagen_cargada = Image.open(io.BytesIO(contents))
         imagen_cargada.verify()
-    except Exception:
-        raise HTTPException(status_code=400, detail=MENSAJE_IMAGEN_INVALIDA)
+    except Exception as err:
+        registrar_rechazo("ARCHIVO_CORRUPTO", campo="file", mime=mime,
+                          bytes_archivo=len(contents), error=str(err))
+        raise HTTPException(
+            status_code=400,
+            detail=error_detail("ARCHIVO_CORRUPTO",
+                                "El archivo está corrupto o no contiene una imagen válida.", "file"),
+        )
 
     # Abrir la imagen ajustando la rotación EXIF (Corrige fotos giradas de iPhone)
     image = Image.open(io.BytesIO(contents))
     image = ImageOps.exif_transpose(image).convert("RGB")
     if image.width > MAX_DIMENSION_IMAGEN or image.height > MAX_DIMENSION_IMAGEN:
+        registrar_rechazo("DIMENSIONES_EXCEDIDAS", campo="file", mime=mime,
+                          bytes_archivo=len(contents), ancho=image.width, alto=image.height)
         raise HTTPException(
             status_code=400,
-            detail={"codigo": "DIMENSIONES_EXCEDIDAS",
-                    "mensaje": "La imagen supera el tamaño máximo de 8000x8000 píxeles."},
+            detail=error_detail("DIMENSIONES_EXCEDIDAS",
+                                "La imagen supera el tamaño máximo de 8000x8000 píxeles.", "file"),
         )
 
     # REC-104: rechazar fotos borrosas antes de clasificar.
