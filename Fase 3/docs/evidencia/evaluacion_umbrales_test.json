@@ -1,0 +1,71 @@
+{
+  "weights": "AppData/Local/Temp/opencode/worktrees/feature-umbrales-por-clase/Fase 3/ecoscan-backend/best.pt",
+  "dataset": "AppData/Local/Temp/opencode/dataset_capstone_v1i",
+  "criterio": "IoU>0.5, greedy por confianza, mismas detecciones (conf>=0.01)",
+  "configuraciones": {
+    "actual": {
+      "Aluminio": 0.5,
+      "Carton": 0.5,
+      "Plastico": 0.5
+    },
+    "propuesta": {
+      "Aluminio": 0.25,
+      "Carton": 0.45,
+      "Plastico": 0.2
+    }
+  },
+  "resultados": {
+    "Aluminio": {
+      "n_gt": 8,
+      "baseline": {
+        "n_gt": 8,
+        "tp": 1,
+        "fp": 4,
+        "recall": 0.125
+      },
+      "propuesto": {
+        "n_gt": 8,
+        "tp": 1,
+        "fp": 6,
+        "recall": 0.125
+      },
+      "delta_recall": 0.0,
+      "delta_fp": 2
+    },
+    "Carton": {
+      "n_gt": 29,
+      "baseline": {
+        "n_gt": 29,
+        "tp": 4,
+        "fp": 10,
+        "recall": 0.13793103448275862
+      },
+      "propuesto": {
+        "n_gt": 29,
+        "tp": 4,
+        "fp": 12,
+        "recall": 0.13793103448275862
+      },
+      "delta_recall": 0.0,
+      "delta_fp": 2
+    },
+    "Plastico": {
+      "n_gt": 24,
+      "baseline": {
+        "n_gt": 24,
+        "tp": 7,
+        "fp": 2,
+        "recall": 0.2916666666666667
+      },
+      "propuesto": {
+        "n_gt": 24,
+        "tp": 12,
+        "fp": 8,
+        "recall": 0.5
+      },
+      "delta_recall": 0.20833333333333331,
+      "delta_fp": 6
+    }
+  },
+  "reporte": "AppData/Local/Temp/opencode/worktrees/feature-umbrales-por-clase/Fase 3/docs/evidencia/evaluacion_umbrales_test.md"
+}

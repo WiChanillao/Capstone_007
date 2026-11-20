@@ -1,0 +1,11 @@
+Verificacion Docker - rama feature/umbrales-por-clase
+compose down -v && up --build -d ejecutados desde el worktree de la rama.
+docker compose ps: ecolearn-backend healthy, ecolearn-frontend healthy, ecolearn-mysql healthy (3/3).
+GET /health (8000 y 5173/api): 200, status=ok, mysql_conectado=true, modelo_activo=best.pt, escaneos_registrados=48.
+POST /predict: 200, respuesta con detecciones, detecciones_rechazadas, detecciones_posibles, umbral_confianza, umbrales_por_clase y umbral_posible.
+claves=
+calidad_imagen,conteo_materiales,detecciones,detecciones_posibles,detecciones_rechazadas,id_sesion,latencia_ms,modelo_usado,umbral_confianza,umbral_posible,umbrales_por_clase
+umbrales_por_clase=
+{"Aluminio":0.5,"Carton":0.5,"Plastico":0.5}
+umbral_posible=0.2
+Password de MySQL local: *** (generado al azar, .env no versionado).
