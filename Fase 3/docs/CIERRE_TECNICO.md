@@ -3,8 +3,8 @@
 ## Estado del candidato local
 
 - Backend: 41 pruebas pasaron con los datos simulados y el puerto de MySQL de prueba deliberadamente desconectado. Queda un aviso de obsolescencia de Starlette TestClient con httpx. El frontend compiló y pasó 24 pruebas.
-- Compose validó la configuración. Docker Desktop denegó acceso al motor, así que las modificaciones de nginx, readiness y persistencia aún requieren una prueba de integración. La evidencia Docker archivada corresponde a una versión anterior.
-- GitHub respondió con `main` en `3b44f03`. La copia de trabajo contiene cambios sin commit. El Run histórico 44669949452 acredita su propia versión, no el candidato actual.
+- Compose validado con MySQL real, escaneo completo y rollback. Ver [evidencia del commit probado](evidencia/VALIDACION_DOCKER_2d2d42f.md).
+- GitHub tiene el commit candidato en la rama fix/ecolearn-cierre-entrega. El Run 44669949452 corresponde a una version anterior.
 - El backend cargó `best.pt` con SHA-256 `ca855386ebb5a45fe8eeb52f3d43a88d2f4c3fe830506ed31ceb4f21e1fbb9b7`. Este hash identifica los pesos. Para vincularlos a la métrica oficial, conservar el manifiesto de evaluación con el mismo hash y los IDs del conjunto evaluado.
 - Compose usa MySQL root y el backend conserva compatibilidad con esquemas antiguos mediante DDL al iniciar. Antes de habilitar producción, trasladar los cambios de esquema a migraciones explícitas, probar una base nueva y un volumen existente, y operar el backend con una cuenta de permisos mínimos.
 
@@ -37,7 +37,7 @@ La guía 2.6 contiene texto completado que menciona React 18 y Scrum. Si el equi
 - [ ] Desde Fase 3 ejecutar `docker compose config --quiet`. Con Docker Desktop accesible, levantar un entorno de pruebas con proyecto, puertos y volumen aislados. Revisar primero si Compose define nombres de contenedor fijos y asignar nombres distintos mediante un override. Conservar los volúmenes originales.
 - [ ] Verificar `docker compose ps`, `GET /health` con `mysql_conectado=true`, `GET /version`, esquema de 15 tablas y el SHA-256 del peso de entrega. Guardar fecha, commit y entorno.
 - [ ] Ejecutar pytest, build y Vitest. En la integración probar foto nítida, borrosa y sin detecciones, una sesión distinta y el caso de persistencia degradada. Comparar filas de `escaneos`, `inferencia` y el impacto de la sesión de prueba. Verificar acceso local a las operaciones de mantenimiento y su bloqueo por el proxy.
-- [ ] Validar con MySQL aislado la transacción InnoDB implementada para sesión, escaneo e inferencias. Comprobar que aparecen juntos y que un fallo de escritura no deja registros parciales. El rollback ya tiene cobertura con una conexión simulada. La idempotencia ante reenvíos requiere un mecanismo aparte.
+- [x] Validar la transaccion InnoDB en MySQL aislado. Una escritura de inferencias fallida dejo cero filas en sesion, escaneos e inferencia. La idempotencia ante reenvios requiere un mecanismo aparte.
 - [ ] Reunir la evidencia de UAT y SUS con participantes, tareas y resultados reales. Mantener el diagnóstico inicial y las pruebas automatizadas como evidencias distintas.
 - [ ] Cerrar versiones del informe y PPT, verificar nombres y formato docente, asignar qué explica cada integrante y cronometrar un ensayo completo.
 - [ ] Revisar `git status --short` y `git diff --check`. Revisar archivos nuevos de manera explícita. El diagnóstico local `tests/diagnostico_400.py` requiere revisión antes de incluirlo. Examinar secretos, datos y respaldos antes de publicar.
