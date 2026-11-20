@@ -27,7 +27,7 @@ Fase 3/
 ├── ecoscan-frontend/    App React + Vite + Tailwind (Menú Principal + 4 módulos)
 ├── docs/                Documentación canónica, requisitos, BPMN, pruebas, auditoría Jira
 ├── docs/evidencia/      Ejecuciones y capturas de la app (capturas/)
-├── docs/pruebas/        Matriz oficial de pruebas (Excel, 92 casos + 161 tickets) y evidencia visual (evidencia_visual/)
+├── docs/pruebas/        Matriz oficial de pruebas (Excel, 97 casos + 161 tickets) y evidencia visual (evidencia_visual/)
 ├── docker/              Scripts de inicialización de MySQL
 ├── scripts/             Arranque reproducible y verificación Docker
 ├── .vscode/             Configuración: abre la carpeta Fase 3 en VS Code
