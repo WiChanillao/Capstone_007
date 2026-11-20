@@ -164,11 +164,24 @@ async def seguridad_y_limite(request: Request, call_next):
     respuesta.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     respuesta.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     respuesta.headers["Permissions-Policy"] = "camera=(self), geolocation=(self), microphone=()"
-    respuesta.headers["Content-Security-Policy"] = (
-        "default-src 'self'; img-src 'self' data: blob:; "
-        "connect-src 'self' " + " ".join(ORIGENES_PERMITIDOS) + "; "
-        "style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'"
-    )
+    if request.url.path in ("/docs", "/redoc") or request.url.path.startswith("/docs/"):
+        # Swagger UI/ReDoc de FastAPI cargan CSS y JS desde un CDN y usan un
+        # script inline. Se relaja la CSP solo en la documentacion; el resto
+        # de la API conserva la politica estricta de REC-107.
+        respuesta.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "img-src 'self' data: blob: https://fastapi.tiangolo.com; "
+            "connect-src 'self' " + " ".join(ORIGENES_PERMITIDOS) + "; "
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "object-src 'none'"
+        )
+    else:
+        respuesta.headers["Content-Security-Policy"] = (
+            "default-src 'self'; img-src 'self' data: blob:; "
+            "connect-src 'self' " + " ".join(ORIGENES_PERMITIDOS) + "; "
+            "style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'"
+        )
     return respuesta
 
 

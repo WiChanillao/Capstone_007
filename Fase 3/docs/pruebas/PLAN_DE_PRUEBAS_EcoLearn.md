@@ -4,11 +4,18 @@
 |---|---|
 | Proyecto | EcoLearn Chile — Clasificador inteligente de residuos (EcoScan) |
 | Fase | Fase 3 — Capstone 2026-2, Duoc UC |
-| Versión del documento | 1.2 |
-| Fecha | 19-11-2026 |
+| Versión del documento | 1.3 (actualización de coherencia 20-11-2026) |
+| Fecha | 19-11-2026; revisado 20-11-2026 |
 | Estado | Vigente |
 | Responsable de elaboración | Equipo EcoLearn Chile |
-| Documentos relacionados | `Informe_de_pruebas_EcoScan.docx`, `EcoLearn_Requisitos_Funcionales.xlsx`, `README.md`, `EVIDENCIA_DOCKER.txt` |
+| Documentos relacionados | `Informe_de_pruebas_EcoScan.docx`, `EcoLearn_Requisitos_Funcionales.xlsx`, `README.md`, `EVIDENCIA_DOCKER.md` |
+
+> **Actualización 20-11-2026:** se conservan los 40 casos y sus IDs (`CP-01`…
+> `CP-40`). Sólo se corrigen denominaciones y estados que quedaron desfasados
+> frente a `main @ af7d14d`: navegación **Menú Principal + 4 módulos** (5 botones
+> en `nav`, sin pestaña de Impacto), **15 tablas**, umbral global `0,50`
+> (`REC-103`) y código `IMAGEN_BORROSA` (`REC-104`). La fuente canónica es
+> [`../DOCUMENTACION_GENERAL.md`](../DOCUMENTACION_GENERAL.md).
 
 ---
 
@@ -33,14 +40,14 @@ Sirve para tres cosas concretas:
 - API FastAPI: `/health`, `/v1/models`, rutas `/db/...` y `POST /predict`.
 - Base de datos MySQL 8.0 (`ecoscan`), esquema, seed, relaciones y reglas de integridad.
 - Modelo YOLO11n (`best.pt`): exactitud, errores por material, latencia y registro de inferencias.
-- Frontend React + Vite: 5 pestañas, mapa Leaflet/OpenStreetMap, filtros, galería de consejos y videos, Desafío Verde automático y panel de impacto.
+- Frontend React + Vite: Menú Principal + 4 módulos (5 botones en `nav`), mapa Leaflet/OpenStreetMap, filtros, galería de consejos y videos, Desafío Verde automático e impacto integrado en el Eco-Simulador RM.
 - Integración punta a punta: foto → inferencia → MySQL → interfaz.
 - Calidad transversal: pruebas unitarias, E2E, CI, seguridad de dependencias, accesibilidad, rendimiento y PWA.
 
 ### Excluido o declarado pendiente
 
 - UAT y SUS con usuarios reales (REC-18, REC-70).
-- Validación oficial en terreno de direcciones, horarios y materiales de los 25 puntos externos (REC-65, REC-93, REC-105, REC-155).
+- Validación oficial en terreno de direcciones, horarios y materiales de los 25 puntos externos (REC-65, REC-93, REC-155, REC-156). CORS de producción es otra deuda (`REC-105`).
 - Despliegue en dominio de producción y CORS definitivo (REC-105).
 - Rotación de la clave de Roboflow y purga de copias antiguas (responsable del dueño de la credencial).
 - Certificación de `mAP@50 ≥ 0,65`: **no alcanzada**; la cifra oficial vigente es `0,562`.
@@ -66,10 +73,10 @@ El XLSX de Fase 2 describe el diseño original. La Fase 3 cambió varias decisio
 | RF-15, RF-16, RF-17, RF-44 — deslizadores e impacto anual | **Sustituido** por impacto automático de los últimos 30 días desde `ecoscan.escaneos`; no hay sliders | REC-140, commit `fase 3` correspondiente |
 | RF-45, RF-47, RF-48, RF-49 — rangos, guardar/comparar escenarios y reset | **Retirados** por decisión de diseño: sin controles manuales | REC-140 |
 | RF-19, RF-20, RF-21, RF-22 — casillas marcables, progreso e insignia manual | **Sustituido** por cuatro desafíos que se activan solos con escaneos reales | REC-140, REC-160 |
-| RF-23 — navegación entre módulos | Ampliado a **5 pestañas** (se agregó Impacto) | Cypress 4/4 |
+| RF-23 — navegación entre módulos | **Menú Principal + 4 módulos**; 5 botones en `nav`, impacto integrado en el simulador (no pestaña propia) | Cypress 4/4, `App.jsx` |
 | RNF-03 — `GET /health` | **Implementado**; sin MySQL responde `degraded`, lo cual es correcto | CI, `/health`, REC-142 |
-| RF-25 — multirresiduo en una imagen | **Pendiente** (brecha B-1) | XLSX, PLAN sección 13 |
-| RF-05, RF-06 — umbral de confianza y rechazo de borrosas | **A verificar** en versión actual; imagen plana ya responde `400 BORROSA` | Sección 7.1 |
+| RF-25 — multirresiduo en una imagen | Backend agrupa varias cajas/clases por imagen (`REC-92`); no se promete selector manual de escenarios | `main.py`, PLAN CP-37 |
+| RF-05, RF-06 — umbral de confianza y rechazo de borrosas | **Implementado**: umbral global `0,50` (`REC-103`); rechazo `400 IMAGEN_BORROSA` sólo sin detecciones (`REC-104`) | `main.py`, REC-103/104 |
 
 ---
 
@@ -112,12 +119,12 @@ El XLSX de Fase 2 describe el diseño original. La Fase 3 cambió varias decisio
 
 | Nivel | Qué cubre | Herramienta | Evidencia principal |
 |---|---|---|---|
-| Unitaria | Funciones puras y componentes | pytest, Vitest | 15/15 y 4/4 |
+| Unitaria | Funciones puras y componentes | pytest, Vitest | 22/22 en evidencia local; 36/36 en auditoría posterior. Vitest 24/24 tras PR 2 |
 | Integración API | Rutas FastAPI y MySQL | pytest + TestClient, `curl`/`fetch` | 8/8 humo, `/health` 200 |
-| Base de datos | Esquema, seed, reglas CHECK/FK | MySQL 8 + scripts | 14 tablas, 35 puntos, 55 relaciones |
+| Base de datos | Esquema, seed, reglas CHECK/FK | MySQL 8 + scripts | 15 tablas, 35 puntos, 55 relaciones |
 | Modelo | Exactitud por material y latencia | `POST /predict` sobre 30 fotos | 27/30 exactas (90 %) |
 | E2E | Flujos completos de usuario | Cypress | 4/4 |
-| Interfaz / accesibilidad | 5 pestañas, 35 marcadores, responsive | Navegador real + Lighthouse | 0 errores de consola, 1,00 en 4 categorías |
+| Interfaz / accesibilidad | Menú Principal + 4 módulos, 35 marcadores, responsive | Navegador real + Lighthouse | 0 errores de consola, 1,00 en 4 categorías |
 | Seguridad / CI | Dependencias y auditoría | pip-audit, npm audit, GitHub Actions | 0 críticos; 5 runs SUCCESS |
 | Aceptación | UAT y SUS | Pendiente | REC-18, REC-70 |
 
@@ -137,7 +144,7 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 | CP-02 | RNF-03 | `GET /health` sin MySQL | 200 con estado `degraded`; **no** cambiar el endpoint para forzar 200 | Ejecutado | Decisión registrada en REC-142 |
 | CP-03 | RF-03 | `POST /predict` con foto JPEG válida | 200 con material, confianza y respuesta de reciclaje | Ejecutado | Docker, informe Fase 2 |
 | CP-04 | RF-03 | `POST /predict` con body JSON (sin multipart) | 422 con mensaje de validación | Ejecutado | Verificación 19-11 |
-| CP-05 | RF-06 | `POST /predict` con imagen plana | 400 con resultado `BORROSA`; no es fallo del servidor | Ejecutado | Verificación 19-11 |
+| CP-05 | RF-06 | `POST /predict` con imagen plana y sin detecciones | 400 con código `IMAGEN_BORROSA`; no es fallo del servidor. Con detecciones, responde 200 con aviso `baja_nitidez` | Ejecutado | Verificación 19-11; `main.py`, REC-104 |
 | CP-06 | RNF-06 | `POST /predict` con PDF u otro no imagen | 4xx con mensaje claro | **Pendiente de reverificar** | El informe Fase 2 registró 500; corregir y repetir |
 | CP-07 | — | `GET /v1/models` | 200 con modelo activo | Ejecutado | Slide 14 |
 | CP-08 | RF-12 | `GET /db/puntos` | 200 con 35 filas, 15 comunas, UTF-8 correcto (`Maipú`, `Ñuñoa`) | Ejecutado | Sección 17 de `EVIDENCIA_DOCKER.txt` |
@@ -147,7 +154,7 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 
 | ID | RF/RNF | Caso | Resultado esperado | Estado | Evidencia |
 |---|---|---|---|---|---|
-| CP-10 | — | Ejecutar `01_schema.sql` y `02_seed.sql` | 14 tablas, sin errores de codificación | Ejecutado | Informe Fase 2; sección 15 |
+| CP-10 | — | Ejecutar `01_schema.sql` y `02_seed.sql` | 15 tablas, sin errores de codificación | Ejecutado | Informe Fase 2; sección 15; `01_schema.sql` |
 | CP-11 | RF-12 | Contar puntos y relaciones punto-material | 35 puntos, 55 relaciones, material id 4 | Ejecutado | Sección 18 |
 | CP-12 | — | Verificar codificación de acentos en los 8 INSERT corregidos | CP850 → UTF-8, sin 48 caracteres extraños | Ejecutado | Sección 15, commit `ea68c5d` |
 | CP-13 | — | Comprobar que borrar una sesión conserva inferencias con sesión en blanco | Regla de integridad aplicada | Ejecutado en Fase 2 | Informe, sección 3 |
@@ -166,7 +173,7 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 
 | ID | RF/RNF | Caso | Resultado esperado | Estado | Evidencia |
 |---|---|---|---|---|---|
-| CP-19 | RF-23 | Cargar la app y contar pestañas | Exactamente 5 botones en `nav` | Ejecutado | Cypress 4/4 |
+| CP-19 | RF-23 | Cargar la app y contar entradas de navegación | Exactamente 5 botones en `nav`: Menú Principal + 4 módulos; sin pestaña de Impacto | Ejecutado | Cypress 4/4; `App.jsx` |
 | CP-20 | RF-24 | Usar el escáner sin cuenta ni descarga | Acceso anónimo por `id_sesion` | Ejecutado | Slide 3 |
 | CP-21 | RF-12/13/14 | Abrir Puntos Limpios y filtrar por comuna | Listado se actualiza sin recargar; 35 marcadores | Ejecutado | Navegador real 19-11 |
 | CP-22 | RF-42 | Autorizar geolocalización y ordenar por cercanía | Texto «puntos ordenados por cercanía» y «A 3.2 km…» | Ejecutado con stub | Cypress caso 3 |
@@ -194,8 +201,8 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 
 | ID | Requisito | Motivo de no ejecución | Cierre previsto |
 |---|---|---|---|
-| CP-37 | RF-25 | Modelo devuelve una sola etiqueta (B-1) | Declarado fuera de alcance; no prometer multirresiduo |
-| CP-38 | RF-05 | Umbral de confianza no verificado en versión actual | Definir umbral y ejecutar caso con confianza baja |
+| CP-37 | RF-25 | Selector manual de varios materiales por escaneo (B-1) | No prometido: el backend ya agrupa varias cajas/clases por imagen (`REC-92`); no hay selector manual |
+| CP-38 | RF-05 | Umbral de confianza | **Cerrado**: `UMBRAL_CONFIANZA = 0,50` global (`REC-103`); cubierto por pruebas de contrato |
 | CP-39 | RNF-27/28/17 | Disponibilidad 99 %, respaldos y HTTPS en producción | Sin entorno de producción; REC-105 |
 | CP-40 | — | UAT y SUS con usuarios reales | REC-18, REC-70; el CSV de n=14 **no** es SUS |
 
@@ -206,7 +213,7 @@ Leyenda de estado: **Ejecutado**, **Parcial**, **Pendiente**.
 | Dato | Origen | Uso | Precaución |
 |---|---|---|---|
 | 30 fotos reales (10 cartón, 10 aluminio, 10 plástico) | Equipo, Fase 2 | CP-14 | HEIC convertido a JPG con `convertir_heic.py` |
-| Imagen plana | Generada localmente | CP-05 | Debe dar `400 BORROSA` |
+| Imagen plana | Generada localmente | CP-05 | Sin detecciones debe dar `400 IMAGEN_BORROSA`; con detecciones, `200` con aviso |
 | Body JSON sin archivo | Solicitud manual | CP-04 | Debe dar 422 |
 | 35 puntos limpios | `02_seed.sql` + ampliación | CP-08, CP-21 | 25 externos con `coords_aproximadas=1` |
 | Geografía de referencia | `-33.4489, -70.6693` | CP-22 | Stub de geolocalización en Cypress |
@@ -319,7 +326,7 @@ completo: para leerlas en detalle, abre el archivo indicado en el pie.
 
 | CP | Captura | Qué demuestra |
 |---|---|---|
-| CP-19, CP-20 | `01_Menu_Principal.png` | Menú principal y acceso anónimo; 5 pestañas visibles |
+| CP-19, CP-20 | `01_Menu_Principal.png` | Menú principal y acceso anónimo; 5 botones en `nav` (Menú + 4 módulos) |
 | CP-03 | `02_Escanner_IA.png` | Pestaña Escáner IA: carga de foto, vista previa y envío a `/predict` |
 | CP-08, CP-21 | `03_Puntos_Limpios_RM.png` | Mapa Leaflet, filtros y 35 marcadores en Puntos Limpios |
 | CP-24, CP-25, CP-26 | `04_Eco_Simulador_RM.png` | Simulador sin controles manuales, galería y videos |

@@ -7,9 +7,15 @@ ofrece puntos limpios de la Región Metropolitana, un simulador educativo y un
 desafío verde.
 
 - **Backend:** FastAPI + Ultralytics (YOLO11n, `best.pt`) + MySQL.
-- **Frontend:** React 19 + Vite + Tailwind (PWA, 5 pestañas).
+- **Frontend:** React 19 + Vite + Tailwind (PWA, Menú Principal + 4 módulos; impacto integrado en el simulador).
 - **Despliegue:** Docker Compose (MySQL + backend + frontend Nginx).
 - **Calidad:** pytest, Vitest, Cypress, oxlint, GitHub Actions.
+
+> **Documentación vigente (20-11-2026):** el alcance canónico, los nombres de
+> módulos y la deuda conocida están en
+> [`docs/DOCUMENTACION_GENERAL.md`](docs/DOCUMENTACION_GENERAL.md). El contraste
+> de los 161 issues de Jira contra este código está en
+> [`docs/AUDITORIA_JIRA.md`](docs/AUDITORIA_JIRA.md).
 
 ## Arquitectura
 
@@ -33,13 +39,13 @@ Todo el proyecto está agrupado aquí. Todos los comandos de esta guía se ejecu
 | Ruta | Contenido |
 |---|---|
 | `ecoscan-backend/` | API FastAPI (`main.py`), rutas de datos (`rutas_db.py`), `best.pt`, `Dockerfile`, pruebas (`tests/`) |
-| `ecoscan-frontend/` | App React + Vite + Tailwind (pestañas Escáner IA, Puntos Limpios —con mapa interactivo Leaflet/OpenStreetMap, 35 registros (10 propios y 25 externos sin validar), procedencia y coordenada aproximada visibles—, Eco-Simulador —con galería interactiva de consejos con flechas y videos educativos, sin controles manuales—, Desafío Verde, Impacto), `Dockerfile`, Cypress y Vitest |
+| `ecoscan-frontend/` | App React + Vite + Tailwind (Menú Principal + 4 módulos: Escáner IA, Puntos Limpios RM —mapa Leaflet/OpenStreetMap, 35 registros, 10 propios y 25 externos sin validar, procedencia y coordenada aproximada visibles—, Eco-Simulador RM —galería de consejos y videos, impacto automático, sin sliders ni escenarios— y Desafío Verde RM), `Dockerfile`, Cypress y Vitest |
 | `docker/mysql/init/` | `01_schema.sql` (esquema `ecoscan`) y `02_seed.sql` (datos iniciales) |
 | `docker-compose.yml` | Stack completo: MySQL 8.0 (host 3307), backend (8000), frontend Nginx (5173) con *healthchecks* |
 | `scripts/` | `run.ps1` / `run.sh` / `run.bat` (arranque reproducible), `verificar_docker.ps1`, `instalar_docker.ps1`, `init_local_db.py` |
 | `docs/` | CRISP-DM, requisitos (100 RF/RNF), BPMN, modelo de datos, informe de pruebas |
 | `Fase 1/`, `Fase 2/` | Entregables originales integrados sin borrar el historial |
-| `.github/workflows/ci.yml` (en la raíz del repo) | CI: pytest + cobertura + pip-audit, y Vitest + npm audit + build |
+| `.github/workflows/ci.yml` (en la raíz del repo) | CI: pytest + cobertura + pip-audit; frontend: `build` → `test:unit` → `npm audit` (PR 1) |
 | `.env.example` | Variables de entorno (copiar a `.env`) |
 
 ## Puesta en marcha
@@ -149,9 +155,10 @@ cd ecoscan-frontend && npm run test:e2e
 cd ecoscan-backend && venv\Scripts\python.exe pruebas\probar_modelo.py
 ```
 
-El pipeline de CI (`../.github/workflows/ci.yml`, en la raíz del repo) ejecuta pytest con cobertura y
-`pip-audit` en el backend, y `npm run test:unit`, `npm audit` y `npm run build`
-en el frontend.
+El pipeline de CI (`../.github/workflows/ci.yml`, en la raíz del repo) ejecuta
+pytest con cobertura y `pip-audit` en el backend. En el frontend ejecuta
+`npm run build`, luego `npm run test:unit` y después `npm audit`; ese orden fue
+corregido en PR 1 (`092fc88`).
 
 ## Seguridad
 
@@ -165,15 +172,16 @@ Revisado el 19-11-2026: se retiró una clave literal que aparecía en la celda d
 entrenamiento y se corrigió la conclusión automática para exigir también
 `mAP@50 ≥ 0.65` en `test`. La clave debe rotarse (REC-64 / REC-122); las salidas
 guardadas del cuaderno difieren de la iteración final documentada (0.562) y no
-deben usarse para afirmar que el objetivo se alcanzó. Detalle en
-`EVIDENCIA_ECOLEARN_ACTUALIZADA_2026-11-19/14_COLAB/EVIDENCIA_COLAB.txt`.
+deben usarse para afirmar que el objetivo se alcanzó. El detalle está en el
+cuaderno de Colab y en `docs/crisp-dm/`; las salidas guardadas de la carpeta
+`EVIDENCIA_ECOLEARN_ACTUALIZADA_2026-11-19/` no están versionadas en el repo.
 
 Segunda iteración ejecutada el 19-11-2026 en la misma GPU T4 (YOLO11n, 100
 épocas, `patience=20`): mAP@50 **0.622 en validación y 0.527 en test**, con
 latencia PyTorch 12,9 ms y ONNX 129,6 ms. No supera la cifra oficial (0.562)
 ni el objetivo (0.65), por lo que la tabla de resultados y la presentación
-final se mantienen sin cambios. Registro completo en
-`EVIDENCIA_ECOLEARN_ACTUALIZADA_2026-11-19/14_COLAB/EVIDENCIA_COLAB_REENTRENAMIENTO.txt`.
+final se mantienen sin cambios. El registro está en el cuaderno de Colab; no
+hay un archivo versionado con esa ruta dentro del repositorio.
 
 ## Equipo y gestión
 

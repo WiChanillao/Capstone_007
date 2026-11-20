@@ -1,4 +1,9 @@
-# Desafío Verde — antes / después (REC-162)
+# Desafío Verde — antes / después (registro histórico; antiguo “REC-162”)
+
+> **Actualización 20-11-2026:** `REC-162` **no existe** en el tablero real (máximo
+> `REC-161`). El arreglo quedó mergeado en PR 2 (`af7d14d`). El ticket real
+> `REC-137` cubre progreso automático/estadísticas, no la repetición de preguntas.
+> Ver [`../../jira/MAPEO_CLAVES_REALES.md`](../../jira/MAPEO_CLAVES_REALES.md).
 
 Rama `fix/desafio-preguntas`, creada desde `main @ 62c73a2646e7d7b1cd4e420f88ba1706aa841d25`.
 Commit del código: `88e72b1bb6b0e3a39ab3440774f4276a07c44094`.
@@ -83,7 +88,8 @@ quedaron intactos. Se usó `down -v` sólo sobre `ecolearn-desafio-aud`.
 - Backend `pytest -q --cov=main --cov=rutas_db`: **36 passed**, cobertura 74 %.
 - 0 errores de consola en el navegador.
 
-No se abrió PR. El `ci.yml` de esta rama (heredado de `main`) no incluye el
-patrón `fix/**`, así que este push no genera run automático; la verificación
-local queda registrada arriba. El patrón `fix/**` sí se añadió en la rama
-`fix/ci-orden-pasos` (REC-170), pendiente de integrar cuando desees.
+En su momento no se abrió PR desde esta rama; la verificación local quedó
+registrada arriba. El patrón `fix/**` se añadió en la rama
+`fix/ci-orden-pasos` y **ya está integrado en `main`** mediante PR 1 (`092fc88`).
+`REC-170` no existe en el tablero real: el fix de CI se documenta por commit/PR,
+no como ticket abierto.

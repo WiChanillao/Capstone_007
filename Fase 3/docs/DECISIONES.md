@@ -4,12 +4,17 @@ Documento de decisiones (ADR resumido). Cada decisión se apoya en código o
 documentación **real** del repositorio; se indican las rutas y líneas relevantes.
 La métrica oficial sigue siendo `mAP@50 = 0.562` y la presentación no se modificó.
 
+> **Actualizado 20-11-2026:** el alcance canónico y los nombres vigentes están en
+> [`DOCUMENTACION_GENERAL.md`](DOCUMENTACION_GENERAL.md); las referencias de línea
+> de este ADR son históricas y pueden diferir del working tree. El esquema real
+> de `01_schema.sql` tiene **15 tablas**, no 14.
+
 ## 1. MySQL 8 en lugar de PostGIS
 
 **Decisión:** usar MySQL 8.0 con el esquema relacional `ecoscan` cargado desde
 `docker/mysql/init/01_schema.sql` y `02_seed.sql`.
 
-**Justificación:** el modelo de datos es relacional (14 tablas: `escaneos`,
+**Justificación:** el modelo de datos es relacional (15 tablas: `escaneos`,
 `inferencia`, `material`, `contenedor`, `punto_limpio`, etc.) y no necesita
 operaciones geométricas en servidor. Las coordenadas de los puntos limpios se
 guardan como columnas `lat`/`lon` y Leaflet las consume en el cliente, por lo
@@ -41,7 +46,7 @@ se descartó y **no** se actualizó la tabla de métricas.
 **Decisión:** no hay login; el frontend envía un `id_sesion` opcional que se
 usa como clave de agrupación de escaneos e impacto.
 
-**Justificación:** es una demo académica de 5 pestañas; el objetivo es mostrar
+**Justificación:** es una demo académica con Menú Principal + 4 módulos; el objetivo es mostrar
 el flujo foto → detección → impacto sin fricción de registro. Para evitar
 inyección o valores arbitrarios en MySQL se valida con
 `^[A-Za-z0-9_-]{1,64}$` y se devuelve 422 si no cumple.
@@ -114,14 +119,16 @@ casos de corrupto, >10 MB, MIME no permitido, dimensiones e `id_sesion`;
   (`_solicitudes`, `main.py:40–71`); detrás de NAT o proxy varios clientes
   comparten la cuenta, no es distribuido y se reinicia con el proceso.
   `/db/*` y `/health` no están limitados.
-- **CSP con orígenes fijos.** La política de `main.py:79–84` incluye
-  `localhost` y `127.0.0.1` en `connect-src`; habrá que parametrizarla cuando se
-  defina un dominio de producción.
+- **CSP con orígenes fijos.** La política estricta vive en `main.py` (cabeceras
+  de seguridad para todas las respuestas). En el working tree hay una relajación
+  **sólo para `/docs`, `/redoc` y `/docs/*`** que aún no está commiteada: decidir
+  si se incorpora antes de congelar la entrega. Habrá que parametrizar los
+  orígenes cuando se defina un dominio de producción (`REC-105`).
 - **Métrica no alcanzada.** `mAP@50 = 0.562` frente a la meta `0.65`. No se
   afirmó el objetivo ni se modificó la presentación; la recomendación abierta
   es mejorar etiquetado/datos antes que repetir entrenamientos.
-- **Fallback del modelo requiere internet.** Si no existe `best.pt`,
-  `main.py:209–211` usa `yolov8n.pt`, que Ultralytics descarga automáticamente;
-  sin conexión el backend no arranca. `best.pt` sí está versionado.
+- **Fallback del modelo requiere internet.** Si no existe `best.pt`, `main.py`
+  usa `yolov8n.pt`, que Ultralytics descarga automáticamente; sin conexión el
+  backend no arranca. `best.pt` sí está versionado.
 - **Datos externos sin validar.** Coordenadas aproximadas y materiales por
   confirmar en los 25 puntos agregados desde un listado externo.

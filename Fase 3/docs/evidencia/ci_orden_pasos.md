@@ -1,4 +1,9 @@
-# REC-170 — CI: Build antes que Pruebas unitarias
+# CI: Build antes que Pruebas unitarias (registro histórico; antiguo “REC-170”)
+
+> **Actualización 20-11-2026:** `REC-170` **no existe** en Jira (máximo `REC-161`).
+> El fix está mergeado en `main` desde PR 1 (`092fc88`) y el workflow ya usa
+> `build → test:unit` con trigger `fix/**`. Ver
+> [`../jira/MAPEO_CLAVES_REALES.md`](../jira/MAPEO_CLAVES_REALES.md).
 
 Rama: `fix/ci-orden-pasos`, creada desde `main @ 62c73a2646e7d7b1cd4e420f88ba1706aa841d25`.
 Sin `--force`, sin reescribir historial, sin tocar `main`.
@@ -69,7 +74,7 @@ arreglo en Actions.
   GHSA-g3hv-75wg-m249 (*potential denial of service via globparts
   amplification*). El reporte cuenta 4 vulnerabilidades moderate en total.
 - `npm audit` propone `npm audit fix --force` → `vite-plugin-pwa@1.1.0`, que es
-  un **cambio breaking**. No se aplica en REC-170 (este ticket es sólo el orden
+  un **cambio breaking**. No se aplicó en el fix de CI (éste es sólo el orden
   de pasos del CI). Queda registrado como deuda y **no se marca Hecho** hasta
   decidir qué hacer con esas CVEs.
 - `pytest`: 1 advertencia no fatal de `fastapi.testclient` (recomienda
@@ -105,6 +110,6 @@ Run **`44669949452`** — https://github.com/WiChanillao/Capstone_007/actions/ru
 - Job `backend`: **success**. Pruebas unitarias y Auditoría de dependencias,
   ambos `success`.
 
-Con esto REC-170 queda corregido y verificado en CI. Las 4 CVEs *moderate*
+Con esto el orden de CI queda corregido y verificado en CI. Las 4 CVEs *moderate*
 seguían existiendo en la auditoría, pero no rompen el umbral `high`, igual que
 en la ejecución local; se mantienen registradas arriba como deuda.

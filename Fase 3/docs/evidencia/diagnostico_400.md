@@ -3,6 +3,12 @@
 > Estado: **FASE 0, 1, 2, 4 y 5 completadas. FASE 3 pendiente del dataset real.**
 > Evidencia sanitizada: sin rutas personales, sin valores de `.env`, sin secretos.
 > Rutas relativas a `Fase 3/`. **No se hizo push.**
+>
+> **Contexto 20-11-2026:** la FASE 3 de este diagnóstico se refiere a la
+> validación estadística con el split oficial, no al estado general del
+> proyecto: el stack Docker ya está verificado y las pruebas de contrato están
+> integradas en `main`. Ver
+> [`../DOCUMENTACION_GENERAL.md`](../DOCUMENTACION_GENERAL.md).
 
 ---
 

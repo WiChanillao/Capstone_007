@@ -4,10 +4,17 @@ Guía de entrega: qué es el proyecto, cómo levantarlo, cómo ejecutar las prue
 dónde está la evidencia verificable de cada requisito. Todo el contenido está
 dentro de este repositorio de GitHub.
 
+> **Actualizado 20-11-2026:** el alcance canónico está en
+> [`DOCUMENTACION_GENERAL.md`](DOCUMENTACION_GENERAL.md) y el contraste de los
+> 161 issues en [`AUDITORIA_JIRA.md`](AUDITORIA_JIRA.md). Los conteos de pruebas
+> de esta guía corresponden a la evidencia local histórica; los conteos vigentes
+> por fecha están en la documentación general.
+
 ## 1. Resumen del proyecto
 
-EcoLearn Chile es una aplicación web de 5 pestañas (Escáner IA, Puntos Limpios RM,
-Eco-Simulador, Desafío Verde e Impacto). El usuario sube una foto de un residuo,
+EcoLearn Chile es una PWA con **Menú Principal + 4 módulos** (Escáner IA,
+Puntos Limpios RM, Eco-Simulador RM y Desafío Verde RM). El impacto está
+integrado en el simulador, no es una pestaña separada. El usuario sube una foto de un residuo,
 un modelo **YOLO11n** (`best.pt`) detecta **Aluminio, Cartón o Plástico**, el
 backend FastAPI devuelve instrucciones de reciclaje y guarda el análisis en
 **MySQL 8**. Los indicadores de impacto y el desafío verde se calculan
@@ -46,15 +53,15 @@ Puertos publicados, todos ligados a `127.0.0.1` de acuerdo con
 | Backend | `127.0.0.1:8000` | `8000` |
 | Frontend | `127.0.0.1:5173` | `8080` (Nginx no root) |
 
-Para apagar y borrar el volumen: `docker compose down -v`.
+Para apagar sin borrar datos: `docker compose down`. **`docker compose down -v` elimina los volúmenes** y sólo se usa si se decide expresamente reconstruir desde cero.
 
 ## 3. Ejecutar las pruebas
 
 ```bash
-# Backend (22 pruebas)
+# Backend (22 pruebas en evidencia local; 36 en auditoría/CI posterior)
 cd ecoscan-backend && venv\Scripts\python.exe -m pytest -q
 
-# Frontend (4 pruebas unitarias)
+# Frontend (24 pruebas unitarias tras PR 2)
 cd ../ecoscan-frontend && npm run test:unit
 
 # Extremo a extremo (4 pruebas Cypress)

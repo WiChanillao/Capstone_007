@@ -5,11 +5,19 @@
 **Tablero:** REC (Jira real, `https://capstone-reci-smart.atlassian.net/jira/software/projects/REC/boards/1`)  
 **Estado del documento:** evaluación y auditoría basada en evidencia verificada directamente y en tickets con evidencia verificada por OCR.
 
+> **Actualización 20-11-2026:** este estudio se conserva como registro histórico
+> del 18-11-2026. El estado vigente del tablero es de **161 issues**
+> (144 `Finalizada`, 8 `En curso`, 9 `Tareas por hacer`), con Docker 3/3
+> `healthy`, PR 1 y PR 2 mergeados, `REC-103`/`REC-104` implementados y
+> `REC-110`–`REC-115` marcados como finalizados en Jira. La referencia vigente
+> es [`docs/DOCUMENTACION_GENERAL.md`](docs/DOCUMENTACION_GENERAL.md) y el
+> contraste completo está en [`docs/AUDITORIA_JIRA.md`](docs/AUDITORIA_JIRA.md).
+
 ---
 
 ## 1. Resumen ejecutivo
 
-El proyecto **sí cumple como proyecto de título** por su alcance técnico: integra visión por computadora, backend FastAPI, MySQL, PWA, trazabilidad documental en Jira y una interfaz de usuario funcional con cinco módulos. Sin embargo, **no todo lo que aparece en Jira está implementado**, y parte de lo documentado corresponde a trabajo pendiente, fuera de alcance real o a tareas de proceso no ejecutadas.
+El proyecto **sí cumple como proyecto de título** por su alcance técnico: integra visión por computadora, backend FastAPI, MySQL, PWA, trazabilidad documental en Jira y una interfaz de usuario funcional con **Menú Principal + 4 módulos**. Sin embargo, **no todo lo que aparece en Jira está implementado**, y parte de lo documentado corresponde a trabajo pendiente, fuera de alcance real o a tareas de proceso no ejecutadas.
 
 La corrección más reciente separa claramente dos cosas:
 
@@ -20,7 +28,7 @@ La corrección más reciente separa claramente dos cosas:
 
 ## 2. Alcance real verificado en la aplicación
 
-La app expone **5 módulos de usuario**:
+La app expone **Menú Principal + 4 módulos de usuario** (el impacto está integrado en el Eco-Simulador RM):
 
 | Módulo | Función real verificada | Origen de datos |
 |---|---|---|
@@ -56,26 +64,28 @@ Evidencia visual: `APP_Limpia_Menu.png`, `APP_Desafio_auto_inicial.png`, `APP_De
 
 ### 3.1 Estado del tablero
 
-Al momento de la auditoría previa a esta entrega, el tablero REC tenía **135 tickets**:
+La auditoría previa a esta entrega registró 135 tickets y luego 138. El
+**estado vigente (20-11-2026)**, obtenido por exportación real desde Jira, es:
 
 | Estado | Cantidad |
 |---|---:|
-| Finalizada | 83 |
-| En curso | 9 |
-| En revisión | 4 |
-| Tareas por hacer | 39 |
-| **Total** | **135** |
+| Finalizada | 144 |
+| En curso | 8 |
+| En revisión | 0 |
+| Tareas por hacer | 9 |
+| **Total** | **161** |
 
-Con los tres tickets creados para esta entrega (limpieza visual, progreso automático y estudio/auditoría), el tablero queda en **138 tickets**.
+Los 161 tickets van de `REC-1` a `REC-161` sin huecos. El detalle está en
+[`docs/jira/INVENTARIO_REC.csv`](docs/jira/INVENTARIO_REC.csv).
 
 ### 3.2 Qué significa “Jira al día”
 
-Jira está **al día en la documentación de evidencia**: REC-1 a REC-135 tienen evidencia verificada y enlaces directos a archivos reales. Los cambios de esta entrega se registran en REC-136, REC-137 y REC-138.
+Jira está **al día en la documentación de evidencia**: `REC-1` a `REC-161` están inventariados y contrastados contra el repositorio. Los cambios de aquella entrega se registraron en `REC-136`, `REC-137` y `REC-138`; las correcciones posteriores quedan propuestas en [`docs/jira/BACKLOG_PROPUESTO.md`](docs/jira/BACKLOG_PROPUESTO.md).
 
 Jira **no está al día en el sentido de que todo esté terminado**. Hay tickets abiertos por tres razones distintas:
 
-1. **Trabajo pendiente real:** por ejemplo REC-63 (mejorar mAP a ≥ 0.65), REC-103/104 (umbral de confianza y fotos borrosas), REC-105/106/107 (CORS de producción, rate limiting y cabeceras), REC-110–115 (carga, LCP, bundle, accesibilidad, responsive y cobertura), REC-127 (orden por cercanía).
-2. **Proceso o gestión no ejecutado:** REC-17/18 y REC-69/70 (Cypress y UAT), REC-57 (publicar repositorio), REC-59/60/61/62 (capturas, PPT, retrospectiva y envío al profesor).
+1. **Trabajo pendiente real:** por ejemplo `REC-63` (mejorar mAP a ≥ 0.65), `REC-105` (CORS de producción), `REC-65`/`REC-155`/`REC-156` (validación de puntos externos), `REC-154` (horarios con bloques múltiples) y UAT/SUS (`REC-18`/`REC-70`). `REC-103`/`REC-104`, `REC-106`/`REC-107` y `REC-110`–`REC-115` ya están finalizados en Jira; en estos dos últimos grupos hace falta adjuntar/actualizar la evidencia.
+2. **Proceso o gestión:** Cypress ya ejecutado (`REC-17`/`REC-69`, 4 pruebas); UAT sigue pendiente (`REC-18`/`REC-70`). Repositorio publicado, capturas, PPT y retrospectiva cerrados (`REC-57`, `REC-59`–`REC-61`); envío al profesor abierto (`REC-62`).
 3. **Fuera de alcance real / sustituido:** REC-11 (offline-first y React 18), REC-13 (YOLOv8, sustituido por YOLO11n), REC-16/68 (panel B2B/B2G), REC-8 (PostGIS), REC-7 (Streamlit), REC-12 (árbol de decisión en 2 toques), REC-14 (ficha dual con PostGIS).
 
 ### 3.3 Coherenencia entre Jira y la app
@@ -89,8 +99,8 @@ Jira **no está al día en el sentido de que todo esté terminado**. Hay tickets
 | Corrección de scroll | Sí | REC-135 |
 | Menú Principal | Sí | REC-130 |
 | Cámara en vivo | Sí | REC-131 |
-| Docker | No como ejecución verificada | Solo archivos y guía de requisitos (REC-67) |
-| Cypress / UAT | No | No ejecutados |
+| Docker | Sí, verificado | 3 contenedores `healthy` y `/predict → MySQL` (REC-67, REC-141) |
+| Cypress / UAT | Cypress sí; UAT no | 4 pruebas Cypress; UAT/SUS pendiente (REC-17/69 vs REC-18/70) |
 | Panel B2B/B2G, offline, YOLOv8, PostGIS | No | Fuera de alcance o sustituidos |
 | mAP ≥ 0.65 | No | Métrica actual documentada: 0.562 |
 
@@ -116,10 +126,10 @@ Jira **no está al día en el sentido de que todo esté terminado**. Hay tickets
 ### Limitaciones que deben decirse en la defensa
 
 - El modelo cumple la detección de 3 clases, pero **mAP@50 0.562 está por debajo del objetivo ≥ 0.65** (REC-63).
-- **No se ejecutaron Cypress ni UAT con usuarios reales** (REC-17/18, REC-69/70).
-- **Docker no se ejecutó**: existen archivos y guía, pero no hay verificación de `docker compose up --build` (REC-67).
-- **No se verificó publicación en GitHub** desde este entorno (REC-55/57).
-- La medición de LCP, bundle, accesibilidad, responsive WebKit y cobertura sigue pendiente (REC-110–115).
+- **Cypress sí se ejecutó** (4 pruebas, `REC-17`/`REC-69`); **UAT con usuarios reales y SUS sigue pendiente** (`REC-18`/`REC-70`).
+- **Docker sí se ejecutó**: 3 contenedores `healthy`, `/health` con MySQL conectado y `/api/db/puntos` con 35 puntos (`REC-67`, `REC-141`).
+- **Repositorio publicado** en GitHub (`REC-55`/`REC-57`).
+- Jira marca `REC-110`–`REC-115` como finalizados, pero las mediciones de LCP, bundle, accesibilidad, responsive WebKit y cobertura deben adjuntarse a los tickets para que la evidencia sea verificable.
 
 ### Prioridades para dejarlo bien presentado
 
@@ -132,9 +142,9 @@ Jira **no está al día en el sentido de que todo esté terminado**. Hay tickets
 
 **P2 — Si queda tiempo**
 
-5. Aplicar umbral mínimo de confianza (REC-103) y rechazo de fotos borrosas (REC-104).
-6. Definir CORS de producción, rate limiting y cabeceras de seguridad (REC-105–107).
-7. Medir LCP, tamaño de bundle, accesibilidad y responsive (REC-111–114).
+5. Verificar y documentar el umbral mínimo de confianza (`REC-103`) y el rechazo de fotos borrosas (`REC-104`), ya implementados en `main`.
+6. Cerrar la política de CORS de producción (`REC-105`); rate limit y cabeceras (`REC-106`/`REC-107`) ya están implementados.
+7. Adjuntar a `REC-111`–`REC-114` las mediciones de LCP, bundle, accesibilidad y responsive; no reabrirlas como trabajo nuevo sin evidencia.
 
 **P3 —fuera del alcance del título**
 

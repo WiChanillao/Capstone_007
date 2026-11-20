@@ -171,7 +171,8 @@ Detalle de las validaciones de `/predict` (`ecoscan-backend/main.py`):
 
 - `MAX_TAMANO_ARCHIVO = 10 * 1024 * 1024`. Se revisa `Content-Length` y además
   se hace `file.read(MAX + 1)`; si excede, responde 413 con código
-  `ARCHIVO_MUY_GRANDE`.
+  `ARCHIVO_MUY_PESADO` (el registro histórico de esta evidencia decía
+  `ARCHIVO_MUY_GRANDE`; el código vigente en `main.py` es `ARCHIVO_MUY_PESADO`).
 - Whitelist MIME: `image/jpeg`, `image/jpg`, `image/png`, `image/webp`,
   `image/heic`, `image/heif`. `Image.verify()` detecta contenido corrupto y el
   límite `MAX_DIMENSION_IMAGEN = 8000` produce `DIMENSIONES_EXCEDIDAS`. Tipo o

@@ -1,7 +1,8 @@
 # Frontend — EcoLearn Chile (EcoScan)
 
-App React 19 + Vite + Tailwind (PWA) con cinco pestañas: **Escáner IA**,
-**Puntos Limpios RM**, **Eco-Simulador**, **Desafío Verde** e **Impacto**.
+App React 19 + Vite + Tailwind (PWA) con **Menú Principal + 4 módulos**:
+**Escáner IA**, **Puntos Limpios RM**, **Eco-Simulador RM** y **Desafío Verde RM**.
+El impacto está integrado en el Eco-Simulador, no es una pestaña separada.
 
 ## Desarrollo
 
@@ -11,7 +12,6 @@ npm run dev          # http://localhost:5173
 ```
 
 La URL del backend se toma de `VITE_API_URL` (por defecto `/api`, mismo origen; nginx la redirige a `backend:8000`). Para desarrollo sin Docker, copiar `.env.example` a `.env.local` y apuntar a `http://127.0.0.1:8000`.
-Por defecto apunta a `http://127.0.0.1:8000`.
 
 ## Comandos
 

@@ -83,7 +83,9 @@ docker compose logs -f
 > Estado real verificado: `docker compose up --build -d` levantó los 3 servicios
 > (`mysql`, `backend`, `frontend`) en estado **healthy**; `/health`, `/v1/models`,
 > `/docs` y `/` respondieron 200 y un `POST /predict` incrementó las inferencias
-> en MySQL de 60 a 61. Evidencia: carpeta `06_DOCKER/` del paquete de evidencias.
+> en MySQL de 60 a 61. Evidencia vigente en `docs/evidencia/EVIDENCIA_DOCKER.md`
+> y `docs/evidencia/docker-compose-ps.txt` (la carpeta `06_DOCKER/` era una ruta
+> del paquete de evidencias externo, no está dentro de este repositorio).
 
 ## Verificación ya realizada
 

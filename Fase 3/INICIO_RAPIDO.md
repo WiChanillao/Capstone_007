@@ -6,7 +6,7 @@ Este documento explica cómo levantar el proyecto **desde un clone/descarga del 
 
 | Modo | Necesitas |
 |---|---|
-| **A. Local (recomendado en la PC actual)** | Python 3.10+, Node.js 20+ con npm, MySQL 8.0 en `localhost:3306`, Visual Studio Code (opcional) |
+| **A. Local (recomendado en la PC actual)** | Python 3.12+ (el stack usa 3.13; `numpy==2.5.5` no funciona con 3.10/3.11), Node.js 20+ con npm, MySQL 8.0 en `localhost:3306`, Visual Studio Code (opcional) |
 | **B. Docker** | Docker Desktop con Compose v2 (no es obligatorio) |
 
 Antes de levantar, copia `.env.example` a `.env` y **define una contraseña propia** en `MYSQL_ROOT_PASSWORD` (y `MYSQL_PASSWORD`). El ejemplo trae el placeholder `cambiar_esta_clave`: no sirve para usar tal cual. El compose falla con un mensaje claro si `MYSQL_ROOT_PASSWORD` no está definida.

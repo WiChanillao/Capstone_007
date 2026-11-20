@@ -9,7 +9,7 @@ está agrupado en la carpeta **[`Fase 3/`](Fase%203/)**.
 .github/                 CI de GitHub Actions (debe permanecer en la raíz)
 Fase 3/
 ├── ecoscan-backend/     API FastAPI, YOLO11n, MySQL y pruebas
-├── ecoscan-frontend/    App React + Vite + Tailwind (5 pestañas)
+├── ecoscan-frontend/    App React + Vite + Tailwind (Menú Principal + 4 módulos)
 ├── docs/                CRISP-DM, requisitos, BPMN, modelo de datos, PPT final
 ├── docker/              Scripts de inicialización de MySQL
 ├── scripts/             Arranque reproducible y verificación Docker
@@ -24,6 +24,8 @@ aplica a todo el repositorio.
 
 ## Acceso rápido
 
+- **Alcance y documento general:** [`Fase 3/docs/DOCUMENTACION_GENERAL.md`](Fase%203/docs/DOCUMENTACION_GENERAL.md)
+- Auditoría Jira vs. código (161 issues): [`Fase 3/docs/AUDITORIA_JIRA.md`](Fase%203/docs/AUDITORIA_JIRA.md)
 - **Entrega para evaluación:** [`Fase 3/docs/ENTREGA.md`](Fase%203/docs/ENTREGA.md)
 - Guía completa: [`Fase 3/README.md`](Fase%203/README.md)
 - Arranque rápido: [`Fase 3/INICIO_RAPIDO.md`](Fase%203/INICIO_RAPIDO.md)
