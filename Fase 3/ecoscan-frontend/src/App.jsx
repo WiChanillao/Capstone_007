@@ -5,6 +5,55 @@ import MapaPuntos from './MapaPuntos.jsx';
 // Por defecto usa /api (mismo origen): funciona en local y cuando la app se comparte por túnel.
 const API_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
+// Error con código estable del backend: el catch genérico NO debe sobrescribirlo.
+class ErrorApi extends Error {
+  constructor(codigo, mensaje, campo) {
+    super(mensaje);
+    this.name = 'ErrorApi';
+    this.codigo = codigo;
+    this.campo = campo;
+  }
+}
+
+const MENSAJES_ERROR = {
+  FORMATO_NO_VALIDO: 'Formato no soportado. Sube una imagen JPG, PNG, WEBP, HEIC o HEIF.',
+  ARCHIVO_CORRUPTO: 'El archivo está corrupto o no contiene una imagen válida. Toma otra foto.',
+  ARCHIVO_MUY_PESADO: 'La imagen supera el límite de 10 MB. Elije una foto más pequeña.',
+  DIMENSIONES_EXCEDIDAS: 'La imagen es demasiado grande (máximo 8000×8000 px).',
+  IMAGEN_BORROSA: 'No se pudo identificar el residuo y la foto tiene poca definición. Acércate y mejora la luz.',
+  ID_SESION_INVALIDO: 'Hubo un problema con la sesión. Recarga la página y vuelve a intentarlo.',
+  DEMASIADAS_SOLICITUDES: 'Demasiados análisis en un minuto. Espera un momento y vuelve a intentarlo.',
+};
+
+// Redimensiona antes de enviar: menos peso, MIME homogéneo y evita 413/8000 px.
+async function redimensionarParaEnvio(file) {
+  const LADO_MAX = 1600;
+  if (typeof createImageBitmap !== 'function' || !file.type?.startsWith('image/')) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    if (Math.max(bitmap.width, bitmap.height) <= LADO_MAX) {
+      bitmap.close?.();
+      return file;
+    }
+    const escala = LADO_MAX / Math.max(bitmap.width, bitmap.height);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * escala);
+    canvas.height = Math.round(bitmap.height * escala);
+    const contexto = canvas.getContext('2d');
+    if (!contexto) { bitmap.close?.(); return file; }
+    contexto.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close?.();
+    const blob = await new Promise((resolver) => canvas.toBlob(resolver, 'image/jpeg', 0.9));
+    if (!blob) return file;
+    return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {
+      type: 'image/jpeg', lastModified: Date.now(),
+    });
+  } catch (err) {
+    // jsdom o navegador sin soporte: se envía el original y el backend valida.
+    return file;
+  }
+}
+
 // Base de datos estricta de los 3 materiales soportados (EcoLearn Chile)
 const CONTENEDORES_POR_DEFECTO = {
   carton: 'Contenedor Azul',
@@ -382,6 +431,7 @@ export default function App() {
   const [ubicacion, setUbicacion] = useState(null);
   const [geoError, setGeoError] = useState('');
   const [errorEscaneo, setErrorEscaneo] = useState('');
+  const [avisoEscaneo, setAvisoEscaneo] = useState('');
   const [confianzas, setConfianzas] = useState({});
   const [ultimoArchivo, setUltimoArchivo] = useState(null);
   const [contenedores, setContenedores] = useState(CONTENEDORES_POR_DEFECTO);
@@ -695,6 +745,7 @@ export default function App() {
   const procesarPrediccionBackend = async (file) => {
     setCargando(true);
     setErrorEscaneo('');
+    setAvisoEscaneo('');
     setElementosDetectados([]);
     setConfianzas({});
     setUltimoArchivo(file);
@@ -703,8 +754,9 @@ export default function App() {
     const temporizador = setTimeout(() => controller.abort(), 10000);
 
     try {
+      const archivo = await redimensionarParaEnvio(file);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', archivo);
       formData.append('id_sesion', await asegurarSesion());
       const res = await fetch(API_URL + '/predict', {
         method: 'POST',
@@ -714,18 +766,23 @@ export default function App() {
       if (!res.ok) {
         let detalle = null;
         try { detalle = await res.json(); } catch (e) { detalle = null; }
-        const codigo = detalle?.detail?.codigo || detalle?.detail;
-        if (codigo === 'BORROSA') {
-          throw new Error('La foto salió borrosa. Toma otra con buena luz y sin movimiento.');
-        }
-        throw new Error('HTTP ' + res.status);
+        const cuerpo = detalle?.detail;
+        const codigo = cuerpo?.codigo || (typeof cuerpo === 'string' ? cuerpo : null);
+        const mensaje = cuerpo?.mensaje || MENSAJES_ERROR[codigo]
+          || (res.status >= 500
+            ? 'El servidor no pudo procesar la imagen. Inténtalo de nuevo.'
+            : 'No se pudo analizar la imagen. Revisa la foto e inténtalo de nuevo.');
+        // El catch de abajo respeta ErrorApi: no sobrescribe este mensaje.
+        throw new ErrorApi(codigo || ('HTTP_' + res.status), mensaje, cuerpo?.campo);
       }
       const data = await res.json();
+      const avisos = [];
 
-      if ((data.detecciones_rechazadas || []).length > 0 && (data.detecciones || []).length === 0) {
-        setUltimoArchivo(file);
-        setErrorEscaneo('La confianza fue menor al ' + Math.round((data.umbral_confianza || 0.5) * 100) + '%. Repite la captura con la etiqueta bien visible.');
-        return;
+      const rechazadas = data.detecciones_rechazadas || [];
+      if (rechazadas.length > 0 && (data.detecciones || []).length === 0) {
+        const mejor = Math.max(...rechazadas.map(x => Number(x.confianza) || 0));
+        avisos.push('Confianza ' + Math.round(mejor * 100) + '% por debajo del umbral de '
+          + Math.round((data.umbral_confianza || 0.5) * 100) + '%. Acércate y mejora la luz.');
       }
 
       const encontrados = new Set();
@@ -744,18 +801,26 @@ export default function App() {
       });
 
       if (encontrados.size === 0) {
-        setErrorEscaneo('La imagen se analizó, pero no se detectaron cartón, plástico ni aluminio. Prueba con otra foto más clara.');
-        return;
+        avisos.push('No detecté residuos; acércate, mejora la luz o cambia el ángulo.');
+      } else {
+        setElementosDetectados(Array.from(encontrados));
+        setConfianzas(conf);
+        // La métrica se vuelve a leer desde MySQL: nadie la modifica a mano.
+        try { await refrescarImpacto(); } catch (e) { /* conserva el último valor válido */ }
       }
-      setElementosDetectados(Array.from(encontrados));
-      setConfianzas(conf);
-      // La métrica se vuelve a leer desde MySQL: nadie la modifica a mano.
-      try { await refrescarImpacto(); } catch (e) { /* conserva el último valor válido */ }
+
+      if (data.calidad_imagen?.aviso === 'baja_nitidez') {
+        avisos.push('La foto tiene poca definición; revisa el resultado.');
+      }
+      setAvisoEscaneo(avisos.join(' '));
     } catch (e) {
-      const motivo = e.name === 'AbortError'
-        ? 'El análisis superó los 10 segundos.'
-        : 'No se pudo analizar la imagen en este momento.';
-      setErrorEscaneo(motivo + ' Revisa tu conexión y vuelve a intentarlo.');
+      if (e instanceof ErrorApi) {
+        setErrorEscaneo(e.message);
+      } else if (e.name === 'AbortError') {
+        setErrorEscaneo('El análisis superó los 10 segundos. Revisa tu conexión y vuelve a intentarlo.');
+      } else {
+        setErrorEscaneo('No se pudo conectar con el servicio de análisis. Revisa tu conexión y vuelve a intentarlo.');
+      }
     } finally {
       clearTimeout(temporizador);
       setCargando(false);
@@ -779,6 +844,7 @@ export default function App() {
 
   const handleSubirArchivo = async (e) => {
     detenerCamara();
+    setAvisoEscaneo('');
     const file = e.target.files[0];
     if (!file) return;
     const nombre = (file.name || '').toLowerCase();
@@ -1219,6 +1285,12 @@ export default function App() {
                   </div>
                 )}
 
+                {avisoEscaneo && !errorEscaneo && !cargando && (
+                  <div className="w-full max-w-md rounded-2xl border border-sky-500/30 bg-sky-950/20 p-3 text-left" role="status">
+                    <p className="text-[11px] text-sky-100/80">ℹ️ {avisoEscaneo}</p>
+                  </div>
+                )}
+
                 {/* VISTA PREVIA DE IMAGEN CAPTURADA O CARGADA */}
                 {imagenVista && !usandoCamara && (
                   <div className="w-full max-w-md mt-4 relative group rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl bg-slate-950 mx-auto">
@@ -1245,7 +1317,7 @@ export default function App() {
             </section>
 
             {/* ESTADO VACÍO */}
-            {elementosDetectados.length === 0 && !cargando && !usandoCamara && !errorEscaneo && (
+            {elementosDetectados.length === 0 && !cargando && !usandoCamara && !errorEscaneo && !avisoEscaneo && (
               <div className="text-center py-12 px-4 border border-dashed border-slate-800 rounded-3xl bg-slate-950/40">
                 <span className="text-4xl block mb-2">🔍</span>
                 <h3 className="text-base font-bold text-slate-300">Esperando imagen...</h3>
