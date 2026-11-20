@@ -29,6 +29,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Definir MYSQL_ROOT_PASSWORD en .env}
       MYSQL_DB: ${MYSQL_DB:-ecoscan}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      UMBRAL_NITIDEZ: ${UMBRAL_NITIDEZ:-50}
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
