@@ -4,7 +4,8 @@
 **Fuente del tablero:** exportación real desde la sesión del usuario en Brave  
 (`Más acciones → Exportar → CSV: todos los campos`), 161 filas y 190 columnas.  
 **Referencia de código:** `main @ af7d14d` (PR 1 y PR 2 mergeados).  
-**Tipo de intervención:** solo lectura y exportación. **No se creó, editó ni cerró ningún issue en Jira.**
+**Tipo de intervención inicial:** solo lectura y exportación. **No se creó, editó ni cerró ningún issue durante la auditoría.**  
+**Actualización 20-11-2026:** con autorización explícita se aplicaron los 30 cambios del §4. Las secciones 1–3 son la fotografía **anterior** a esa aplicación; el resultado verificado está en el §4.  
 
 El inventario normalizado queda en [`jira/INVENTARIO_REC.csv`](jira/INVENTARIO_REC.csv).
 
@@ -49,7 +50,7 @@ El inventario normalizado queda en [`jira/INVENTARIO_REC.csv`](jira/INVENTARIO_R
 | `REC-104` | Finalizada | Rechazo por nitidez cuando no hay detecciones, en `main.py`. |
 | `REC-105` | En curso | CORS por entorno ya implementado; falta cerrar la política de **producción**. |
 | `REC-106` | Finalizada | Rate limit 30/min por IP en `/predict`. |
-| `REC-107` | Finalizada | Cabeceras de seguridad/CSP en el API (la relajación local para `/docs` está sin commitear). |
+| `REC-107` | Finalizada | Cabeceras de seguridad/CSP en el API (relajación limitada a `/docs`, `/redoc` y `/docs/*`, commiteada en `d85d5cd`). |
 | `REC-137` | Finalizada | Progreso automático del Desafío Verde y estadísticas por escaneo; coincide con `trivia.js` y `App.jsx`. |
 | `REC-140` | Finalizada | Impacto de los últimos 30 días desde `ecoscan.escaneos`; sustituye sliders/escenarios. |
 | `REC-144`, `REC-145`, `REC-149`, `REC-152` | Finalizada | Mapa Leaflet/OpenStreetMap, corrección de capa gris, horarios NULL y geocodificación; `/api/db/puntos` responde 35 puntos. |
@@ -111,7 +112,7 @@ El máximo real es `REC-161`. Por tanto **no existen** `REC-162`, `REC-163`, `RE
 
 ### 3.5 Documentación desactualizada detectada (corregida en esta revisión salvo los puntos marcados)
 
-- `ESTUDIO_PROYECTO_TITULO.md` (18-11-2026) reportaba 135/138 tickets, “Docker no ejecutado”, REC-103/104 como pendientes y REC-110–115 abiertos. **Corregido**: 161 tickets, Docker 3/3 `healthy`, REC-103/104 y REC-110–115 finalizados en Jira (con evidencia a reforzar en estos últimos).
+- `ESTUDIO_PROYECTO_TITULO.md` (18-11-2026) reportaba 135/138 tickets, “Docker no ejecutado”, REC-103/104 como pendientes y REC-110–115 abiertos. **Corregido**: 161 tickets, Docker 3/3 `healthy`, REC-103/104 y REC-110–115 finalizados en Jira (evidencia solicitada por comentario el 20-11-2026 en `REC-110`–`REC-115`).
 - `docs/ENTREGA.md` hablaba de “5 pestañas” e “Impacto” como pestaña separada. **Corregido**: Menú Principal + 4 módulos, impacto integrado en el Eco-Simulador RM.
 - `docs/DECISIONES.md` y `docs/README.md` citaban 14 tablas. **Corregido**: el esquema real tiene **15** (`banner_impacto`, `comuna`, `contenedor`, `escaneos`, `habito`, `habito_cumplido`, `inferencia`, `instruccion`, `item_simulador`, `material`, `paso_instruccion`, `punto_limpio`, `punto_material`, `recurso_externo`, `sesion`).
 - El plan de pruebas (XLSX y Markdown) y `EVIDENCIA_DOCKER.md` citaban códigos y estados obsoletos (`BORROSA`, `ARCHIVO_MUY_GRANDE`, RF-05 pendiente, RF-25 “fuera de alcance”). **Corregido en v1.3**: `IMAGEN_BORROSA`, `ARCHIVO_MUY_PESADO`, umbral `0,50` y multi-detección del backend, sin cambiar los 40 IDs de caso.
@@ -121,18 +122,18 @@ El máximo real es `REC-161`. Por tanto **no existen** `REC-162`, `REC-163`, `RE
 
 ---
 
-## 4. Backlog propuesto (pendiente de aprobación; **no aplicado en Jira**)
+## 4. Backlog aplicado en Jira (20-11-2026, autorizado)
 
-El detalle operativo está en [`jira/BACKLOG_PROPUESTO.md`](jira/BACKLOG_PROPUESTO.md). Resumen:
+El detalle operativo y el resultado están en [`jira/BACKLOG_PROPUESTO.md`](jira/BACKLOG_PROPUESTO.md). Lo ejecutado fue:
 
-1. **Conservar** `REC-1`…`REC-161` tal como están en estado, salvo los casos indicados a continuación.
-2. **Reclasificar como “fuera de alcance / decisión documentada”** `REC-7`, `REC-8`, `REC-11`, `REC-12`, `REC-13`, `REC-14`, `REC-16`, `REC-68`.
-3. **Reabrir o reclasificar** `REC-128`/`REC-129` (escenarios no presentes en `main`) y **cerrar** `REC-157` (fix ya en `main`).
-4. **Cerrar o vincular** `REC-18`/`REC-70` (UAT duplicada) manteniendo `REC-19` y `REC-62` abiertos hasta la defensa.
-5. **Corregir fechas** de `REC-22` y `REC-23`.
-6. **No crear** tickets con las claves `REC-162`…`REC-170`: las correcciones ya están en PR 1/PR 2 o son trabajo fuera de alcance. Si se quiere trazabilidad, crear tickets nuevos con la numeración real que Jira asigne y enlazar los commits.
-7. **Adjuntar AC** a los tickets desde el plan de pruebas en vez de inventar criterios nuevos.
-8. **No borrar** tickets: toda corrección es una aclaración de estado, resumen o vínculo.
+1. **Conservados** `REC-1`…`REC-161`: no se borró ningún ticket.
+2. **Reclasificados en el resumen** como “fuera de alcance / decisión documentada” `REC-7`, `REC-8`, `REC-11`, `REC-12`, `REC-14`, `REC-16`, `REC-68`, y `REC-13` como “SUSTITUIDO por YOLO11n”.
+3. **`REC-128`/`REC-129`** → `Tareas por hacer` (transición “Por hacer”) con resumen `SUSTITUIDO por REC-140`; **`REC-157`** → `Finalizada` (transición “Listo”) con comentario de evidencia en `vite.config.js` y `sw.test.js`. No se crearon estados nuevos.
+4. **Vinculados como `Relates`** `REC-2` ↔ `REC-34` y `REC-18` ↔ `REC-70`, sin cerrar ni borrar; `REC-19` y `REC-62` siguen abiertos hasta la defensa.
+5. **Vencimientos corregidos:** `REC-22` y `REC-23` → `30/nov/2026`.
+6. **`REC-162`, `REC-167` y `REC-170`: verificado, sin cambio** (no existen; documentadas en [`jira/MAPEO_CLAVES_REALES.md`](jira/MAPEO_CLAVES_REALES.md)).
+7. **AC aplicados como comentarios** con prefijo `AC (plan de pruebas)` en 17 tickets abiertos; las épicas `REC-20`, `REC-21` y `REC-24` recibieron la referencia al plan de pruebas y a `CRITERIOS_ACEPTACION.md`. No se creó un campo personalizado ni se redactaron criterios nuevos.
+8. **Verificación final:** 10 resúmenes, 3 estados, 2 fechas, 2 vínculos, 17 comentarios de AC y 7 comentarios de acción → **0 anomalías**.
 
 ---
 
@@ -143,8 +144,8 @@ El detalle operativo está en [`jira/BACKLOG_PROPUESTO.md`](jira/BACKLOG_PROPUES
 | `jira/CONTRASTE_161.md` / `.csv` | Contraste **issue por issue** de los 161 tickets contra el código real: clasificación, evidencia y acción propuesta. |
 | `jira/INVENTARIO_REC.csv` | 161 issues normalizados: clave, tipo, resumen, estado, resolución, prioridad, épica, sprint, fechas y flag de AC. |
 | `jira/MAPEO_CLAVES_REALES.md` | equivalencia entre claves históricas inexistentes y evidencia real. |
-| `jira/BACKLOG_PROPUESTO.md` | cambios sugeridos, **sin ejecutar en Jira**. |
-| `jira/CAMBIOS_JIRA_PROPUESTOS.csv` | filas listas para aplicar manualmente: clave, campo, valor actual, valor propuesto y motivo. |
+| `jira/BACKLOG_PROPUESTO.md` | propuesta original y **resultado ejecutado en Jira el 20-11-2026**. |
+| `jira/CAMBIOS_JIRA_PROPUESTOS.csv` | 30 filas ejecutadas el 20-11-2026: clave, campo, valor actual, valor propuesto y motivo. |
 | `jira/CRITERIOS_ACEPTACION.md` | AC reales del plan de pruebas y dónde pegarlos, sin redactar criterios nuevos. |
 | `AUDITORIA_JIRA.md` | este documento. |
 | `DOCUMENTACION_GENERAL.md` | documento único de alcance, arquitectura y funcionamiento real. |

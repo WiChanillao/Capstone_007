@@ -177,4 +177,4 @@ Y decir explícitamente en la defensa:
 - `REG_Menu_Principal_top.png` — menú sin franja negra tras la regresión.
 - `BUG_Scroll_franja_negra.png` / `BUG_Scroll_corregido.png` — regresión visual y corrección original.
 - `APP_Puntos_MySQL.png` / `APP_Desafio_MySQL.png` — datos reales desde MySQL.
-- `COMO_EJECUTAR.md` — requisitos previos y comandos (Docker documentado, no ejecutado).
+- `COMO_EJECUTAR.md` — requisitos previos y comandos (Docker verificado: 3/3 contenedores `healthy`).

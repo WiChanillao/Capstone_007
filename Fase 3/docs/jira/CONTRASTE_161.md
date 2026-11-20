@@ -3,6 +3,7 @@
 **Fecha:** 20-11-2026  
 **Fuente:** exportación CSV real (161 filas, 190 campos) y código `main @ af7d14d`.  
 **Criterios de aceptación:** ningún issue tiene campo de AC en Jira; la fuente vigente es `docs/pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx` (40 casos).
+**Estado de esta tabla:** es la fotografía **anterior** a la aplicación del backlog. El 20-11-2026 se ejecutaron los 30 cambios autorizados; el estado vigente y la verificación están en el §4 de [`AUDITORIA_JIRA.md`](../AUDITORIA_JIRA.md) y en el §7 de [`BACKLOG_PROPUESTO.md`](BACKLOG_PROPUESTO.md).
 
 Clasificaciones usadas: **Alineado**, **Alineado con matiz**, **Entregable documental/BPMN**,
 **Deuda abierta coherente**, **Fuera de alcance declarado**, **Sustituido**, **Parcial**,
@@ -11,7 +12,7 @@ Clasificaciones usadas: **Alineado**, **Alineado con matiz**, **Entregable docum
 | Clave | Estado | Clasificación | Resumen | Evidencia / observación | Acción propuesta |
 |---|---|---|---|---|---|
 | REC-1 | Finalizada | Alineado | Curación y etiquetado del dataset base en Roboflow (3 clases) | dataset 3 clases en README/CRISP-DM | Mantener |
-| REC-2 | Finalizada | Duplicado probable | Entrenamiento YOLO11n - iteración 1 (dataset sin limpiar) | Mismo resumen que REC-34 | Comparar con REC-34; vincular si son la misma iteración |
+| REC-2 | Finalizada | Duplicado probable | Entrenamiento YOLO11n - iteración 1 (dataset sin limpiar) | Mismo resumen que REC-34 | Ejecutado: vínculo Relates con REC-34 |
 | REC-3 | Finalizada | Alineado | Endpoint REST de inferencia en FastAPI (/predict) | main.py POST /predict | Mantener |
 | REC-4 | Finalizada | Incongruencia documental | Catálogo semántico y esquema relacional de residuos (14 tablas) | 01_schema.sql tiene 15 tablas, no 14 | Corregir resumen a 15 tablas |
 | REC-5 | Finalizada | Alineado | Prototipo de interfaz web y arquitectura de componentes | React 19 + Vite + Tailwind en package.json | Mantener |
@@ -27,12 +28,12 @@ Clasificaciones usadas: **Alineado**, **Alineado con matiz**, **Entregable docum
 | REC-15 | Finalizada | Alineado con matiz | Pruebas unitarias de componentes frontend (Vitest 4/4) | Vitest: 24 pruebas tras PR 2; el ticket dice 4/4 | Actualizar conteo a 24 |
 | REC-16 | Finalizada | Fuera de alcance declarado | Panel analítico B2B/B2G y mapas de calor (no implementado) | Sin panel B2B/B2G | Reclasificar como decisión documentada |
 | REC-17 | Finalizada | Alineado con matiz | Pruebas E2E con Cypress: 3 casos ejecutados (alcance reducido) | Cypress: 4 pruebas en cypress/e2e/app.cy.js | Actualizar conteo a 4 |
-| REC-18 | Tareas por hacer | Deuda abierta coherente | UAT con usuarios reales y SUS (no ejecutada) | UAT/SUS no ejecutada | Mantener abierto; vincular REC-70 |
+| REC-18 | Tareas por hacer | Deuda abierta coherente | UAT con usuarios reales y SUS (no ejecutada) | UAT/SUS no ejecutada | Ejecutado: vínculo Relates con REC-70; sigue abierta |
 | REC-19 | Tareas por hacer | Deuda abierta coherente | Consolidación de la memoria técnica y preparación de defensa | Memoria/defensa en preparación | Mantener abierto |
 | REC-20 | En curso | Épica vigente | Épica: Modelo de visión y dataset | 15 hijos; mAP pendiente | Mantener en curso |
 | REC-21 | En curso | Épica vigente | Épica: Base de datos MySQL | 16 hijos; 15 tablas y puntos por validar | Mantener en curso |
-| REC-22 | Finalizada | Épica cerrada con dato inválido | Épica: Backend e integración | 16 hijos; vencimiento anterior a creación | Corregir vencimiento |
-| REC-23 | Finalizada | Épica cerrada con dato inválido | Épica: Frontend y experiencia de usuario | 41 hijos; vencimiento anterior a creación | Corregir vencimiento |
+| REC-22 | Finalizada | Épica cerrada con dato inválido | Épica: Backend e integración | 16 hijos; vencimiento anterior a creación | Ejecutado: vencimiento 30/nov/2026 |
+| REC-23 | Finalizada | Épica cerrada con dato inválido | Épica: Frontend y experiencia de usuario | 41 hijos; vencimiento anterior a creación | Ejecutado: vencimiento 30/nov/2026 |
 | REC-24 | En curso | Épica vigente | Épica: Documentación, pruebas y entrega | 56 hijos; UAT y defensa abiertas | Mantener en curso |
 | REC-25 | Finalizada | Entregable documental | Análisis del negocio y problemática del reciclaje | docs/crisp-dm/ | Mantener |
 | REC-26 | Finalizada | Entregable documental con matiz | Levantamiento de 100 requisitos funcionales y no funcionales | 100 RF/RNF; dos XLSX duplicados y parcialmente obsoletos | Consolidar XLSX de requisitos |
@@ -43,7 +44,7 @@ Clasificaciones usadas: **Alineado**, **Alineado con matiz**, **Entregable docum
 | REC-31 | Finalizada | Alineado | Análisis exploratorio y caracterización morfológica (EDA) | EDA en CrispDM_Ecolearn.ipynb | Mantener |
 | REC-32 | Finalizada | Alineado | Estandarización de 485 etiquetas poligonales a bounding boxes | 485 etiquetas a bounding boxes | Mantener |
 | REC-33 | Finalizada | Alineado | Oversampling de la clase minoritaria Aluminio (+252 imágenes) | Oversampling +252 Aluminio | Mantener |
-| REC-34 | Finalizada | Duplicado probable | Entrenamiento YOLO11n - iteración 1 (dataset sin limpiar) | Mismo resumen que REC-2 | Comparar con REC-2; vincular si son la misma iteración |
+| REC-34 | Finalizada | Duplicado probable | Entrenamiento YOLO11n - iteración 1 (dataset sin limpiar) | Mismo resumen que REC-2 | Ejecutado: vínculo Relates con REC-2 |
 | REC-35 | Finalizada | Alineado | Entrenamiento YOLO11n - iteración 2 (dataset limpio y balanceado) | Iteración 2, mAP 0,562 | Mantener |
 | REC-36 | Finalizada | Alineado | Evaluación del modelo y matriz de confusión | Matriz de confusión en CRISP-DM | Mantener |
 | REC-37 | Finalizada | Incongruencia documental | Diseño e implementación de la base MySQL ecoscan (14 tablas) | DDL crea 15 tablas | Corregir resumen a 15 tablas |
@@ -79,7 +80,7 @@ Clasificaciones usadas: **Alineado**, **Alineado con matiz**, **Entregable docum
 | REC-67 | Finalizada | Alineado | Docker y Docker Compose para el backend | 3 contenedores healthy + healthchecks | Mantener; actualizar evidencia |
 | REC-68 | Finalizada | Fuera de alcance declarado | Panel B2B de reportes | Sin panel B2B en main | Reclasificar como decisión documentada |
 | REC-69 | Finalizada | Alineado | Pruebas E2E con Cypress | 4 pruebas Cypress | Mantener |
-| REC-70 | Tareas por hacer | Deuda abierta coherente | UAT con usuarios reales | Duplica REC-18 | Fusionar/vincular con REC-18 |
+| REC-70 | Tareas por hacer | Deuda abierta coherente | UAT con usuarios reales | Duplica REC-18 | Ejecutado: vínculo Relates con REC-18; sigue abierta |
 | REC-71 | Finalizada | Alineado | Endpoint /health y logging estructurado | /health en main.py | Mantener |
 | REC-72 | Finalizada | Entregable BPMN | BPMN 01 Escáner IA: escanear un residuo (cliente) | Modelo 01 en paquete v3 | Mantener; verificar importación Bizagi |
 | REC-73 | Finalizada | Entregable BPMN | BPMN 02 Servicio de inferencia POST /predict | Modelo 02 en paquete v3 | Mantener; importar en Bizagi |
@@ -116,7 +117,7 @@ Clasificaciones usadas: **Alineado**, **Alineado con matiz**, **Entregable docum
 | REC-104 | Finalizada | Alineado | Rechazar imágenes borrosas o de baja calidad | Rechazo por nitidez sin detecciones | Mantener |
 | REC-105 | En curso | Deuda abierta coherente | Definir política CORS explícita para producción | CORS por entorno; falta dominio producción | Mantener en curso |
 | REC-106 | Finalizada | Alineado | Implementar rate limiting por IP o sesión en /predict | Rate limit 30/min en /predict | Mantener |
-| REC-107 | Finalizada | Alineado con matiz | Agregar cabeceras de seguridad CSP, X-Content-Type-Options y HSTS | CSP estricta en main; relajación /docs sin commitear | Decidir si se commitea el cambio local |
+| REC-107 | Finalizada | Alineado con matiz | Agregar cabeceras de seguridad CSP, X-Content-Type-Options y HSTS | CSP con relajación sólo en /docs, /redoc y /docs/*; commiteada en d85d5cd | Verificado: commiteada y subida en d85d5cd |
 | REC-108 | Finalizada | Alineado | Verificar consultas parametrizadas y escape de salida | Consultas parametrizadas y escape en mapa | Mantener |
 | REC-109 | Finalizada | Alineado con matiz | Auditar dependencias en el pipeline de CI | pip-audit en CI; 4 CVE moderate por debajo de high | Mantener; documentar deuda |
 | REC-110 | Finalizada | Documentado como cerrado; evidencia a reforzar | Prueba de carga: 50 solicitudes concurrentes a /predict | No se localizó salida de prueba de carga | Adjuntar medición o aclarar |
@@ -137,8 +138,8 @@ Clasificaciones usadas: **Alineado**, **Alineado con matiz**, **Entregable docum
 | REC-125 | Finalizada | Alineado con matiz | Indicar si un punto está abierto según su horario estructurado | Horario estructurado simple; REC-154 abre bloques múltiples | Mantener; vincular REC-154 |
 | REC-126 | Finalizada | Alineado | Enlace “Cómo llegar” usando coordenadas del punto | Enlace "Cómo llegar" con coordenadas | Mantener |
 | REC-127 | Finalizada | Alineado | Ordenar puntos por cercanía con geolocalización autorizada | Geolocalización autorizada en MapaPuntos.jsx | Mantener |
-| REC-128 | Finalizada | Incongruencia: no en main | Guardar escenarios del simulador asociados a la sesión | No hay lógica de escenarios en frontend | Reabrir o renombrar como decisión sustituida |
-| REC-129 | Finalizada | Incongruencia: no en main | Comparar dos escenarios guardados del simulador | No hay comparación de escenarios | Reabrir o renombrar como decisión sustituida |
+| REC-128 | Tareas por hacer | Corregido el 20-11-2026 | Guardar escenarios del simulador asociados a la sesión | No hay lógica de escenarios en frontend | Ejecutado: Tareas por hacer + resumen SUSTITUIDO |
+| REC-129 | Tareas por hacer | Corregido el 20-11-2026 | Comparar dos escenarios guardados del simulador | No hay comparación de escenarios | Ejecutado: Tareas por hacer + resumen SUSTITUIDO |
 | REC-130 | Finalizada | Alineado | Pantalla de Menú Principal (landing) de EcoLearn Chile | Menú Principal en App.jsx | Mantener |
 | REC-131 | Finalizada | Alineado | Cámara en vivo (web/rear) y captura en el Escáner IA | Cámara web/rear en Escáner IA | Mantener |
 | REC-132 | Finalizada | Alineado | Configuración de VS Code para ejecutar backend y frontend sin errores | .vscode/tasks.json y scripts/ | Mantener |
@@ -166,7 +167,7 @@ Clasificaciones usadas: **Alineado**, **Alineado con matiz**, **Entregable docum
 | REC-154 | Tareas por hacer | Deuda abierta coherente | Soportar horarios con multiples bloques y cierres parciales en la app | Horarios con múltiples bloques no implementados | Mantener abierto |
 | REC-155 | Tareas por hacer | Deuda abierta coherente | Validar en terreno las coordenadas de los 25 puntos externos | 25 puntos externos sin validar en terreno | Mantener abierto |
 | REC-156 | Tareas por hacer | Deuda abierta coherente | Validar materiales de los puntos externos con fuentes oficiales | Materiales externos por confirmar | Mantener abierto |
-| REC-157 | Tareas por hacer | Incongruencia: fix ya en main | Error: la PWA sirve el bundle cacheado tras un despliegue | autoUpdate + cacheId + cleanupOutdatedCaches + sw.test.js | Cerrar o vincular al fix |
+| REC-157 | Finalizada | Corregido el 20-11-2026 | Error: la PWA sirve el bundle cacheado tras un despliegue | autoUpdate + cacheId + cleanupOutdatedCaches + sw.test.js | Ejecutado: Finalizada + comentario de evidencia |
 | REC-158 | Finalizada | Alineado | Error: encabezado de Puntos Limpios desalineado (filtros y boton) | Encabezado de Puntos Limpios | Mantener |
 | REC-159 | Finalizada | Alineado con matiz | Error: etiqueta de region se superponia a los controles de zoom del mapa | Etiqueta de región lejos del zoom | Mantener; no interpretar "región" como login |
 | REC-160 | Finalizada | Alineado | Galería interactiva de consejos y videos en el Eco-Simulador RM | Galería de consejos/videos en App.jsx | Mantener |

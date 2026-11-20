@@ -1,4 +1,4 @@
-# Criterios de aceptación — fuente vigente y propuesta de incorporación a Jira
+# Criterios de aceptación — fuente vigente e incorporación a Jira (aplicada el 20-11-2026)
 
 **Fecha:** 20-11-2026  
 **Hecho verificable:** la exportación de Jira (190 campos) **no contiene** ningún campo de “criterios de aceptación”. Por tanto, no se inventan criterios nuevos: se reutilizan los del plan de pruebas oficial.
@@ -11,7 +11,7 @@
 
 ## 2. Casos clave para el reconocimiento de residuos y el tablero REC
 
-| Ticket Jira | Caso | Criterio de aceptación real (texto del plan) | Estado del caso | Acción propuesta en Jira |
+| Ticket Jira | Caso | Criterio de aceptación real (texto del plan) | Estado del caso | Acción en Jira (20-11-2026) |
 |---|---|---|---|---|
 | `REC-142`, `REC-71` | CP-01 | `GET /health` con MySQL disponible → 200, `mysql_conectado:true`, `modelo_activo:"best.pt"` | Ejecutado | Copiar como comentario/AC de evidencia. |
 | `REC-142` | CP-02 | `GET /health` sin MySQL → 200 con estado `degraded`; **no** forzar 200 | Ejecutado | Copiar como AC; dejar claro que `degraded` es correcto. |
@@ -36,10 +36,12 @@ El plan de pruebas registra explícitamente qué requisitos del XLSX quedaron **
 ## 4. Reglas para cualquier incorporación a Jira
 
 1. Copiar el texto del Excel/Markdown; **no reformular criterios nuevos**.
-2. No crear un field personalizado: si no existe, pegar el AC como comentario con prefijo `AC (plan de pruebas) — CP-xx`.
+2. No se creó un field personalizado: los AC se pegaron como comentario con prefijo `AC (plan de pruebas) — CP-xx` en 17 tickets abiertos; las épicas llevaron la referencia al plan de pruebas.
 3. Mantener el AC de `REC-105` como pendiente: no marcar CORS de producción como cerrado sin dominio real.
 4. Mantener `REC-18`/`REC-70` abiertos: el artefacto de `n=14` es salida de `tests/diagnostico_400.py`, no una encuesta SUS.
 5. No adjuntar valores de `.env`, tokens ni claves junto con la evidencia.
+
+**Resultado aplicado:** los 17 tickets abiertos recibieron el comentario de AC; las épicas `REC-20`, `REC-21` y `REC-24` recibieron la referencia al plan. No se creó ningún campo personalizado y la verificación devolvió 0 anomalías.
 
 > Nota de coherencia: el plan de pruebas no nombra el código de error de archivo
 > pesado, pero `main.py` usa `ARCHIVO_MUY_PESADO` y una evidencia histórica

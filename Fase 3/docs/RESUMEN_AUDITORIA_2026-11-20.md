@@ -2,7 +2,7 @@
 
 ## 1. Qué se revisó
 
-- **Jira en vivo:** exportación real desde la sesión de Brave (`CSV: todos los campos`), **161 issues**, `REC-1` … `REC-161`, 190 columnas. No se modificó ningún ticket.
+- **Jira en vivo:** exportación real desde la sesión de Brave (`CSV: todos los campos`), **161 issues**, `REC-1` … `REC-161`, 190 columnas. La auditoría fue inicialmente de solo lectura; el 20-11-2026 se aplicaron los 30 cambios autorizados (ver §6).
 - **Repositorio real:** `main @ af7d14d`, PR 1 (`092fc88`) y PR 2 (`af7d14d`) mergeados; rama `feature/umbrales-por-clase` sin merge.
 - **Código contrastado:** `main.py`, `rutas_db.py`, `docker-compose.yml`, `01_schema.sql`, `02_seed.sql`, `App.jsx`, `trivia.js`, `MapaPuntos.jsx`, `vite.config.js`, `ci.yml`, plan de pruebas y evidencia Docker/CI/Colab.
 - **Inventario local y Git:** artefactos Jira en `docs/`, XLSX/PPTX/DOCX, commits históricos y worktrees.
@@ -11,7 +11,7 @@
 
 - Alcance real coherente: **YOLO11n `best.pt`**, 3 clases, **umbral global `0,50`**, impacto de **30 días desde `ecoscan.escaneos`**, visitante anónimo con `id_sesion`.
 - Docker 3/3 `healthy`, `/health` con MySQL conectado, `/api/db/puntos` con 35 marcadores.
-- Swagger `/docs` respondiendo 200 con CSP ajustada sólo en rutas de documentación (cambio local aún no commiteado).
+- Swagger `/docs` respondiendo 200 con CSP ajustada sólo en rutas de documentación (commiteado en `d85d5cd` y subido a `origin/main`).
 - Mapa Leaflet/OpenStreetMap con filtros, procedencia y coordenadas aproximadas visibles.
 - Desafío Verde con 25 preguntas, rondas sin repetir y avance automático desde escaneos.
 - CI corregido: `build → test:unit`, trigger `fix/**`, PR 1 mergeado.
@@ -38,8 +38,8 @@
 | `docs/jira/CONTRASTE_161.md` / `.csv` | Contraste **uno por uno** de los 161 issues. |
 | `docs/jira/INVENTARIO_REC.csv` | Inventario normalizado de 161 filas. |
 | `docs/jira/MAPEO_CLAVES_REALES.md` | Destino real de las claves `REC-162`…`REC-170`. |
-| `docs/jira/BACKLOG_PROPUESTO.md` | Cambios sugeridos para Jira, **sin aplicar**. |
-| `docs/jira/CAMBIOS_JIRA_PROPUESTOS.csv` | Filas listas para aplicar manualmente en Jira (campo, valor actual, propuesto y motivo). |
+| `docs/jira/BACKLOG_PROPUESTO.md` | Backlog **ejecutado en Jira el 20-11-2026** (30 cambios); conserva la propuesta y el resultado verificado. |
+| `docs/jira/CAMBIOS_JIRA_PROPUESTOS.csv` | Las 30 filas se ejecutaron en Jira el 20-11-2026 (clave, campo, valor actual, propuesto y motivo). |
 | `docs/jira/CRITERIOS_ACEPTACION.md` | AC reales del plan de pruebas y su destino en los tickets. |
 
 ## 5. Archivos actualizados
@@ -61,11 +61,12 @@
 - `Fase 3/docs/requisitos/EcoScan_Requisitos_Funcionales.xlsx`: estados reconciliados con `main` (RF-05/06, RNF-03/11/21 implementados; RF-15/16/18/20/22/RF-44 ajustados por `REC-140`); se eliminó la copia duplicada de `Fase 2/Evidencia/`.
 - `Fase 3/ecoscan-backend/.env.example`: `UMBRAL_NITIDEZ=50`, alineado con `main.py`, `docker-compose.yml` y la plantilla raíz.
 
-## 6. Estado final y pendientes de autorización
+## 6. Estado final y trabajo pendiente
 
-- **Commit `d85d5cd` subido a `origin/main`** (sin PR ni merge adicionales; PR 3 intacto).
-- No se modificó Jira: el backlog propuesto sigue listo para revisar y aplicar sólo si se autoriza.
+- **Commits `d85d5cd` y `2cf351a` subidos a `origin/main`** (sin PR ni merge adicionales; PR 3 intacto).
+- **Jira actualizado el 20-11-2026 con autorización explícita:** 30 cambios aplicados y verificados (10 resúmenes, 3 estados, 2 fechas, 2 vínculos, 17 comentarios de AC y 7 comentarios de acción; **0 anomalías**). No se borró ningún ticket ni se crearon `REC-162`…`REC-170`.
 - No se borraron volúmenes ni se ejecutó `docker compose down -v`.
 - No se escribieron credenciales ni tokens; sólo se listan nombres de variables.
 - `tests/diagnostico_400.py` continúa sin versionarse, según su propia cabecera «NO versionar».
-- Pendiente de decisión: aplicar los 30 cambios propuestos en Jira e importar en Bizagi los modelos `02`–`14`.
+- **Pendiente externo:** importar en Bizagi los modelos BPMN `02`–`14`.
+- **Deuda abierta del tablero (no ocultar):** mAP `0,562 < 0,65` (`REC-63`), UAT/SUS (`REC-18`/`REC-70`), CORS de producción (`REC-105`), rotación de clave (`REC-64`/`REC-122`), 25 puntos externos por validar (`REC-155`/`REC-156`), horarios con bloques múltiples (`REC-154`) y respaldo/retención sin programar.

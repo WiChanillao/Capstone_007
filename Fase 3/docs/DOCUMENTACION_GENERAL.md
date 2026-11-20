@@ -221,12 +221,12 @@ El orden `build → test:unit` y el trigger `fix/**` son el fix de PR 1; no volv
 | [`jira/CONTRASTE_161.md`](jira/CONTRASTE_161.md) / `.csv` | **Contraste de los 161 issues**, uno por uno, contra el repo |
 | [`jira/INVENTARIO_REC.csv`](jira/INVENTARIO_REC.csv) | Inventario normalizado: 161 filas, épica, estado, fechas, sprint |
 | [`jira/MAPEO_CLAVES_REALES.md`](jira/MAPEO_CLAVES_REALES.md) | Claves `REC-162`…`REC-170` inexistentes y su destino real |
-| [`jira/BACKLOG_PROPUESTO.md`](jira/BACKLOG_PROPUESTO.md) | Cambios propuestos, **no aplicados en Jira** |
-| [`jira/CAMBIOS_JIRA_PROPUESTOS.csv`](jira/CAMBIOS_JIRA_PROPUESTOS.csv) | Filas listas para aplicar manualmente |
+| [`jira/BACKLOG_PROPUESTO.md`](jira/BACKLOG_PROPUESTO.md) | Propuesta original y **backlog ejecutado en Jira el 20-11-2026** (30 cambios) |
+| [`jira/CAMBIOS_JIRA_PROPUESTOS.csv`](jira/CAMBIOS_JIRA_PROPUESTOS.csv) | 30 filas ejecutadas en Jira el 20-11-2026 |
 | [`jira/CRITERIOS_ACEPTACION.md`](jira/CRITERIOS_ACEPTACION.md) | AC reales del plan de pruebas y dónde pegarlos |
 | [`pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx`](pruebas/PLAN_DE_PRUEBAS_EcoLearn.xlsx) | 40 casos con columna “Criterios de aceptación” |
 
-**Ningún issue de Jira tiene campo de criterios de aceptación.** Los AC vigentes se toman del plan de pruebas; no se inventan criterios nuevos. Las claves `REC-162`, `REC-167` y `REC-170` no existen: el máximo real es `REC-161`. El bug del Desafío y el fix de CI están mergeados en PR 2 y PR 1 respectivamente; los umbrales por clase siguen fuera de `main`.
+**Ningún issue de Jira tiene campo de criterios de aceptación.** Los AC vigentes se toman del plan de pruebas; no se inventan criterios nuevos. El 20-11-2026 se aplicaron como comentarios en 17 tickets abiertos, con referencia al plan en las épicas `REC-20`, `REC-21` y `REC-24`. Las claves `REC-162`, `REC-167` y `REC-170` no existen: el máximo real es `REC-161`; se trataron como “verificado, sin cambio”. El bug del Desafío y el fix de CI están mergeados en PR 2 y PR 1 respectivamente; los umbrales por clase siguen fuera de `main`.
 
 ---
 
@@ -242,8 +242,8 @@ El orden `build → test:unit` y el trigger `fix/**` son el fix de PR 1; no volv
 8. Sin autenticación por diseño: `id_sesion` es controlado por el cliente. Aceptable para demo académica, no para datos reales.
 9. Rate limit en memoria por IP: detrás de NAT/túnel varios visitantes comparten cuota.
 10. `npm audit` reporta vulnerabilidades *moderate* por debajo del umbral `high`; no se aplicó el arreglo breaking.
-11. Existen cambios locales sin commitear en `docker-compose.yml` (`BACKEND_MYSQL_HOST`, `extra_hosts`) y `main.py` (CSP relajada sólo en `/docs`, `/redoc`): decidir si se incorporan antes de congelar la entrega.
-12. Dos XLSX de requisitos byte-idénticos y parcialmente obsoletos; consolidar en uno solo.
+11. **Resuelto:** los cambios de `docker-compose.yml` (`BACKEND_MYSQL_HOST`, `extra_hosts`) y `main.py` (CSP relajada sólo en `/docs`, `/redoc`, `/docs/*`) quedaron commiteados en `d85d5cd` y subidos a `origin/main`.
+12. **Resuelto:** los dos XLSX byte-idénticos se consolidaron en `docs/requisitos/EcoScan_Requisitos_Funcionales.xlsx`; la copia de `Fase 2/Evidencia/` se eliminó y sustituyó por un README puntero.
 
 ---
 
@@ -252,7 +252,7 @@ El orden `build → test:unit` y el trigger `fix/**` son el fix de PR 1; no volv
 1. **Este documento** — alcance, nombres y flujos vigentes.
 2. [`DECISIONES.md`](DECISIONES.md) — decisiones técnicas y su justificación (actualizar líneas citadas y número de tablas).
 3. [`ENTREGA.md`](ENTREGA.md) — guía operativa de entrega (actualizar conteos de pruebas y nombres de módulos).
-4. [`AUDITORIA_JIRA.md`](AUDITORIA_JIRA.md) y [`jira/`](jira/) — verdad del tablero y cambios propuestos.
+4. [`AUDITORIA_JIRA.md`](AUDITORIA_JIRA.md) y [`jira/`](jira/) — verdad del tablero y cambios aplicados (20-11-2026).
 5. `ESTUDIO_PROYECTO_TITULO.md`, `evidencia/` y `pruebas/` — registros históricos con fecha; se conservan, pero no redefinen el alcance vigente.
 
 Cualquier corrección futura debe actualizar primero este archivo y el contraste de Jira, y después los documentos históricos, para evitar que el tablero y la documentación vuelvan a divergir.
