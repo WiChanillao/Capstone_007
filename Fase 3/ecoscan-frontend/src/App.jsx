@@ -768,7 +768,9 @@ export default function App() {
         try { detalle = await res.json(); } catch (e) { detalle = null; }
         const cuerpo = detalle?.detail;
         const codigo = cuerpo?.codigo || (typeof cuerpo === 'string' ? cuerpo : null);
-        const mensaje = cuerpo?.mensaje || MENSAJES_ERROR[codigo]
+        // El mapa local manda: evita mostrar textos internos o genéricos del
+        // servidor y garantiza una acción concreta para cada código conocido.
+        const mensaje = MENSAJES_ERROR[codigo] || cuerpo?.mensaje
           || (res.status >= 500
             ? 'El servidor no pudo procesar la imagen. Inténtalo de nuevo.'
             : 'No se pudo analizar la imagen. Revisa la foto e inténtalo de nuevo.');
