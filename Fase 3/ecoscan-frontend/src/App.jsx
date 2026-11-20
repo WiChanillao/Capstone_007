@@ -27,7 +27,7 @@ const MENSAJES_ERROR = {
   ARCHIVO_CORRUPTO: 'El archivo está corrupto o no contiene una imagen válida. Toma otra foto.',
   ARCHIVO_MUY_PESADO: 'La imagen supera el límite de 10 MB. Elije una foto más pequeña.',
   DIMENSIONES_EXCEDIDAS: 'La imagen es demasiado grande (máximo 8000×8000 px).',
-  IMAGEN_BORROSA: 'No se pudo identificar el residuo y la foto tiene poca definición. Acércate y mejora la luz.',
+  IMAGEN_BORROSA: 'La foto está borrosa. Limpia la lente, sujeta el teléfono con firmeza y vuelve a tomarla con buena luz.',
   ID_SESION_INVALIDO: 'Hubo un problema con la sesión. Recarga la página y vuelve a intentarlo.',
   DEMASIADAS_SOLICITUDES: 'Demasiados análisis en un minuto. Espera un momento y vuelve a intentarlo.',
 };
@@ -438,6 +438,7 @@ export default function App() {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const sesionRef = useRef(null);
+  const solicitudPorFoto = useRef(new WeakMap());
 
   // Estadísticas reales del usuario: se actualizan solas con cada escaneo.
   const [estadisticas, setEstadisticas] = useState({
@@ -737,6 +738,13 @@ export default function App() {
       const formData = new FormData();
       formData.append('file', archivo);
       formData.append('id_sesion', await asegurarSesion());
+      let solicitud = solicitudPorFoto.current.get(file);
+      if (!solicitud) {
+        solicitud = Array.from(crypto.getRandomValues(new Uint8Array(16)),
+          byte => byte.toString(16).padStart(2, '0')).join('');
+        solicitudPorFoto.current.set(file, solicitud);
+      }
+      formData.append('id_solicitud', solicitud);
       const res = await fetch(API_URL + '/predict', {
         method: 'POST',
         body: formData,
@@ -762,8 +770,7 @@ export default function App() {
       const rechazadas = data.detecciones_rechazadas || [];
       if (rechazadas.length > 0 && (data.detecciones || []).length === 0) {
         const mejor = Math.max(...rechazadas.map(x => Number(x.confianza) || 0));
-        avisos.push('Confianza ' + Math.round(mejor * 100) + '% por debajo del umbral de '
-          + Math.round((data.umbral_confianza || 0.5) * 100) + '%. Acércate y mejora la luz.');
+        avisos.push('Resultado de baja confianza (' + Math.round(mejor * 100) + '%). Fotografía un solo objeto, de cerca y sobre un fondo liso.');
       }
 
       const encontrados = new Set();
@@ -782,7 +789,9 @@ export default function App() {
       });
 
       if (encontrados.size === 0) {
-        avisos.push('No detecté residuos; acércate, mejora la luz o cambia el ángulo.');
+        if (rechazadas.length === 0) {
+          avisos.push('No se detectó un material compatible. Centra una lata, cartón o plástico en la foto y evita objetos que lo tapen.');
+        }
       } else {
         setElementosDetectados(Array.from(encontrados));
         setConfianzas(conf);

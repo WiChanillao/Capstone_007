@@ -253,3 +253,5 @@ Confirmado por búsqueda en todo el código y la documentación vigente:
 - POST /predict acepta hasta 36 caracteres de sesion, igual que las columnas MySQL.
 - /health conserva HTTP 200 y comunica la disponibilidad de MySQL en mysql_conectado. Compose comprueba ese campo.
 - La exportacion de inferencias, la escritura directa de inferencias y la retencion se sirven desde el puerto local de FastAPI. nginx excluye esas rutas del proxy de la PWA.
+
+- La PWA reutiliza el identificador de solicitud al reintentar una foto en la misma sesión. MySQL impide volver a contar un escaneo aceptado con esa clave.

@@ -283,6 +283,14 @@ try:
     except Exception as err:
         print(f"⚠️ Aviso migración de escaneos: {err}")
 
+    with engine.begin() as conn:
+        columnas = {f[0] for f in conn.execute(text("SHOW COLUMNS FROM escaneos")).fetchall()}
+        if "id_solicitud" not in columnas:
+            conn.execute(text(
+                "ALTER TABLE escaneos ADD COLUMN id_solicitud CHAR(32) NULL, "
+                "ADD UNIQUE KEY uq_escaneos_solicitud (id_sesion, id_solicitud)"
+            ))
+
     # Migración para ordenar puntos por cercanía (REC-127).
     try:
         with engine.begin() as conn:
@@ -425,7 +433,11 @@ def detalle_modelo(modelo_id: str):
 
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
+async def predict(
+    file: UploadFile = File(...),
+    id_sesion: str = Form(None),
+    id_solicitud: str | None = Form(None),
+):
     inicio = time.perf_counter()
     sesion = (id_sesion or "").strip() or None
     if sesion is not None and not re.fullmatch(r"[A-Za-z0-9_-]{1,36}", sesion):
@@ -436,6 +448,16 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
                 "ID_SESION_INVALIDO",
                 "id_sesion debe tener entre 1 y 36 caracteres: letras, números, guion o guion bajo.",
                 "id_sesion",
+            ),
+        )
+    if id_solicitud is not None and (
+        not sesion or not re.fullmatch(r"[0-9a-f]{32}", id_solicitud)
+    ):
+        raise HTTPException(
+            status_code=422,
+            detail=error_detail(
+                "ID_SOLICITUD_INVALIDO", "La solicitud necesita una sesión y un identificador válido.",
+                "id_solicitud",
             ),
         )
     # Rechazar archivos > 10 MB antes de cargarlos en memoria. Se revisa la
@@ -578,7 +600,7 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
             escaneo = (
                 ", ".join(sorted(clases_unicas)), MODEL_PATH, len(detecciones), sesion,
                 conteo_clases.get("Carton", 0), conteo_clases.get("Aluminio", 0),
-                conteo_clases.get("Plastico", 0),
+                conteo_clases.get("Plastico", 0), id_solicitud,
             )
         try:
             guardar_resultado_escaneo(sesion, inferencias, escaneo)

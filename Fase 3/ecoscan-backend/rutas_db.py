@@ -115,11 +115,13 @@ def guardar_resultado_escaneo(sesion, inferencias, escaneo=None):
                 cur.execute(
                     """INSERT INTO escaneos
                     (fecha, materiales_detectados, modelo_usado, total_objetos, id_sesion,
-                     cant_carton, cant_aluminio, cant_plastico)
-                    VALUES (NOW(),%s,%s,%s,%s,%s,%s,%s)""",
+                     cant_carton, cant_aluminio, cant_plastico, id_solicitud)
+                    VALUES (NOW(),%s,%s,%s,%s,%s,%s,%s,%s)
+                    ON DUPLICATE KEY UPDATE id = id""",
                     escaneo,
                 )
-            cur.executemany(INSERT_INFERENCIA, [valores_inferencia(d) for d in inferencias])
+            if escaneo is None or cur.rowcount != 0:
+                cur.executemany(INSERT_INFERENCIA, [valores_inferencia(d) for d in inferencias])
         conn.commit()
     except Exception:
         conn.rollback()
