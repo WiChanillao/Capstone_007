@@ -17,7 +17,7 @@ disponible desde un solo clone.
 `ESTRUCTURA_PROYECTO_DOCKER.png` es una **captura real de Docker Desktop** (no
 un diagrama diseñado), tomada de la ventana del proyecto `capstone`. Muestra
 los tres contenedores en ejecución con sus puertos (`mysql 3307:3306`,
-`backend 8000:8000`, `frontend 5173:80`), el estado del motor y los logs de
+`backend 8000:8000`, `frontend 127.0.0.1:5173:8080`), el estado del motor y los logs de
 `/health` y `/v1/models` respondiendo `200 OK`. El texto de la captura se
 verificó por OCR, no por inspección visual.
 
