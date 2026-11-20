@@ -154,7 +154,9 @@ def test_predict_rechaza_foto_borrosa(monkeypatch):
         files={"file": ("borrosa.png", _imagen(nitida=False), "image/png")},
     )
     assert r.status_code == 400
-    assert r.json()["detail"]["codigo"] == "BORROSA"
+    detalle = r.json()["detail"]
+    assert detalle["codigo"] == "IMAGEN_BORROSA"
+    assert detalle["campo"] == "file"
 
 
 def test_predict_devuelve_estructura_con_imagen_nitida(monkeypatch):

@@ -83,6 +83,21 @@ def mime_declarado(objeto):
     return (contenido or "").split(";")[0].strip().lower() or None
 
 
+def calcular_nitidez(imagen):
+    """Varianza del Laplaciano en grayscale, reescalado a 640 px de lado largo.
+
+    Normalizar evita que una foto de 12 MP parezca más nítida que la misma
+    foto de 2 MP solo por tener más píxeles.
+    """
+    if max(imagen.size) > LADO_NITIDEZ:
+        escala = LADO_NITIDEZ / max(imagen.size)
+        imagen = imagen.resize(
+            (max(1, int(imagen.width * escala)), max(1, int(imagen.height * escala)))
+        )
+    gris = cv2.cvtColor(np.array(imagen), cv2.COLOR_RGB2GRAY)
+    return round(float(cv2.Laplacian(gris, cv2.CV_64F).var()), 2)
+
+
 @app.middleware("http")
 async def seguridad_y_limite(request: Request, call_next):
     ip = request.client.host if request.client else "desconocida"
@@ -254,7 +269,11 @@ if not os.path.exists(MODEL_PATH):
     MODEL_PATH = "yolov8n.pt"
     print("⚠️ best.pt no encontrado: usando baseline yolov8n.pt (descarga automática).")
 UMBRAL_CONFIANZA = float(os.getenv("UMBRAL_CONFIANZA", "0.5"))
-UMBRAL_NITIDEZ = float(os.getenv("UMBRAL_NITIDEZ", "100"))
+# Calibrado sobre 26 fotos reales disponibles reescaladas a 640 px: min 128.39,
+# p05 324.68, mediana 2527.54. Con 50 se rechaza 0/26 (0 %) y se sigue
+# detectando el caso sintético "cartón liso con logo IDEAL" (20.6).
+LADO_NITIDEZ = 640
+UMBRAL_NITIDEZ = float(os.getenv("UMBRAL_NITIDEZ", "50"))
 print(f"🟢 Cargando modelo de visión artificial desde: {MODEL_PATH}")
 model = YOLO(MODEL_PATH)
 
@@ -412,24 +431,9 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
                                 "La imagen supera el tamaño máximo de 8000x8000 píxeles.", "file"),
         )
 
-    # REC-104: rechazar fotos borrosas antes de clasificar.
-    gris = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
-    nitidez = float(cv2.Laplacian(gris, cv2.CV_64F).var())
-    if nitidez < UMBRAL_NITIDEZ:
-        try:
-            guardar_inferencia(Inferencia(
-                id_sesion=(id_sesion or "").strip() or None,
-                id_material=None,
-                resultado="BORROSA",
-                confianza=None,
-                latencia_ms=int((time.perf_counter() - inicio) * 1000),
-            ))
-        except Exception:
-            pass
-        raise HTTPException(
-            status_code=400,
-            detail={"codigo": "BORROSA", "mensaje": "La foto salió borrosa. Toma otra con buena luz y sin movimiento."}
-        )
+    # REC-104: medir nitidez normalizada, pero NO rechazar antes de inferir.
+    # Si el modelo detecta el objeto, la foto es válida aunque tenga poca textura.
+    nitidez = calcular_nitidez(image)
 
     # Inferencia con YOLO
     results = model(image)
@@ -456,6 +460,29 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
             detecciones.append(item)
             clases_unicas.add(class_name)
             conteo_clases[class_name] = conteo_clases.get(class_name, 0) + 1
+
+    # Solo se rechaza por nitidez si el modelo NO encontró nada. Una caja lisa
+    # con logo puede tener Laplaciano bajo y seguir siendo una foto válida.
+    if not detecciones and nitidez < UMBRAL_NITIDEZ:
+        registrar_rechazo("IMAGEN_BORROSA", campo="file", mime=mime,
+                          bytes_archivo=len(contents), ancho=image.width,
+                          alto=image.height, nitidez=nitidez)
+        try:
+            guardar_inferencia(Inferencia(
+                id_sesion=sesion,
+                id_material=None,
+                resultado="BORROSA",
+                confianza=None,
+                latencia_ms=int((time.perf_counter() - inicio) * 1000),
+            ))
+        except Exception as err:
+            log_evento("error_guardar_inferencia", etapa="IMAGEN_BORROSA", error=str(err))
+        raise HTTPException(
+            status_code=400,
+            detail=error_detail("IMAGEN_BORROSA",
+                                "No se pudo identificar el residuo y la foto tiene poca definición. Acércate y mejora la luz.",
+                                "file"),
+        )
 
     # Solo cuenta como escaneo real si hubo detecciones aceptadas.
     if db_activa and SessionLocal and detecciones:
@@ -521,6 +548,10 @@ async def predict(file: UploadFile = File(...), id_sesion: str = Form(None)):
         "conteo_materiales": conteo_clases,
         "umbral_confianza": UMBRAL_CONFIANZA,
         "latencia_ms": latencia_ms,
+        "calidad_imagen": {
+            "nitidez": nitidez,
+            "aviso": "baja_nitidez" if nitidez < UMBRAL_NITIDEZ else None,
+        },
     }
 
 if __name__ == "__main__":
