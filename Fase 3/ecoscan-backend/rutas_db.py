@@ -1,6 +1,7 @@
 """Rutas /db/... para EcoLearn Chile (FastAPI + MySQL ecoscan).
 
-Expone los datos reales de las 14 tablas cargadas en MySQL para los 4 módulos.
+Expone los datos reales del esquema MySQL `ecoscan` (15 tablas, 14 con filas
+semilla) para los 4 módulos.
 Se usa pymysql (ya instalado en el entorno del proyecto).
 """
 import os

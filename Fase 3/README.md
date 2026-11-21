@@ -15,7 +15,9 @@ desafío verde.
 > módulos y la deuda conocida están en
 > [`docs/DOCUMENTACION_GENERAL.md`](docs/DOCUMENTACION_GENERAL.md). El contraste
 > de los 161 issues de Jira contra este código está en
-> [`docs/AUDITORIA_JIRA.md`](docs/AUDITORIA_JIRA.md).
+> [`docs/AUDITORIA_JIRA.md`](docs/AUDITORIA_JIRA.md). La ruta completa de los
+> datos (dataset → modelo → API → MySQL → frontend → BPMN → Jira) está en
+> [`docs/TRAZABILIDAD_DATOS.md`](docs/TRAZABILIDAD_DATOS.md).
 
 ## Arquitectura
 

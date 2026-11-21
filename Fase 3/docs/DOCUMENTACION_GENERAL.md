@@ -107,7 +107,7 @@ flowchart TB
 
 Puertos publicados en Docker: MySQL `127.0.0.1:3307`, backend `127.0.0.1:8000`, frontend `127.0.0.1:5173`. Los tres servicios tienen healthchecks y los contenedores no ejecutan como root (`appuser`, `nginx`). Dentro de la red de Compose, el flujo es `nginx → backend:8000 → mysql:3306` (`docker-compose.yml:28` mapea `BACKEND_MYSQL_HOST` a `MYSQL_HOST`).
 
-Versiones principales: Python 3.13 en backend/CI, Node 22 en CI y `node:20-alpine` en la imagen frontend, MySQL 8.0, FastAPI 0.165.0, Ultralytics 8.4.215, React 19.2.x, Vite 8.3.x, Tailwind 3.4.x.
+Versiones principales: Python 3.13 en backend/CI, Node 22 en CI y `node:20-alpine` en la imagen frontend, MySQL 8.0, FastAPI 0.165.0, Ultralytics 8.4.215 en runtime, React 19.2.x, Vite 8.3.x, Tailwind 3.4.x. El checkpoint `best.pt` registra en sus metadatos que fue entrenado con Ultralytics 8.4.175.
 
 ---
 
@@ -157,7 +157,7 @@ El frontend muestra la confianza y advierte cuando una foto fue rechazada; el pr
 
 - Banco de 25 preguntas en `trivia.js`; rondas de 5 sin repetir, PRNG `mulberry32`, baraje Fisher–Yates, prioridad de preguntas no vistas y reinicio al agotar el banco.
 - No usa API ni tabla de preguntas.
-- El avance **ya no se marca manualmente**: cada escaneo incrementa totales y conteo por material en `localStorage`; de ahí se derivan 4 hábitos y la insignia “Guardián Verde” (`REC-137`).
+- El avance **ya no se marca manualmente**: cada escaneo persiste `escaneos` e `inferencia` en MySQL; el frontend conserva sólo `ecolearn_id_sesion` en `localStorage` y deriva los totales, 4 hábitos y la insignia “Guardián Verde” de `GET /db/impacto` (`REC-137`).
 
 ---
 

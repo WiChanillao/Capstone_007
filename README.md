@@ -44,6 +44,7 @@ código real del proyecto.
 
 - **Alcance y documento general:** [`Fase 3/docs/DOCUMENTACION_GENERAL.md`](Fase%203/docs/DOCUMENTACION_GENERAL.md)
 - Auditoría Jira vs. código (161 issues): [`Fase 3/docs/AUDITORIA_JIRA.md`](Fase%203/docs/AUDITORIA_JIRA.md)
+- **Trazabilidad de datos y decisiones:** [`Fase 3/docs/TRAZABILIDAD_DATOS.md`](Fase%203/docs/TRAZABILIDAD_DATOS.md)
 - **Entrega para evaluación:** [`Fase 3/docs/ENTREGA.md`](Fase%203/docs/ENTREGA.md)
 - Guía completa: [`Fase 3/README.md`](Fase%203/README.md)
 - Arranque rápido: [`Fase 3/INICIO_RAPIDO.md`](Fase%203/INICIO_RAPIDO.md)

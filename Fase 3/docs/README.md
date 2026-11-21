@@ -1,7 +1,9 @@
 # Documentación del proyecto — EcoLearn Chile / EcoScan
 
-Documentación vigente y entregables de las fases 1 y 2, incorporados al
-repositorio para que todo quede disponible desde un solo clone.
+Documentación vigente y entregables de las fases 1, 2 y 3, incorporados al
+repositorio para que todo quede disponible desde un solo clone. Esta carpeta
+es el índice canónico de la documentación; la guía de ejecución está en
+[`../README.md`](../README.md).
 
 ## Documentación vigente (20-11-2026)
 
@@ -20,7 +22,7 @@ repositorio para que todo quede disponible desde un solo clone.
 | `requisitos/` | `EcoScan_Requisitos_Funcionales.xlsx` — **fuente única vigente** de los 100 requisitos (RF-01..RF-60, RNF-01..RNF-40), con estados reconciliados el 20-11-2026 contra `main @ af7d14d`. La copia de `Fase 2/Evidencia/` se consolidó aquí. |
 | `bpmn/` | [`v3/`](bpmn/v3/README.md) — **paquete vigente**: 14 modelos BPMN 2.0 independientes, 14 diagramas PNG, ZIP fuente y mapeo `REC-72`…`REC-85` (Bizagi Modeler 4.3.0008). `EcoScan_Procesos_BPMN_v4_extendidos.bpmn` se conserva como referencia histórica. |
 | `modelo-datos/` | Modelo lógico/relacional (DOCX) y `diagrama_relacional.png` (documentan 14 tablas; el esquema real de `docker/mysql/init/01_schema.sql` tiene **15**). |
-| `pruebas/` | [`MATRIZ_DE_PRUEBAS_EcoLearn_Oficial.xlsx`](pruebas/MATRIZ_DE_PRUEBAS_EcoLearn_Oficial.xlsx) (**matriz oficial vigente**: 97 casos —6 de Infraestructura Docker—, 4 hojas —`Resumen_QA`, `Casos_de_Prueba`, `Metricas_IA_y_Evidencias`, `Trazabilidad_Jira_161`—, 161 tickets y 3 gráficos) y `PLAN_DE_PRUEBAS_EcoLearn.md` (detalle técnico). `PLAN_DE_PRUEBAS_EcoLearn.xlsx` (v1.3, 40 casos) se conserva como **fuente histórica de criterios de aceptación**; `PLAN_DE_PRUEBAS_EcoLearn_CON_EVIDENCIA.docx`/`.pdf` (41 páginas) e `Informe_de_pruebas_EcoScan.docx` son instantáneas históricas: no redefinen el alcance actual. |
+| `pruebas/` | [`MATRIZ_DE_PRUEBAS_EcoLearn_Oficial.xlsx`](pruebas/MATRIZ_DE_PRUEBAS_EcoLearn_Oficial.xlsx) (**matriz oficial vigente**: 97 casos —6 de Infraestructura Docker—, 4 hojas —`Resumen_QA`, `Casos_de_Prueba`, `Metricas_IA_y_Evidencias`, `Trazabilidad_Jira_161`—, 161 tickets y 3 gráficos) y `PLAN_DE_PRUEBAS_EcoLearn.md` (detalle técnico). `PLAN_DE_PRUEBAS_EcoLearn.xlsx` (v1.3, 40 casos) se conserva como **fuente histórica de criterios de aceptación**; `PLAN_DE_PRUEBAS_EcoLearn_CON_EVIDENCIA.pdf` (41 páginas) e `Informe_de_pruebas_EcoScan.docx` son instantáneas históricas: no redefinen el alcance actual. El DOCX duplicado que tenía el mismo contenido que `PLAN_DE_PRUEBAS_EcoLearn.docx` se conserva en [`pruebas/historial/`](pruebas/historial/) para no mezclarlo con la versión vigente. |
 | `bd/` | Scripts SQL originales de esquema y datos (el stack Docker usa además `docker/mysql/init/`). |
 | [`evidencia/`](evidencia/) | Ejecuciones y capturas. [`evidencia/capturas/`](evidencia/capturas/) reúne las imágenes que antes estaban sueltas en la raíz de `Fase 3/`; [`pruebas/evidencia_visual/`](pruebas/evidencia_visual/) contiene las capturas citadas por el plan de pruebas. |
 
@@ -39,9 +41,10 @@ Los notebooks incorporados fueron revisados: no contienen la API key de
 Roboflow filtrada en copias antiguas. Si necesitas volver a entrenar, crea la
 variable `ROBOFLOW_API_KEY` en tu entorno o en los Secretos de Colab.
 
-## Revisi?n de la entrega
+## Revisión de la entrega
 
 - [Trazabilidad de los 30 indicadores de la pauta APT](REVISION_PAUTA_APT.md).
+- [Trazabilidad integral de datos, requisitos, Jira, BPMN y evidencia](TRAZABILIDAD_DATOS.md).
 - [Diagrama actualizado con el estilo visual de Fase 2](Arquitectura_EcoLearn_actualizada.png).
-- [Cierre tecnico y matriz de riesgo](CIERRE_TECNICO.md).
+- [Cierre técnico y matriz de riesgo](CIERRE_TECNICO.md).
 - [Protocolo UAT y SUS pendiente de aplicación](pruebas/PROTOCOLO_UAT_SUS.md).
