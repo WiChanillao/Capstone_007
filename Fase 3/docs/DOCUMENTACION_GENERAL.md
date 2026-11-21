@@ -240,6 +240,7 @@ El orden `build → test:unit` y el trigger `fix/**` son el fix de PR 1; no volv
 ## 11. BPMN y entregables documentales
 
 - Paquete v3: **14 modelos BPMN 2.0** (`01`…`14`), un archivo por modelo, corregidos sobre los mismos 8 `.diag` de la versión anterior. Validación: 0 solapes, 0 nodos aislados, 0 `BPMNShape`/`BPMNEdge` faltantes. Formato de entrega: **Bizagi Modeler 4.3.0008**.
+- Desde el **21-11-2026** el paquete está versionado en [`docs/bpmn/v3/`](bpmn/v3/README.md): 14 `.bpmn`, 14 `.png`, el ZIP fuente y la correspondencia uno a uno con `REC-72`…`REC-85`. Validación al importar: 14/14 XML parseables y 14/14 PNG válidos.
 - Modelo `12` usa la decisión **“¿Continuar con otra ronda?”**, coherente con `trivia.js`.
 - Modelo `01` fue importado correctamente en Bizagi; la importación de `02`–`14` queda como tarea pendiente de entrega, no como funcionalidad de la app.
 - Los tickets BPMN reales son `REC-72`…`REC-85`; los modelos v4 y las capturas antiguas son referencia histórica, no sustituyen al paquete v3.

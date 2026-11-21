@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Gestión del catálogo de materiales y contenedores">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p07_pool1" name="07 Gestión del catálogo (TO-BE - hoy solo lectura y textos hardcodeados)" processRef="p07_pool1_proc" />
+
+  </collaboration>
+  <process id="p07_pool1_proc" name="07 Gestión del catálogo (TO-BE - hoy solo lectura y textos hardcodeados)" isExecutable="false">
+    <documentation>AS-IS VERIFICADO (Fase 3, commit af7d14d): las tablas material, contenedor, instruccion, paso_instruccion, recurso_externo y banner_impacto están sembradas y se leen por /db/materiales, /db/materiales/{id}/instrucciones y /db/banners, pero el frontend solo usa el color del contenedor y muestra pasos y enlaces hardcodeados en App.jsx:71-184. Fuente: 01_schema.sql:33-76, 160-287, rutas_db.py:60-90, App.jsx:533-546. TO-BE PROPUESTO: panel de administración con roles, validación de completitud, vista previa, aprobación, transacción y auditoría, y que el frontend consuma la API.</documentation>
+    <laneSet id="p07_pool1_ls">
+      <lane id="p07_pool1_lane_1" name="Administrador de contenido">
+        <flowNodeRef>p07_s</flowNodeRef>
+        <flowNodeRef>p07_u1</flowNodeRef>
+        <flowNodeRef>p07_u2</flowNodeRef>
+        <flowNodeRef>p07_u3</flowNodeRef>
+        <flowNodeRef>p07_ga</flowNodeRef>
+        <flowNodeRef>p07_u4</flowNodeRef>
+        <flowNodeRef>p07_u5</flowNodeRef>
+        <flowNodeRef>p07_u6</flowNodeRef>
+        <flowNodeRef>p07_gj</flowNodeRef>
+        <flowNodeRef>p07_u7</flowNodeRef>
+      </lane>
+      <lane id="p07_pool1_lane_2" name="Plataforma de administración">
+        <flowNodeRef>p07_p1</flowNodeRef>
+        <flowNodeRef>p07_g1</flowNodeRef>
+        <flowNodeRef>p07_e1</flowNodeRef>
+        <flowNodeRef>p07_p2</flowNodeRef>
+        <flowNodeRef>p07_g2</flowNodeRef>
+        <flowNodeRef>p07_p3</flowNodeRef>
+        <flowNodeRef>p07_p4</flowNodeRef>
+        <flowNodeRef>p07_e2</flowNodeRef>
+      </lane>
+      <lane id="p07_pool1_lane_3" name="Revisor">
+        <flowNodeRef>p07_r1</flowNodeRef>
+        <flowNodeRef>p07_g3</flowNodeRef>
+      </lane>
+      <lane id="p07_pool1_lane_4" name="Base de datos">
+        <flowNodeRef>p07_d1</flowNodeRef>
+        <flowNodeRef>p07_d2</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p07_s" name="Material nuevo o corrección requerida" />
+    <userTask id="p07_u1" name="Iniciar sesión en el panel de administración" />
+    <serviceTask id="p07_p1" name="Validar credenciales y rol 'administrador'"><documentation>SELECT usuario, rol</documentation></serviceTask>
+    <exclusiveGateway id="p07_g1" name="¿Autenticado?" />
+    <endEvent id="p07_e1" name="Fin: acceso denegado" />
+    <userTask id="p07_u2" name="Crear o editar material (nombre, código, ¿clasificable por IA?)" />
+    <userTask id="p07_u3" name="Asignar contenedor de reciclaje (color)" />
+    <parallelGateway id="p07_ga" />
+    <userTask id="p07_u4" name="Redactar pasos de '¿Cómo Reciclar?'" />
+    <userTask id="p07_u5" name="Redactar pasos de '¿Cómo Reutilizar?'" />
+    <userTask id="p07_u6" name="Asociar recursos externos (MMA, TriCiclos…)" />
+    <parallelGateway id="p07_gj" />
+    <serviceTask id="p07_p2" name="Validar completitud: contenedor y ≥ 1 paso por modo" />
+    <exclusiveGateway id="p07_g2" name="¿Catálogo completo?" />
+    <serviceTask id="p07_p3" name="Generar vista previa del resultado del escáner" />
+    <userTask id="p07_u7" name="Revisar vista previa y enviar a aprobación" />
+    <userTask id="p07_r1" name="Aprobar o rechazar el cambio" />
+    <exclusiveGateway id="p07_g3" name="¿Aprobado?" />
+    <serviceTask id="p07_d1" name="Guardar material, pasos y recursos (transacción)"><documentation>INSERT/UPDATE material, instruccion, paso_instruccion, instruccion_recurso</documentation></serviceTask>
+    <serviceTask id="p07_d2" name="Registrar auditoría (usuario, antes y después)"><documentation>INSERT auditoria_cambio</documentation></serviceTask>
+    <serviceTask id="p07_p4" name="Publicar nueva versión del catálogo" />
+    <endEvent id="p07_e2" name="Fin: catálogo actualizado" />
+    <sequenceFlow id="p07_sf1" sourceRef="p07_s" targetRef="p07_u1" />
+    <sequenceFlow id="p07_sf2" sourceRef="p07_u1" targetRef="p07_p1" />
+    <sequenceFlow id="p07_sf3" sourceRef="p07_p1" targetRef="p07_g1" />
+    <sequenceFlow id="p07_sf4" name="No" sourceRef="p07_g1" targetRef="p07_e1" />
+    <sequenceFlow id="p07_sf5" name="Sí" sourceRef="p07_g1" targetRef="p07_u2" />
+    <sequenceFlow id="p07_sf6" sourceRef="p07_u2" targetRef="p07_u3" />
+    <sequenceFlow id="p07_sf7" sourceRef="p07_u3" targetRef="p07_ga" />
+    <sequenceFlow id="p07_sf8" sourceRef="p07_ga" targetRef="p07_u4" />
+    <sequenceFlow id="p07_sf9" sourceRef="p07_ga" targetRef="p07_u5" />
+    <sequenceFlow id="p07_sf10" sourceRef="p07_ga" targetRef="p07_u6" />
+    <sequenceFlow id="p07_sf11" sourceRef="p07_u4" targetRef="p07_gj" />
+    <sequenceFlow id="p07_sf12" sourceRef="p07_u5" targetRef="p07_gj" />
+    <sequenceFlow id="p07_sf13" sourceRef="p07_u6" targetRef="p07_gj" />
+    <sequenceFlow id="p07_sf14" sourceRef="p07_gj" targetRef="p07_p2" />
+    <sequenceFlow id="p07_sf15" sourceRef="p07_p2" targetRef="p07_g2" />
+    <sequenceFlow id="p07_sf16" name="Incompleto: completar datos" sourceRef="p07_g2" targetRef="p07_u2" />
+    <sequenceFlow id="p07_sf17" name="Sí" sourceRef="p07_g2" targetRef="p07_p3" />
+    <sequenceFlow id="p07_sf18" sourceRef="p07_p3" targetRef="p07_u7" />
+    <sequenceFlow id="p07_sf19" sourceRef="p07_u7" targetRef="p07_r1" />
+    <sequenceFlow id="p07_sf20" sourceRef="p07_r1" targetRef="p07_g3" />
+    <sequenceFlow id="p07_sf21" name="Rechazado: corregir" sourceRef="p07_g3" targetRef="p07_u2" />
+    <sequenceFlow id="p07_sf22" name="Sí" sourceRef="p07_g3" targetRef="p07_d1" />
+    <sequenceFlow id="p07_sf23" sourceRef="p07_d1" targetRef="p07_d2" />
+    <sequenceFlow id="p07_sf24" sourceRef="p07_d2" targetRef="p07_p4" />
+    <sequenceFlow id="p07_sf25" sourceRef="p07_p4" targetRef="p07_e2" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p07_pool1_di" bpmnElement="p07_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="3444" height="832" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_pool1_lane_1_di" bpmnElement="p07_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="3414" height="338" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_pool1_lane_2_di" bpmnElement="p07_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="398" width="3414" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_pool1_lane_3_di" bpmnElement="p07_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="632" width="3414" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_pool1_lane_4_di" bpmnElement="p07_pool1_lane_4" isHorizontal="true"><dc:Bounds x="130" y="762" width="3414" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_s_di" bpmnElement="p07_s" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_u1_di" bpmnElement="p07_u1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="354" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_p1_di" bpmnElement="p07_p1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_g1_di" bpmnElement="p07_g1" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="751" y="432" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_e1_di" bpmnElement="p07_e1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="934" y="543" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_u2_di" bpmnElement="p07_u2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_u3_di" bpmnElement="p07_u3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1058" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_ga_di" bpmnElement="p07_ga" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1279" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_u4_di" bpmnElement="p07_u4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1410" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_u5_di" bpmnElement="p07_u5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1410" y="190" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_u6_di" bpmnElement="p07_u6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1410" y="294" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_gj_di" bpmnElement="p07_gj" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1631" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_p2_di" bpmnElement="p07_p2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1762" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_g2_di" bpmnElement="p07_g2" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1983" y="432" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_p3_di" bpmnElement="p07_p3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2114" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_u7_di" bpmnElement="p07_u7" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2290" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_r1_di" bpmnElement="p07_r1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2466" y="658" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_g3_di" bpmnElement="p07_g3" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2687" y="666" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_d1_di" bpmnElement="p07_d1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2818" y="788" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_d2_di" bpmnElement="p07_d2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2994" y="788" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_p4_di" bpmnElement="p07_p4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3170" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p07_e2_di" bpmnElement="p07_e2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3398" y="439" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p07_sf1_di" bpmnElement="p07_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="354" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf2_di" bpmnElement="p07_sf2"><di:waypoint x="494" y="119" /><di:waypoint x="512" y="119" /><di:waypoint x="512" y="457" /><di:waypoint x="530" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf3_di" bpmnElement="p07_sf3"><di:waypoint x="670" y="457" /><di:waypoint x="751" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf4_di" bpmnElement="p07_sf4"><di:waypoint x="776" y="482" /><di:waypoint x="776" y="561" /><di:waypoint x="934" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf5_di" bpmnElement="p07_sf5"><di:waypoint x="776" y="432" /><di:waypoint x="776" y="119" /><di:waypoint x="882" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf6_di" bpmnElement="p07_sf6"><di:waypoint x="1022" y="119" /><di:waypoint x="1058" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf7_di" bpmnElement="p07_sf7"><di:waypoint x="1198" y="119" /><di:waypoint x="1279" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf8_di" bpmnElement="p07_sf8"><di:waypoint x="1329" y="119" /><di:waypoint x="1410" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf9_di" bpmnElement="p07_sf9"><di:waypoint x="1304" y="144" /><di:waypoint x="1304" y="223" /><di:waypoint x="1410" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf10_di" bpmnElement="p07_sf10"><di:waypoint x="1329" y="119" /><di:waypoint x="1370" y="119" /><di:waypoint x="1370" y="327" /><di:waypoint x="1410" y="327" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf11_di" bpmnElement="p07_sf11"><di:waypoint x="1550" y="119" /><di:waypoint x="1631" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf12_di" bpmnElement="p07_sf12"><di:waypoint x="1550" y="223" /><di:waypoint x="1590" y="223" /><di:waypoint x="1590" y="119" /><di:waypoint x="1631" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf13_di" bpmnElement="p07_sf13"><di:waypoint x="1550" y="327" /><di:waypoint x="1590" y="327" /><di:waypoint x="1590" y="119" /><di:waypoint x="1631" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf14_di" bpmnElement="p07_sf14"><di:waypoint x="1656" y="144" /><di:waypoint x="1656" y="457" /><di:waypoint x="1762" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf15_di" bpmnElement="p07_sf15"><di:waypoint x="1902" y="457" /><di:waypoint x="1983" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf16_di" bpmnElement="p07_sf16"><di:waypoint x="2008" y="432" /><di:waypoint x="2008" y="70" /><di:waypoint x="952" y="70" /><di:waypoint x="952" y="86" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf17_di" bpmnElement="p07_sf17"><di:waypoint x="2033" y="457" /><di:waypoint x="2114" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf18_di" bpmnElement="p07_sf18"><di:waypoint x="2254" y="457" /><di:waypoint x="2272" y="457" /><di:waypoint x="2272" y="119" /><di:waypoint x="2290" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf19_di" bpmnElement="p07_sf19"><di:waypoint x="2430" y="119" /><di:waypoint x="2448" y="119" /><di:waypoint x="2448" y="691" /><di:waypoint x="2466" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf20_di" bpmnElement="p07_sf20"><di:waypoint x="2606" y="691" /><di:waypoint x="2687" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf21_di" bpmnElement="p07_sf21"><di:waypoint x="2712" y="666" /><di:waypoint x="2712" y="70" /><di:waypoint x="952" y="70" /><di:waypoint x="952" y="86" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf22_di" bpmnElement="p07_sf22"><di:waypoint x="2712" y="716" /><di:waypoint x="2712" y="821" /><di:waypoint x="2818" y="821" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf23_di" bpmnElement="p07_sf23"><di:waypoint x="2958" y="821" /><di:waypoint x="2994" y="821" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf24_di" bpmnElement="p07_sf24"><di:waypoint x="3134" y="821" /><di:waypoint x="3152" y="821" /><di:waypoint x="3152" y="457" /><di:waypoint x="3170" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p07_sf25_di" bpmnElement="p07_sf25"><di:waypoint x="3310" y="457" /><di:waypoint x="3398" y="457" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

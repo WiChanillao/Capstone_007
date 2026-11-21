@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Curaduría y actualización del catálogo de puntos limpios">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p08_pool1" name="08 Curaduría de puntos limpios (TO-BE - no implementado)" processRef="p08_pool1_proc" />
+
+  </collaboration>
+  <process id="p08_pool1_proc" name="08 Curaduría de puntos limpios (TO-BE - no implementado)" isExecutable="false">
+    <documentation>TO-BE PROPUESTO (no implementado en Fase 3, commit af7d14d): no hay ETL, staging, detección de duplicados, auditoría ni tabla reporte_dato_punto. Hoy se siembran 35 puntos, de los cuales 25 externos están marcados por confirmar y tienen coordenadas aproximadas. Fuente: 02_seed.sql:139-184, MapaPuntos.jsx:156-190.</documentation>
+    <laneSet id="p08_pool1_ls">
+      <lane id="p08_pool1_lane_1" name="Equipo de curaduría de datos">
+        <flowNodeRef>p08_s</flowNodeRef>
+        <flowNodeRef>p08_e1</flowNodeRef>
+        <flowNodeRef>p08_e2</flowNodeRef>
+        <flowNodeRef>p08_e3</flowNodeRef>
+        <flowNodeRef>p08_e4</flowNodeRef>
+        <flowNodeRef>p08_g2</flowNodeRef>
+        <flowNodeRef>p08_e5</flowNodeRef>
+        <flowNodeRef>p08_e7</flowNodeRef>
+        <flowNodeRef>p08_g3</flowNodeRef>
+        <flowNodeRef>p08_e9</flowNodeRef>
+      </lane>
+      <lane id="p08_pool1_lane_2" name="Plataforma / proceso ETL">
+        <flowNodeRef>p08_p1</flowNodeRef>
+        <flowNodeRef>p08_p2</flowNodeRef>
+        <flowNodeRef>p08_p3</flowNodeRef>
+        <flowNodeRef>p08_g1</flowNodeRef>
+        <flowNodeRef>p08_p4</flowNodeRef>
+        <flowNodeRef>p08_p5</flowNodeRef>
+        <flowNodeRef>p08_e6</flowNodeRef>
+        <flowNodeRef>p08_s2</flowNodeRef>
+        <flowNodeRef>p08_p6</flowNodeRef>
+      </lane>
+      <lane id="p08_pool1_lane_3" name="Operador o municipio (externo)">
+        <flowNodeRef>p08_x1</flowNodeRef>
+      </lane>
+      <lane id="p08_pool1_lane_4" name="Base de datos">
+        <flowNodeRef>p08_d1</flowNodeRef>
+        <flowNodeRef>p08_d2</flowNodeRef>
+        <flowNodeRef>p08_d3</flowNodeRef>
+        <flowNodeRef>p08_e8</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p08_s" name="Revisión trimestral"><timerEventDefinition /></startEvent>
+    <userTask id="p08_e1" name="Identificar fuentes oficiales (MMA, municipios)" />
+    <userTask id="p08_e2" name="Solicitar o descargar listado actualizado" />
+    <userTask id="p08_x1" name="Entregar listado de puntos, horarios y materiales" />
+    <serviceTask id="p08_p1" name="Normalizar campos (comuna, dirección, horario, materiales)" />
+    <serviceTask id="p08_p2" name="Geocodificar direcciones (latitud / longitud)" />
+    <serviceTask id="p08_p3" name="Detectar duplicados y conflictos con los datos vigentes" />
+    <exclusiveGateway id="p08_g1" name="¿Datos válidos?" />
+    <userTask id="p08_e3" name="Corregir o consultar al operador" />
+    <serviceTask id="p08_d1" name="Cargar el lote a staging" />
+    <userTask id="p08_e4" name="Revisar diferencias (altas, bajas y cambios)" />
+    <exclusiveGateway id="p08_g2" name="¿Lote aprobado?" />
+    <endEvent id="p08_e5" name="Fin: lote rechazado" />
+    <serviceTask id="p08_d2" name="Publicar en punto_limpio y registrar auditoría"><documentation>UPSERT punto_limpio, horario_punto, punto_material; INSERT auditoria_cambio</documentation></serviceTask>
+    <serviceTask id="p08_p4" name="Actualizar el listado visible en la app" />
+    <serviceTask id="p08_p5" name="Programar la próxima verificación trimestral" />
+    <endEvent id="p08_e6" name="Fin: puntos limpios actualizados" />
+    <startEvent id="p08_s2" name="Reporte de usuario: dato incorrecto"><messageEventDefinition /></startEvent>
+    <serviceTask id="p08_p6" name="Registrar reporte (punto, campo, descripción)"><documentation>INSERT reporte_dato_punto</documentation></serviceTask>
+    <userTask id="p08_e7" name="Verificar el dato con el operador" />
+    <exclusiveGateway id="p08_g3" name="¿Reporte procedente?" />
+    <serviceTask id="p08_d3" name="Corregir dato y marcar reporte como resuelto" />
+    <endEvent id="p08_e8" name="Fin: reporte resuelto" />
+    <endEvent id="p08_e9" name="Fin: reporte descartado" />
+    <sequenceFlow id="p08_sf1" sourceRef="p08_s" targetRef="p08_e1" />
+    <sequenceFlow id="p08_sf2" sourceRef="p08_e1" targetRef="p08_e2" />
+    <sequenceFlow id="p08_sf3" sourceRef="p08_e2" targetRef="p08_x1" />
+    <sequenceFlow id="p08_sf4" sourceRef="p08_x1" targetRef="p08_p1" />
+    <sequenceFlow id="p08_sf5" sourceRef="p08_p1" targetRef="p08_p2" />
+    <sequenceFlow id="p08_sf6" sourceRef="p08_p2" targetRef="p08_p3" />
+    <sequenceFlow id="p08_sf7" sourceRef="p08_p3" targetRef="p08_g1" />
+    <sequenceFlow id="p08_sf8" name="No" sourceRef="p08_g1" targetRef="p08_e3" />
+    <sequenceFlow id="p08_sf9" name="Reintentar" sourceRef="p08_e3" targetRef="p08_p1" />
+    <sequenceFlow id="p08_sf10" name="Sí" sourceRef="p08_g1" targetRef="p08_d1" />
+    <sequenceFlow id="p08_sf11" sourceRef="p08_d1" targetRef="p08_e4" />
+    <sequenceFlow id="p08_sf12" sourceRef="p08_e4" targetRef="p08_g2" />
+    <sequenceFlow id="p08_sf13" name="No" sourceRef="p08_g2" targetRef="p08_e5" />
+    <sequenceFlow id="p08_sf14" name="Sí" sourceRef="p08_g2" targetRef="p08_d2" />
+    <sequenceFlow id="p08_sf15" sourceRef="p08_d2" targetRef="p08_p4" />
+    <sequenceFlow id="p08_sf16" sourceRef="p08_p4" targetRef="p08_p5" />
+    <sequenceFlow id="p08_sf17" sourceRef="p08_p5" targetRef="p08_e6" />
+    <sequenceFlow id="p08_sf18" sourceRef="p08_s2" targetRef="p08_p6" />
+    <sequenceFlow id="p08_sf19" sourceRef="p08_p6" targetRef="p08_e7" />
+    <sequenceFlow id="p08_sf20" sourceRef="p08_e7" targetRef="p08_g3" />
+    <sequenceFlow id="p08_sf21" name="Sí" sourceRef="p08_g3" targetRef="p08_d3" />
+    <sequenceFlow id="p08_sf22" sourceRef="p08_d3" targetRef="p08_e8" />
+    <sequenceFlow id="p08_sf23" name="No" sourceRef="p08_g3" targetRef="p08_e9" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p08_pool1_di" bpmnElement="p08_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="2740" height="936" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_pool1_lane_1_di" bpmnElement="p08_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="2710" height="338" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_pool1_lane_2_di" bpmnElement="p08_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="398" width="2710" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_pool1_lane_3_di" bpmnElement="p08_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="632" width="2710" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_pool1_lane_4_di" bpmnElement="p08_pool1_lane_4" isHorizontal="true"><dc:Bounds x="130" y="762" width="2710" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_s_di" bpmnElement="p08_s" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_e1_di" bpmnElement="p08_e1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="354" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_e2_di" bpmnElement="p08_e2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_x1_di" bpmnElement="p08_x1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="706" y="658" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_p1_di" bpmnElement="p08_p1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_p2_di" bpmnElement="p08_p2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1058" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_p3_di" bpmnElement="p08_p3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1234" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_g1_di" bpmnElement="p08_g1" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1455" y="432" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_e3_di" bpmnElement="p08_e3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="190" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_d1_di" bpmnElement="p08_d1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="788" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_e4_di" bpmnElement="p08_e4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1762" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_g2_di" bpmnElement="p08_g2" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1983" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_e5_di" bpmnElement="p08_e5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2166" y="205" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_d2_di" bpmnElement="p08_d2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2114" y="788" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_p4_di" bpmnElement="p08_p4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2290" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_p5_di" bpmnElement="p08_p5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2466" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_e6_di" bpmnElement="p08_e6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2694" y="439" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_s2_di" bpmnElement="p08_s2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="543" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_p6_di" bpmnElement="p08_p6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="354" y="528" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_e7_di" bpmnElement="p08_e7" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="190" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_g3_di" bpmnElement="p08_g3" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="751" y="198" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_d3_di" bpmnElement="p08_d3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="892" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_e8_di" bpmnElement="p08_e8" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1110" y="907" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p08_e9_di" bpmnElement="p08_e9" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="934" y="309" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p08_sf1_di" bpmnElement="p08_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="354" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf2_di" bpmnElement="p08_sf2"><di:waypoint x="494" y="119" /><di:waypoint x="530" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf3_di" bpmnElement="p08_sf3"><di:waypoint x="670" y="119" /><di:waypoint x="688" y="119" /><di:waypoint x="688" y="691" /><di:waypoint x="706" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf4_di" bpmnElement="p08_sf4"><di:waypoint x="846" y="691" /><di:waypoint x="864" y="691" /><di:waypoint x="864" y="457" /><di:waypoint x="882" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf5_di" bpmnElement="p08_sf5"><di:waypoint x="1022" y="457" /><di:waypoint x="1058" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf6_di" bpmnElement="p08_sf6"><di:waypoint x="1198" y="457" /><di:waypoint x="1234" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf7_di" bpmnElement="p08_sf7"><di:waypoint x="1374" y="457" /><di:waypoint x="1455" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf8_di" bpmnElement="p08_sf8"><di:waypoint x="1480" y="432" /><di:waypoint x="1480" y="223" /><di:waypoint x="1586" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf9_di" bpmnElement="p08_sf9"><di:waypoint x="1656" y="256" /><di:waypoint x="1656" y="506" /><di:waypoint x="952" y="506" /><di:waypoint x="952" y="490" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf10_di" bpmnElement="p08_sf10"><di:waypoint x="1480" y="482" /><di:waypoint x="1480" y="821" /><di:waypoint x="1586" y="821" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf11_di" bpmnElement="p08_sf11"><di:waypoint x="1726" y="821" /><di:waypoint x="1744" y="821" /><di:waypoint x="1744" y="119" /><di:waypoint x="1762" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf12_di" bpmnElement="p08_sf12"><di:waypoint x="1902" y="119" /><di:waypoint x="1983" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf13_di" bpmnElement="p08_sf13"><di:waypoint x="2008" y="144" /><di:waypoint x="2008" y="223" /><di:waypoint x="2166" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf14_di" bpmnElement="p08_sf14"><di:waypoint x="2008" y="144" /><di:waypoint x="2008" y="821" /><di:waypoint x="2114" y="821" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf15_di" bpmnElement="p08_sf15"><di:waypoint x="2254" y="821" /><di:waypoint x="2272" y="821" /><di:waypoint x="2272" y="457" /><di:waypoint x="2290" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf16_di" bpmnElement="p08_sf16"><di:waypoint x="2430" y="457" /><di:waypoint x="2466" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf17_di" bpmnElement="p08_sf17"><di:waypoint x="2606" y="457" /><di:waypoint x="2694" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf18_di" bpmnElement="p08_sf18"><di:waypoint x="266" y="561" /><di:waypoint x="354" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf19_di" bpmnElement="p08_sf19"><di:waypoint x="494" y="561" /><di:waypoint x="512" y="561" /><di:waypoint x="512" y="223" /><di:waypoint x="530" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf20_di" bpmnElement="p08_sf20"><di:waypoint x="670" y="223" /><di:waypoint x="751" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf21_di" bpmnElement="p08_sf21"><di:waypoint x="801" y="223" /><di:waypoint x="842" y="223" /><di:waypoint x="842" y="925" /><di:waypoint x="882" y="925" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf22_di" bpmnElement="p08_sf22"><di:waypoint x="1022" y="925" /><di:waypoint x="1110" y="925" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p08_sf23_di" bpmnElement="p08_sf23"><di:waypoint x="776" y="248" /><di:waypoint x="776" y="327" /><di:waypoint x="934" y="327" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

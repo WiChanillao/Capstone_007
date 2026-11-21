@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Verificación periódica de enlaces externos">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p09_pool1" name="09 Verificación de enlaces (TO-BE - no implementado)" processRef="p09_pool1_proc" />
+
+  </collaboration>
+  <process id="p09_pool1_proc" name="09 Verificación de enlaces (TO-BE - no implementado)" isExecutable="false">
+    <documentation>TO-BE PROPUESTO (no implementado en Fase 3, commit af7d14d): no existe verificación HTTP de enlaces, campo de estado, scheduler ni ocultamiento de recursos caídos. Los enlaces visibles están hardcodeados en App.jsx:89-96, 127-133, 164-170 y recurso_externo solo guarda nombre y url. El informe de Fase 2 ya reportaba un enlace caído sin mecanismo de detección.</documentation>
+    <laneSet id="p09_pool1_ls">
+      <lane id="p09_pool1_lane_1" name="Planificador (cron)">
+        <flowNodeRef>p09_s</flowNodeRef>
+      </lane>
+      <lane id="p09_pool1_lane_2" name="Servicio de verificación">
+        <flowNodeRef>p09_v1</flowNodeRef>
+        <flowNodeRef>p09_v2</flowNodeRef>
+        <flowNodeRef>p09_v3</flowNodeRef>
+        <flowNodeRef>p09_g1</flowNodeRef>
+        <flowNodeRef>p09_v4</flowNodeRef>
+        <flowNodeRef>p09_v5</flowNodeRef>
+        <flowNodeRef>p09_g2</flowNodeRef>
+        <flowNodeRef>p09_v6</flowNodeRef>
+        <flowNodeRef>p09_v7</flowNodeRef>
+        <flowNodeRef>p09_g4</flowNodeRef>
+        <flowNodeRef>p09_v8</flowNodeRef>
+        <flowNodeRef>p09_e</flowNodeRef>
+      </lane>
+      <lane id="p09_pool1_lane_3" name="Sitio del recurso externo">
+        <flowNodeRef>p09_w1</flowNodeRef>
+      </lane>
+      <lane id="p09_pool1_lane_4" name="Equipo EcoScan">
+        <flowNodeRef>p09_t1</flowNodeRef>
+        <flowNodeRef>p09_t2</flowNodeRef>
+        <flowNodeRef>p09_g3</flowNodeRef>
+        <flowNodeRef>p09_t3</flowNodeRef>
+        <flowNodeRef>p09_t4</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p09_s" name="Cada semana (domingo 03:00)"><timerEventDefinition /></startEvent>
+    <serviceTask id="p09_v1" name="Obtener los recursos externos activos"><documentation>SELECT recurso_externo WHERE activo</documentation></serviceTask>
+    <serviceTask id="p09_v2" name="Tomar el siguiente recurso de la lista" />
+    <serviceTask id="p09_v3" name="Enviar solicitud HTTP con timeout de 8 s" />
+    <serviceTask id="p09_w1" name="Responder con código HTTP" />
+    <exclusiveGateway id="p09_g1" name="¿Código 2xx o 3xx?" />
+    <serviceTask id="p09_v4" name="Registrar verificación OK (código, latencia)"><documentation>INSERT verificacion_enlace</documentation></serviceTask>
+    <serviceTask id="p09_v5" name="Reintentar hasta 2 veces con espera" />
+    <exclusiveGateway id="p09_g2" name="¿Responde tras los reintentos?" />
+    <serviceTask id="p09_v6" name="Registrar enlace caído y marcar recurso no disponible"><documentation>UPDATE recurso_externo SET estado_enlace</documentation></serviceTask>
+    <serviceTask id="p09_v7" name="Ocultar el enlace en la interfaz hasta su recuperación" />
+    <serviceTask id="p09_t1" name="Crear ticket y notificar al equipo (Jira / correo)" />
+    <userTask id="p09_t2" name="Revisar el sitio y buscar un enlace alternativo" />
+    <exclusiveGateway id="p09_g3" name="¿Hay enlace alternativo?" />
+    <userTask id="p09_t3" name="Actualizar el recurso en el catálogo" />
+    <userTask id="p09_t4" name="Mantener oculto y reintentar en el próximo ciclo" />
+    <exclusiveGateway id="p09_g4" name="¿Quedan recursos por verificar?" />
+    <serviceTask id="p09_v8" name="Generar resumen de la verificación (OK / caídos)" />
+    <endEvent id="p09_e" name="Fin: verificación completada" />
+    <sequenceFlow id="p09_sf1" sourceRef="p09_s" targetRef="p09_v1" />
+    <sequenceFlow id="p09_sf2" sourceRef="p09_v1" targetRef="p09_v2" />
+    <sequenceFlow id="p09_sf3" sourceRef="p09_v2" targetRef="p09_v3" />
+    <sequenceFlow id="p09_sf4" sourceRef="p09_v3" targetRef="p09_w1" />
+    <sequenceFlow id="p09_sf5" sourceRef="p09_w1" targetRef="p09_g1" />
+    <sequenceFlow id="p09_sf6" name="Sí" sourceRef="p09_g1" targetRef="p09_v4" />
+    <sequenceFlow id="p09_sf7" name="No" sourceRef="p09_g1" targetRef="p09_v5" />
+    <sequenceFlow id="p09_sf8" sourceRef="p09_v5" targetRef="p09_g2" />
+    <sequenceFlow id="p09_sf9" name="Sí" sourceRef="p09_g2" targetRef="p09_v4" />
+    <sequenceFlow id="p09_sf10" name="No" sourceRef="p09_g2" targetRef="p09_v6" />
+    <sequenceFlow id="p09_sf11" sourceRef="p09_v6" targetRef="p09_v7" />
+    <sequenceFlow id="p09_sf12" sourceRef="p09_v7" targetRef="p09_t1" />
+    <sequenceFlow id="p09_sf13" sourceRef="p09_t1" targetRef="p09_t2" />
+    <sequenceFlow id="p09_sf14" sourceRef="p09_t2" targetRef="p09_g3" />
+    <sequenceFlow id="p09_sf15" name="Sí" sourceRef="p09_g3" targetRef="p09_t3" />
+    <sequenceFlow id="p09_sf16" name="No" sourceRef="p09_g3" targetRef="p09_t4" />
+    <sequenceFlow id="p09_sf17" sourceRef="p09_t3" targetRef="p09_g4" />
+    <sequenceFlow id="p09_sf18" sourceRef="p09_t4" targetRef="p09_g4" />
+    <sequenceFlow id="p09_sf19" sourceRef="p09_v4" targetRef="p09_g4" />
+    <sequenceFlow id="p09_sf20" name="Sí" sourceRef="p09_g4" targetRef="p09_v2" />
+    <sequenceFlow id="p09_sf21" name="No" sourceRef="p09_g4" targetRef="p09_v8" />
+    <sequenceFlow id="p09_sf22" sourceRef="p09_v8" targetRef="p09_e" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p09_pool1_di" bpmnElement="p09_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="3268" height="728" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_pool1_lane_1_di" bpmnElement="p09_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="3238" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_pool1_lane_2_di" bpmnElement="p09_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="190" width="3238" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_pool1_lane_3_di" bpmnElement="p09_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="424" width="3238" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_pool1_lane_4_di" bpmnElement="p09_pool1_lane_4" isHorizontal="true"><dc:Bounds x="130" y="554" width="3238" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_s_di" bpmnElement="p09_s" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_v1_di" bpmnElement="p09_v1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="354" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_v2_di" bpmnElement="p09_v2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_v3_di" bpmnElement="p09_v3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="706" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_w1_di" bpmnElement="p09_w1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="450" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_g1_di" bpmnElement="p09_g1" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1103" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_v4_di" bpmnElement="p09_v4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1234" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_v5_di" bpmnElement="p09_v5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1234" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_g2_di" bpmnElement="p09_g2" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1455" y="328" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_v6_di" bpmnElement="p09_v6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_v7_di" bpmnElement="p09_v7" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1762" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_t1_di" bpmnElement="p09_t1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1938" y="580" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_t2_di" bpmnElement="p09_t2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2114" y="580" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_g3_di" bpmnElement="p09_g3" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2335" y="588" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_t3_di" bpmnElement="p09_t3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2466" y="580" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_t4_di" bpmnElement="p09_t4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2466" y="684" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_g4_di" bpmnElement="p09_g4" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2863" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_v8_di" bpmnElement="p09_v8" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2994" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p09_e_di" bpmnElement="p09_e" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3222" y="231" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p09_sf1_di" bpmnElement="p09_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="310" y="119" /><di:waypoint x="310" y="249" /><di:waypoint x="354" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf2_di" bpmnElement="p09_sf2"><di:waypoint x="494" y="249" /><di:waypoint x="530" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf3_di" bpmnElement="p09_sf3"><di:waypoint x="670" y="249" /><di:waypoint x="706" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf4_di" bpmnElement="p09_sf4"><di:waypoint x="846" y="249" /><di:waypoint x="864" y="249" /><di:waypoint x="864" y="483" /><di:waypoint x="882" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf5_di" bpmnElement="p09_sf5"><di:waypoint x="1022" y="483" /><di:waypoint x="1062" y="483" /><di:waypoint x="1062" y="249" /><di:waypoint x="1103" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf6_di" bpmnElement="p09_sf6"><di:waypoint x="1153" y="249" /><di:waypoint x="1234" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf7_di" bpmnElement="p09_sf7"><di:waypoint x="1128" y="274" /><di:waypoint x="1128" y="353" /><di:waypoint x="1234" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf8_di" bpmnElement="p09_sf8"><di:waypoint x="1374" y="353" /><di:waypoint x="1455" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf9_di" bpmnElement="p09_sf9"><di:waypoint x="1480" y="328" /><di:waypoint x="1480" y="200" /><di:waypoint x="1304" y="200" /><di:waypoint x="1304" y="216" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf10_di" bpmnElement="p09_sf10"><di:waypoint x="1505" y="353" /><di:waypoint x="1586" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf11_di" bpmnElement="p09_sf11"><di:waypoint x="1726" y="353" /><di:waypoint x="1762" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf12_di" bpmnElement="p09_sf12"><di:waypoint x="1902" y="353" /><di:waypoint x="1920" y="353" /><di:waypoint x="1920" y="613" /><di:waypoint x="1938" y="613" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf13_di" bpmnElement="p09_sf13"><di:waypoint x="2078" y="613" /><di:waypoint x="2114" y="613" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf14_di" bpmnElement="p09_sf14"><di:waypoint x="2254" y="613" /><di:waypoint x="2335" y="613" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf15_di" bpmnElement="p09_sf15"><di:waypoint x="2385" y="613" /><di:waypoint x="2466" y="613" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf16_di" bpmnElement="p09_sf16"><di:waypoint x="2360" y="638" /><di:waypoint x="2360" y="717" /><di:waypoint x="2466" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf17_di" bpmnElement="p09_sf17"><di:waypoint x="2606" y="613" /><di:waypoint x="2837" y="613" /><di:waypoint x="2837" y="249" /><di:waypoint x="2863" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf18_di" bpmnElement="p09_sf18"><di:waypoint x="2606" y="717" /><di:waypoint x="2837" y="717" /><di:waypoint x="2837" y="249" /><di:waypoint x="2863" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf19_di" bpmnElement="p09_sf19"><di:waypoint x="1374" y="249" /><di:waypoint x="2863" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf20_di" bpmnElement="p09_sf20"><di:waypoint x="2888" y="224" /><di:waypoint x="2888" y="200" /><di:waypoint x="600" y="200" /><di:waypoint x="600" y="216" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf21_di" bpmnElement="p09_sf21"><di:waypoint x="2913" y="249" /><di:waypoint x="2994" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p09_sf22_di" bpmnElement="p09_sf22"><di:waypoint x="3134" y="249" /><di:waypoint x="3222" y="249" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Gestión de incidentes del servicio">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p14_pool1" name="14 Gestión de incidentes (TO-BE - no implementado)" processRef="p14_pool1_proc" />
+
+  </collaboration>
+  <process id="p14_pool1_proc" name="14 Gestión de incidentes (TO-BE - no implementado)" isExecutable="false">
+    <documentation>TO-BE PROPUESTO (no implementado en Fase 3, commit af7d14d): no hay tabla incidente, severidad, aviso en la app, ticket automático ni post-mortem. Solo existen como insumo los logs JSON y /health. Fuente: main.py:75-88, 360-376, 594.</documentation>
+    <laneSet id="p14_pool1_ls">
+      <lane id="p14_pool1_lane_1" name="Monitoreo y soporte">
+        <flowNodeRef>p14_s</flowNodeRef>
+        <flowNodeRef>p14_m1</flowNodeRef>
+        <flowNodeRef>p14_x1</flowNodeRef>
+      </lane>
+      <lane id="p14_pool1_lane_2" name="Equipo de guardia">
+        <flowNodeRef>p14_u1</flowNodeRef>
+        <flowNodeRef>p14_g1</flowNodeRef>
+        <flowNodeRef>p14_u2</flowNodeRef>
+        <flowNodeRef>p14_u5</flowNodeRef>
+        <flowNodeRef>p14_u7</flowNodeRef>
+        <flowNodeRef>p14_g4</flowNodeRef>
+      </lane>
+      <lane id="p14_pool1_lane_3" name="Equipo de desarrollo">
+        <flowNodeRef>p14_u3</flowNodeRef>
+        <flowNodeRef>p14_g0</flowNodeRef>
+        <flowNodeRef>p14_u4</flowNodeRef>
+        <flowNodeRef>p14_g2</flowNodeRef>
+        <flowNodeRef>p14_u6</flowNodeRef>
+        <flowNodeRef>p14_g3</flowNodeRef>
+        <flowNodeRef>p14_u8</flowNodeRef>
+        <flowNodeRef>p14_e</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p14_s" name="Alerta de monitoreo o reporte de usuario" />
+    <serviceTask id="p14_m1" name="Registrar alerta con severidad preliminar" />
+    <userTask id="p14_u1" name="Clasificar severidad (crítica, alta o baja)" />
+    <exclusiveGateway id="p14_g1" name="¿Es crítica?" />
+    <userTask id="p14_u2" name="Notificar al equipo y publicar aviso en la app" />
+    <userTask id="p14_u3" name="Crear ticket y priorizar en el backlog" />
+    <exclusiveGateway id="p14_g0" />
+    <userTask id="p14_u4" name="Diagnosticar causa (logs, métricas, /health)" />
+    <exclusiveGateway id="p14_g2" name="¿Mitigable sin cambiar código?" />
+    <userTask id="p14_u5" name="Aplicar mitigación (reinicio, rollback, configuración)" />
+    <userTask id="p14_u6" name="Desarrollar y probar corrección (hotfix)" />
+    <exclusiveGateway id="p14_g3" />
+    <userTask id="p14_u7" name="Verificar recuperación (health OK y prueba manual)" />
+    <exclusiveGateway id="p14_g4" name="¿Servicio recuperado?" />
+    <serviceTask id="p14_x1" name="Retirar aviso y confirmar normalidad" />
+    <userTask id="p14_u8" name="Registrar post-mortem y acciones preventivas" />
+    <endEvent id="p14_e" name="Fin: incidente cerrado" />
+    <sequenceFlow id="p14_sf1" sourceRef="p14_s" targetRef="p14_m1" />
+    <sequenceFlow id="p14_sf2" sourceRef="p14_m1" targetRef="p14_u1" />
+    <sequenceFlow id="p14_sf3" sourceRef="p14_u1" targetRef="p14_g1" />
+    <sequenceFlow id="p14_sf4" name="Sí" sourceRef="p14_g1" targetRef="p14_u2" />
+    <sequenceFlow id="p14_sf5" name="No" sourceRef="p14_g1" targetRef="p14_u3" />
+    <sequenceFlow id="p14_sf6" sourceRef="p14_u2" targetRef="p14_g0" />
+    <sequenceFlow id="p14_sf7" sourceRef="p14_u3" targetRef="p14_g0" />
+    <sequenceFlow id="p14_sf8" sourceRef="p14_g0" targetRef="p14_u4" />
+    <sequenceFlow id="p14_sf9" sourceRef="p14_u4" targetRef="p14_g2" />
+    <sequenceFlow id="p14_sf10" name="Sí" sourceRef="p14_g2" targetRef="p14_u5" />
+    <sequenceFlow id="p14_sf11" name="No" sourceRef="p14_g2" targetRef="p14_u6" />
+    <sequenceFlow id="p14_sf12" sourceRef="p14_u5" targetRef="p14_g3" />
+    <sequenceFlow id="p14_sf13" sourceRef="p14_u6" targetRef="p14_g3" />
+    <sequenceFlow id="p14_sf14" sourceRef="p14_g3" targetRef="p14_u7" />
+    <sequenceFlow id="p14_sf15" sourceRef="p14_u7" targetRef="p14_g4" />
+    <sequenceFlow id="p14_sf16" name="No: diagnosticar de nuevo" sourceRef="p14_g4" targetRef="p14_u4" />
+    <sequenceFlow id="p14_sf17" name="Sí" sourceRef="p14_g4" targetRef="p14_x1" />
+    <sequenceFlow id="p14_sf18" sourceRef="p14_x1" targetRef="p14_u8" />
+    <sequenceFlow id="p14_sf19" sourceRef="p14_u8" targetRef="p14_e" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p14_pool1_di" bpmnElement="p14_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="2740" height="598" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_pool1_lane_1_di" bpmnElement="p14_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="2710" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_pool1_lane_2_di" bpmnElement="p14_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="190" width="2710" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_pool1_lane_3_di" bpmnElement="p14_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="424" width="2710" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_s_di" bpmnElement="p14_s" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_m1_di" bpmnElement="p14_m1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="354" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_u1_di" bpmnElement="p14_u1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_g1_di" bpmnElement="p14_g1" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="751" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_u2_di" bpmnElement="p14_u2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_u3_di" bpmnElement="p14_u3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_g0_di" bpmnElement="p14_g0" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1103" y="458" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_u4_di" bpmnElement="p14_u4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1234" y="450" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_g2_di" bpmnElement="p14_g2" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1455" y="458" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_u5_di" bpmnElement="p14_u5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_u6_di" bpmnElement="p14_u6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="450" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_g3_di" bpmnElement="p14_g3" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1807" y="458" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_u7_di" bpmnElement="p14_u7" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1938" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_g4_di" bpmnElement="p14_g4" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2159" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_x1_di" bpmnElement="p14_x1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2290" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_u8_di" bpmnElement="p14_u8" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2466" y="450" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p14_e_di" bpmnElement="p14_e" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2694" y="465" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p14_sf1_di" bpmnElement="p14_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="354" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf2_di" bpmnElement="p14_sf2"><di:waypoint x="494" y="119" /><di:waypoint x="512" y="119" /><di:waypoint x="512" y="249" /><di:waypoint x="530" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf3_di" bpmnElement="p14_sf3"><di:waypoint x="670" y="249" /><di:waypoint x="751" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf4_di" bpmnElement="p14_sf4"><di:waypoint x="801" y="249" /><di:waypoint x="882" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf5_di" bpmnElement="p14_sf5"><di:waypoint x="776" y="274" /><di:waypoint x="776" y="587" /><di:waypoint x="882" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf6_di" bpmnElement="p14_sf6"><di:waypoint x="1022" y="249" /><di:waypoint x="1062" y="249" /><di:waypoint x="1062" y="483" /><di:waypoint x="1103" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf7_di" bpmnElement="p14_sf7"><di:waypoint x="1022" y="587" /><di:waypoint x="1062" y="587" /><di:waypoint x="1062" y="483" /><di:waypoint x="1103" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf8_di" bpmnElement="p14_sf8"><di:waypoint x="1153" y="483" /><di:waypoint x="1234" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf9_di" bpmnElement="p14_sf9"><di:waypoint x="1374" y="483" /><di:waypoint x="1455" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf10_di" bpmnElement="p14_sf10"><di:waypoint x="1480" y="458" /><di:waypoint x="1480" y="353" /><di:waypoint x="1586" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf11_di" bpmnElement="p14_sf11"><di:waypoint x="1505" y="483" /><di:waypoint x="1586" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf12_di" bpmnElement="p14_sf12"><di:waypoint x="1726" y="353" /><di:waypoint x="1766" y="353" /><di:waypoint x="1766" y="483" /><di:waypoint x="1807" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf13_di" bpmnElement="p14_sf13"><di:waypoint x="1726" y="483" /><di:waypoint x="1807" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf14_di" bpmnElement="p14_sf14"><di:waypoint x="1832" y="458" /><di:waypoint x="1832" y="249" /><di:waypoint x="1938" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf15_di" bpmnElement="p14_sf15"><di:waypoint x="2078" y="249" /><di:waypoint x="2159" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf16_di" bpmnElement="p14_sf16"><di:waypoint x="2184" y="224" /><di:waypoint x="2184" y="208" /><di:waypoint x="1304" y="208" /><di:waypoint x="1304" y="450" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf17_di" bpmnElement="p14_sf17"><di:waypoint x="2184" y="224" /><di:waypoint x="2184" y="119" /><di:waypoint x="2290" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf18_di" bpmnElement="p14_sf18"><di:waypoint x="2430" y="119" /><di:waypoint x="2448" y="119" /><di:waypoint x="2448" y="483" /><di:waypoint x="2466" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p14_sf19_di" bpmnElement="p14_sf19"><di:waypoint x="2606" y="483" /><di:waypoint x="2694" y="483" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Reporte mensual de trazabilidad (apoyo a Ley REP 20.920)">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p12_pool1" name="12 Trazabilidad: CSV (AS-IS Fase 3) + reporte mensual (TO-BE)" processRef="p12_pool1_proc" />
+
+  </collaboration>
+  <process id="p12_pool1_proc" name="12 Trazabilidad: CSV (AS-IS Fase 3) + reporte mensual (TO-BE)" isExecutable="false">
+    <documentation>AS-IS VERIFICADO (Fase 3, commit af7d14d): la tabla inferencia registra UUID, sesión, material, resultado, confianza y latencia con CHECKS, se escribe desde /predict y se exporta por GET /db/reporte/inferencias.csv; /version identifica el modelo. La etiqueta Ley REP en la UI es solo texto decorativo. Fuente: 01_schema.sql:133-150, main.py:561-592, rutas_db.py:103-133, App.jsx:897-902. TO-BE PROPUESTO: reporte mensual con PDF, hash de integridad, archivado, conteo por comuna y retención automática mayor a 12 meses.</documentation>
+    <laneSet id="p12_pool1_ls">
+      <lane id="p12_pool1_lane_1" name="Planificador">
+        <flowNodeRef>p12_s</flowNodeRef>
+      </lane>
+      <lane id="p12_pool1_lane_2" name="Servicio de reportes">
+        <flowNodeRef>p12_r1</flowNodeRef>
+        <flowNodeRef>p12_ga</flowNodeRef>
+        <flowNodeRef>p12_r2</flowNodeRef>
+        <flowNodeRef>p12_r3</flowNodeRef>
+        <flowNodeRef>p12_r4</flowNodeRef>
+        <flowNodeRef>p12_gj</flowNodeRef>
+        <flowNodeRef>p12_r5</flowNodeRef>
+        <flowNodeRef>p12_r6</flowNodeRef>
+      </lane>
+      <lane id="p12_pool1_lane_3" name="Base de datos">
+        <flowNodeRef>p12_d1</flowNodeRef>
+        <flowNodeRef>p12_d2</flowNodeRef>
+        <flowNodeRef>p12_d3</flowNodeRef>
+      </lane>
+      <lane id="p12_pool1_lane_4" name="Responsable del proyecto">
+        <flowNodeRef>p12_h1</flowNodeRef>
+        <flowNodeRef>p12_g1</flowNodeRef>
+        <flowNodeRef>p12_e</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p12_s" name="[TO-BE] Primer día hábil de cada mes"><timerEventDefinition /></startEvent>
+    <serviceTask id="p12_r1" name="[TO-BE] Definir periodo del reporte (mes anterior)" />
+    <serviceTask id="p12_d1" name="Extraer inferencias válidas del periodo"><documentation>SELECT inferencia WHERE resultado=OK AND fecha_hora en periodo</documentation></serviceTask>
+    <parallelGateway id="p12_ga" />
+    <serviceTask id="p12_r2" name="Contar inferencias por material y contenedor" />
+    <serviceTask id="p12_r3" name="Contar inferencias por comuna de la sesión (si existe)" />
+    <serviceTask id="p12_r4" name="Calcular tasa de rechazos (borrosa / confianza baja)" />
+    <parallelGateway id="p12_gj" />
+    <serviceTask id="p12_r5" name="Exportar CSV de inferencias (AS-IS); [TO-BE] generar resumen PDF" />
+    <userTask id="p12_h1" name="Revisar consistencia del reporte" />
+    <exclusiveGateway id="p12_g1" name="¿Reporte conforme?" />
+    <serviceTask id="p12_r6" name="Corregir parámetros y regenerar" />
+    <serviceTask id="p12_d2" name="[TO-BE] Archivar reporte con hash de integridad" />
+    <serviceTask id="p12_d3" name="[TO-BE] Aplicar retención automática: anonimizar o eliminar datos &gt; 12 meses" />
+    <endEvent id="p12_e" name="Fin: reporte mensual disponible" />
+    <sequenceFlow id="p12_sf1" sourceRef="p12_s" targetRef="p12_r1" />
+    <sequenceFlow id="p12_sf2" sourceRef="p12_r1" targetRef="p12_d1" />
+    <sequenceFlow id="p12_sf3" sourceRef="p12_d1" targetRef="p12_ga" />
+    <sequenceFlow id="p12_sf4" sourceRef="p12_ga" targetRef="p12_r2" />
+    <sequenceFlow id="p12_sf5" sourceRef="p12_ga" targetRef="p12_r3" />
+    <sequenceFlow id="p12_sf6" sourceRef="p12_ga" targetRef="p12_r4" />
+    <sequenceFlow id="p12_sf7" sourceRef="p12_r2" targetRef="p12_gj" />
+    <sequenceFlow id="p12_sf8" sourceRef="p12_r3" targetRef="p12_gj" />
+    <sequenceFlow id="p12_sf9" sourceRef="p12_r4" targetRef="p12_gj" />
+    <sequenceFlow id="p12_sf10" sourceRef="p12_gj" targetRef="p12_r5" />
+    <sequenceFlow id="p12_sf11" sourceRef="p12_r5" targetRef="p12_h1" />
+    <sequenceFlow id="p12_sf12" sourceRef="p12_h1" targetRef="p12_g1" />
+    <sequenceFlow id="p12_sf13" name="No" sourceRef="p12_g1" targetRef="p12_r6" />
+    <sequenceFlow id="p12_sf14" name="Regenerar" sourceRef="p12_r6" targetRef="p12_r5" />
+    <sequenceFlow id="p12_sf15" name="Sí" sourceRef="p12_g1" targetRef="p12_d2" />
+    <sequenceFlow id="p12_sf16" sourceRef="p12_d2" targetRef="p12_d3" />
+    <sequenceFlow id="p12_sf17" sourceRef="p12_d3" targetRef="p12_e" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p12_pool1_di" bpmnElement="p12_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="2212" height="728" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_pool1_lane_1_di" bpmnElement="p12_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="2182" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_pool1_lane_2_di" bpmnElement="p12_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="190" width="2182" height="338" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_pool1_lane_3_di" bpmnElement="p12_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="528" width="2182" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_pool1_lane_4_di" bpmnElement="p12_pool1_lane_4" isHorizontal="true"><dc:Bounds x="130" y="658" width="2182" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_s_di" bpmnElement="p12_s" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_r1_di" bpmnElement="p12_r1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="354" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_d1_di" bpmnElement="p12_d1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_ga_di" bpmnElement="p12_ga" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="751" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_r2_di" bpmnElement="p12_r2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_r3_di" bpmnElement="p12_r3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_r4_di" bpmnElement="p12_r4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_gj_di" bpmnElement="p12_gj" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1103" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_r5_di" bpmnElement="p12_r5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1234" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_h1_di" bpmnElement="p12_h1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1410" y="684" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_g1_di" bpmnElement="p12_g1" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1631" y="692" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_r6_di" bpmnElement="p12_r6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1762" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_d2_di" bpmnElement="p12_d2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1762" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_d3_di" bpmnElement="p12_d3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1938" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p12_e_di" bpmnElement="p12_e" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2166" y="699" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p12_sf1_di" bpmnElement="p12_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="310" y="119" /><di:waypoint x="310" y="249" /><di:waypoint x="354" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf2_di" bpmnElement="p12_sf2"><di:waypoint x="494" y="249" /><di:waypoint x="512" y="249" /><di:waypoint x="512" y="587" /><di:waypoint x="530" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf3_di" bpmnElement="p12_sf3"><di:waypoint x="670" y="587" /><di:waypoint x="710" y="587" /><di:waypoint x="710" y="249" /><di:waypoint x="751" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf4_di" bpmnElement="p12_sf4"><di:waypoint x="801" y="249" /><di:waypoint x="882" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf5_di" bpmnElement="p12_sf5"><di:waypoint x="776" y="274" /><di:waypoint x="776" y="353" /><di:waypoint x="882" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf6_di" bpmnElement="p12_sf6"><di:waypoint x="801" y="249" /><di:waypoint x="842" y="249" /><di:waypoint x="842" y="457" /><di:waypoint x="882" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf7_di" bpmnElement="p12_sf7"><di:waypoint x="1022" y="249" /><di:waypoint x="1103" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf8_di" bpmnElement="p12_sf8"><di:waypoint x="1022" y="353" /><di:waypoint x="1062" y="353" /><di:waypoint x="1062" y="249" /><di:waypoint x="1103" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf9_di" bpmnElement="p12_sf9"><di:waypoint x="1022" y="457" /><di:waypoint x="1062" y="457" /><di:waypoint x="1062" y="249" /><di:waypoint x="1103" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf10_di" bpmnElement="p12_sf10"><di:waypoint x="1153" y="249" /><di:waypoint x="1234" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf11_di" bpmnElement="p12_sf11"><di:waypoint x="1374" y="249" /><di:waypoint x="1392" y="249" /><di:waypoint x="1392" y="717" /><di:waypoint x="1410" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf12_di" bpmnElement="p12_sf12"><di:waypoint x="1550" y="717" /><di:waypoint x="1631" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf13_di" bpmnElement="p12_sf13"><di:waypoint x="1656" y="692" /><di:waypoint x="1656" y="353" /><di:waypoint x="1762" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf14_di" bpmnElement="p12_sf14"><di:waypoint x="1832" y="386" /><di:waypoint x="1832" y="402" /><di:waypoint x="1304" y="402" /><di:waypoint x="1304" y="282" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf15_di" bpmnElement="p12_sf15"><di:waypoint x="1656" y="692" /><di:waypoint x="1656" y="587" /><di:waypoint x="1762" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf16_di" bpmnElement="p12_sf16"><di:waypoint x="1902" y="587" /><di:waypoint x="1938" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p12_sf17_di" bpmnElement="p12_sf17"><di:waypoint x="2078" y="587" /><di:waypoint x="2122" y="587" /><di:waypoint x="2122" y="717" /><di:waypoint x="2166" y="717" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

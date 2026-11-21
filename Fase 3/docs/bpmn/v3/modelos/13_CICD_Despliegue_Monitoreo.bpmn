@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Despliegue continuo y monitoreo de salud">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p13_pool1" name="13 CI (AS-IS Fase 3) + CD y monitoreo (TO-BE)" processRef="p13_pool1_proc" />
+
+  </collaboration>
+  <process id="p13_pool1_proc" name="13 CI (AS-IS Fase 3) + CD y monitoreo (TO-BE)" isExecutable="false">
+    <documentation>AS-IS VERIFICADO (Fase 3, commit af7d14d): CI ejecuta pytest con coverage y pip-audit en backend, y npm ci, build, tests y npm audit en frontend; existe docker-compose local con healthchecks, /health con estado ok o degraded y PWA con actualización automática. Fuente: .github/workflows/ci.yml:1-48, docker-compose.yml, main.py:360-376, vite.config.js:8-37. TO-BE PROPUESTO: build y escaneo de imagen Docker en CI, publicación en registro, staging y producción con CORS final, health check cada minuto, alertas y rollback.</documentation>
+    <laneSet id="p13_pool1_ls">
+      <lane id="p13_pool1_lane_1" name="Desarrollador">
+        <flowNodeRef>p13_s</flowNodeRef>
+        <flowNodeRef>p13_u1</flowNodeRef>
+        <flowNodeRef>p13_u2</flowNodeRef>
+        <flowNodeRef>p13_u3</flowNodeRef>
+        <flowNodeRef>p13_u4</flowNodeRef>
+      </lane>
+      <lane id="p13_pool1_lane_2" name="Repositorio y CI">
+        <flowNodeRef>p13_r1</flowNodeRef>
+        <flowNodeRef>p13_ga</flowNodeRef>
+        <flowNodeRef>p13_r2</flowNodeRef>
+        <flowNodeRef>p13_r3</flowNodeRef>
+        <flowNodeRef>p13_r4</flowNodeRef>
+        <flowNodeRef>p13_gj</flowNodeRef>
+        <flowNodeRef>p13_g1</flowNodeRef>
+        <flowNodeRef>p13_r5</flowNodeRef>
+        <flowNodeRef>p13_r6</flowNodeRef>
+        <flowNodeRef>p13_g2</flowNodeRef>
+        <flowNodeRef>p13_r7</flowNodeRef>
+      </lane>
+      <lane id="p13_pool1_lane_3" name="Entorno cloud (Docker)">
+        <flowNodeRef>p13_k1</flowNodeRef>
+        <flowNodeRef>p13_k2</flowNodeRef>
+        <flowNodeRef>p13_g3</flowNodeRef>
+        <flowNodeRef>p13_k3</flowNodeRef>
+        <flowNodeRef>p13_e1</flowNodeRef>
+        <flowNodeRef>p13_k4</flowNodeRef>
+        <flowNodeRef>p13_t1</flowNodeRef>
+        <flowNodeRef>p13_g4</flowNodeRef>
+        <flowNodeRef>p13_k5</flowNodeRef>
+        <flowNodeRef>p13_e2</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p13_s" name="Cambio listo en rama de trabajo" />
+    <userTask id="p13_u1" name="Abrir pull request hacia main" />
+    <serviceTask id="p13_r1" name="Disparar pipeline de CI" />
+    <parallelGateway id="p13_ga" />
+    <serviceTask id="p13_r2" name="CI AS-IS: pytest con coverage y pip-audit" />
+    <serviceTask id="p13_r3" name="[TO-BE] Pruebas de integración de /predict (httpx)" />
+    <serviceTask id="p13_r4" name="CI AS-IS: npm ci, build, tests y npm audit" />
+    <parallelGateway id="p13_gj" />
+    <exclusiveGateway id="p13_g1" name="¿Todo en verde?" />
+    <userTask id="p13_u2" name="Corregir y subir nuevos commits" />
+    <userTask id="p13_u3" name="Revisión de código y aprobación del PR" />
+    <serviceTask id="p13_r5" name="Merge a main" />
+    <serviceTask id="p13_r6" name="[TO-BE] Construir imagen Docker y escanear vulnerabilidades" />
+    <exclusiveGateway id="p13_g2" name="¿Sin vulnerabilidades críticas?" />
+    <serviceTask id="p13_r7" name="[TO-BE] Publicar imagen versionada en el registro" />
+    <serviceTask id="p13_k1" name="[TO-BE] Desplegar en staging" />
+    <serviceTask id="p13_k2" name="Smoke tests y GET /health" />
+    <exclusiveGateway id="p13_g3" name="¿Salud OK?" />
+    <serviceTask id="p13_k3" name="Rollback a la versión anterior" />
+    <endEvent id="p13_e1" name="Fin: despliegue fallido"><errorEventDefinition /></endEvent>
+    <userTask id="p13_u4" name="[TO-BE] Aprobar paso a producción" />
+    <serviceTask id="p13_k4" name="[TO-BE] Desplegar en producción (CORS con dominio final)" />
+    <intermediateCatchEvent id="p13_t1" name="[TO-BE] Health check cada 1 min"><timerEventDefinition /></intermediateCatchEvent>
+    <exclusiveGateway id="p13_g4" name="¿Responde /health?" />
+    <serviceTask id="p13_k5" name="[TO-BE] Alertar al equipo y ejecutar rollback" />
+    <endEvent id="p13_e2" name="Fin: servicio revertido" />
+    <sequenceFlow id="p13_sf1" sourceRef="p13_s" targetRef="p13_u1" />
+    <sequenceFlow id="p13_sf2" sourceRef="p13_u1" targetRef="p13_r1" />
+    <sequenceFlow id="p13_sf3" sourceRef="p13_r1" targetRef="p13_ga" />
+    <sequenceFlow id="p13_sf4" sourceRef="p13_ga" targetRef="p13_r2" />
+    <sequenceFlow id="p13_sf5" sourceRef="p13_ga" targetRef="p13_r3" />
+    <sequenceFlow id="p13_sf6" sourceRef="p13_ga" targetRef="p13_r4" />
+    <sequenceFlow id="p13_sf7" sourceRef="p13_r2" targetRef="p13_gj" />
+    <sequenceFlow id="p13_sf8" sourceRef="p13_r3" targetRef="p13_gj" />
+    <sequenceFlow id="p13_sf9" sourceRef="p13_r4" targetRef="p13_gj" />
+    <sequenceFlow id="p13_sf10" sourceRef="p13_gj" targetRef="p13_g1" />
+    <sequenceFlow id="p13_sf11" name="No" sourceRef="p13_g1" targetRef="p13_u2" />
+    <sequenceFlow id="p13_sf12" name="Nuevo commit" sourceRef="p13_u2" targetRef="p13_r1" />
+    <sequenceFlow id="p13_sf13" name="Sí" sourceRef="p13_g1" targetRef="p13_u3" />
+    <sequenceFlow id="p13_sf14" sourceRef="p13_u3" targetRef="p13_r5" />
+    <sequenceFlow id="p13_sf15" sourceRef="p13_r5" targetRef="p13_r6" />
+    <sequenceFlow id="p13_sf16" sourceRef="p13_r6" targetRef="p13_g2" />
+    <sequenceFlow id="p13_sf17" name="Vulnerable: corregir" sourceRef="p13_g2" targetRef="p13_u2" />
+    <sequenceFlow id="p13_sf18" name="Sí" sourceRef="p13_g2" targetRef="p13_r7" />
+    <sequenceFlow id="p13_sf19" sourceRef="p13_r7" targetRef="p13_k1" />
+    <sequenceFlow id="p13_sf20" sourceRef="p13_k1" targetRef="p13_k2" />
+    <sequenceFlow id="p13_sf21" sourceRef="p13_k2" targetRef="p13_g3" />
+    <sequenceFlow id="p13_sf22" name="No" sourceRef="p13_g3" targetRef="p13_k3" />
+    <sequenceFlow id="p13_sf23" sourceRef="p13_k3" targetRef="p13_e1" />
+    <sequenceFlow id="p13_sf24" name="Sí" sourceRef="p13_g3" targetRef="p13_u4" />
+    <sequenceFlow id="p13_sf25" sourceRef="p13_u4" targetRef="p13_k4" />
+    <sequenceFlow id="p13_sf26" sourceRef="p13_k4" targetRef="p13_t1" />
+    <sequenceFlow id="p13_sf27" sourceRef="p13_t1" targetRef="p13_g4" />
+    <sequenceFlow id="p13_sf28" name="Sí" sourceRef="p13_g4" targetRef="p13_t1" />
+    <sequenceFlow id="p13_sf29" name="No" sourceRef="p13_g4" targetRef="p13_k5" />
+    <sequenceFlow id="p13_sf30" sourceRef="p13_k5" targetRef="p13_e2" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p13_pool1_di" bpmnElement="p13_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="3796" height="806" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_pool1_lane_1_di" bpmnElement="p13_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="3766" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_pool1_lane_2_di" bpmnElement="p13_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="294" width="3766" height="338" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_pool1_lane_3_di" bpmnElement="p13_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="632" width="3766" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_s_di" bpmnElement="p13_s" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_u1_di" bpmnElement="p13_u1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="354" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_r1_di" bpmnElement="p13_r1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_ga_di" bpmnElement="p13_ga" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="751" y="328" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_r2_di" bpmnElement="p13_r2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_r3_di" bpmnElement="p13_r3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_r4_di" bpmnElement="p13_r4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="528" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_gj_di" bpmnElement="p13_gj" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1103" y="328" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_g1_di" bpmnElement="p13_g1" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1279" y="328" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_u2_di" bpmnElement="p13_u2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1410" y="190" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_u3_di" bpmnElement="p13_u3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1410" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_r5_di" bpmnElement="p13_r5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_r6_di" bpmnElement="p13_r6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1762" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_g2_di" bpmnElement="p13_g2" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1983" y="328" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_r7_di" bpmnElement="p13_r7" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2114" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_k1_di" bpmnElement="p13_k1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2290" y="658" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_k2_di" bpmnElement="p13_k2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2466" y="658" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_g3_di" bpmnElement="p13_g3" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2687" y="666" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_k3_di" bpmnElement="p13_k3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2818" y="762" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_e1_di" bpmnElement="p13_e1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3046" y="777" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_u4_di" bpmnElement="p13_u4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2818" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_k4_di" bpmnElement="p13_k4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2994" y="658" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_t1_di" bpmnElement="p13_t1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3222" y="673" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_g4_di" bpmnElement="p13_g4" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3391" y="666" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_k5_di" bpmnElement="p13_k5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3522" y="762" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p13_e2_di" bpmnElement="p13_e2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3750" y="777" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p13_sf1_di" bpmnElement="p13_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="354" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf2_di" bpmnElement="p13_sf2"><di:waypoint x="494" y="119" /><di:waypoint x="512" y="119" /><di:waypoint x="512" y="353" /><di:waypoint x="530" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf3_di" bpmnElement="p13_sf3"><di:waypoint x="670" y="353" /><di:waypoint x="751" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf4_di" bpmnElement="p13_sf4"><di:waypoint x="801" y="353" /><di:waypoint x="882" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf5_di" bpmnElement="p13_sf5"><di:waypoint x="776" y="378" /><di:waypoint x="776" y="457" /><di:waypoint x="882" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf6_di" bpmnElement="p13_sf6"><di:waypoint x="801" y="353" /><di:waypoint x="842" y="353" /><di:waypoint x="842" y="561" /><di:waypoint x="882" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf7_di" bpmnElement="p13_sf7"><di:waypoint x="1022" y="353" /><di:waypoint x="1103" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf8_di" bpmnElement="p13_sf8"><di:waypoint x="1022" y="457" /><di:waypoint x="1062" y="457" /><di:waypoint x="1062" y="353" /><di:waypoint x="1103" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf9_di" bpmnElement="p13_sf9"><di:waypoint x="1022" y="561" /><di:waypoint x="1062" y="561" /><di:waypoint x="1062" y="353" /><di:waypoint x="1103" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf10_di" bpmnElement="p13_sf10"><di:waypoint x="1153" y="353" /><di:waypoint x="1279" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf11_di" bpmnElement="p13_sf11"><di:waypoint x="1304" y="328" /><di:waypoint x="1304" y="223" /><di:waypoint x="1410" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf12_di" bpmnElement="p13_sf12"><di:waypoint x="1480" y="256" /><di:waypoint x="1480" y="402" /><di:waypoint x="600" y="402" /><di:waypoint x="600" y="386" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf13_di" bpmnElement="p13_sf13"><di:waypoint x="1304" y="328" /><di:waypoint x="1304" y="119" /><di:waypoint x="1410" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf14_di" bpmnElement="p13_sf14"><di:waypoint x="1550" y="119" /><di:waypoint x="1568" y="119" /><di:waypoint x="1568" y="353" /><di:waypoint x="1586" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf15_di" bpmnElement="p13_sf15"><di:waypoint x="1726" y="353" /><di:waypoint x="1762" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf16_di" bpmnElement="p13_sf16"><di:waypoint x="1902" y="353" /><di:waypoint x="1983" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf17_di" bpmnElement="p13_sf17"><di:waypoint x="2008" y="378" /><di:waypoint x="2008" y="394" /><di:waypoint x="1480" y="394" /><di:waypoint x="1480" y="256" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf18_di" bpmnElement="p13_sf18"><di:waypoint x="2033" y="353" /><di:waypoint x="2114" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf19_di" bpmnElement="p13_sf19"><di:waypoint x="2254" y="353" /><di:waypoint x="2272" y="353" /><di:waypoint x="2272" y="691" /><di:waypoint x="2290" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf20_di" bpmnElement="p13_sf20"><di:waypoint x="2430" y="691" /><di:waypoint x="2466" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf21_di" bpmnElement="p13_sf21"><di:waypoint x="2606" y="691" /><di:waypoint x="2687" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf22_di" bpmnElement="p13_sf22"><di:waypoint x="2712" y="716" /><di:waypoint x="2712" y="795" /><di:waypoint x="2818" y="795" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf23_di" bpmnElement="p13_sf23"><di:waypoint x="2958" y="795" /><di:waypoint x="3046" y="795" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf24_di" bpmnElement="p13_sf24"><di:waypoint x="2712" y="666" /><di:waypoint x="2712" y="119" /><di:waypoint x="2818" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf25_di" bpmnElement="p13_sf25"><di:waypoint x="2958" y="119" /><di:waypoint x="2976" y="119" /><di:waypoint x="2976" y="691" /><di:waypoint x="2994" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf26_di" bpmnElement="p13_sf26"><di:waypoint x="3134" y="691" /><di:waypoint x="3222" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf27_di" bpmnElement="p13_sf27"><di:waypoint x="3258" y="691" /><di:waypoint x="3391" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf28_di" bpmnElement="p13_sf28"><di:waypoint x="3416" y="716" /><di:waypoint x="3416" y="732" /><di:waypoint x="3240" y="732" /><di:waypoint x="3240" y="709" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf29_di" bpmnElement="p13_sf29"><di:waypoint x="3416" y="716" /><di:waypoint x="3416" y="795" /><di:waypoint x="3522" y="795" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p13_sf30_di" bpmnElement="p13_sf30"><di:waypoint x="3662" y="795" /><di:waypoint x="3750" y="795" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

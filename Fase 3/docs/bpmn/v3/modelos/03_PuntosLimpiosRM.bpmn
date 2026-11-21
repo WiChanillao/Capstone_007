@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Puntos Limpios RM: buscar un punto de reciclaje (extendido)">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p03_pool1" name="03 Puntos Limpios RM: buscar un punto (AS-IS Fase 3)" processRef="p03_pool1_proc" />
+
+  </collaboration>
+  <process id="p03_pool1_proc" name="03 Puntos Limpios RM: buscar un punto (AS-IS Fase 3)" isExecutable="false">
+    <documentation>AS-IS VERIFICADO (Fase 3, commit af7d14d): 35 puntos limpios desde MySQL con 55 relaciones punto-material, filtros por comuna y material, cálculo de abierto ahora, orden por distancia, mapa Leaflet con 3 proveedores y enlace de cómo llegar. Fuente: rutas_db.py:134-155, App.jsx:331-353, 595-610, MapaPuntos.jsx:8-190, 02_seed.sql:139-184. TO-BE PROPUESTO: curaduría de datos, confirmar los 25 puntos externos y permitir reportar datos incorrectos (proceso 08).</documentation>
+    <laneSet id="p03_pool1_ls">
+      <lane id="p03_pool1_lane_1" name="Usuario">
+        <flowNodeRef>p03_s</flowNodeRef>
+        <flowNodeRef>p03_u1</flowNodeRef>
+        <flowNodeRef>p03_u2</flowNodeRef>
+        <flowNodeRef>p03_g1</flowNodeRef>
+        <flowNodeRef>p03_u3</flowNodeRef>
+        <flowNodeRef>p03_g2</flowNodeRef>
+        <flowNodeRef>p03_u4</flowNodeRef>
+        <flowNodeRef>p03_g3</flowNodeRef>
+        <flowNodeRef>p03_g4</flowNodeRef>
+        <flowNodeRef>p03_u5</flowNodeRef>
+        <flowNodeRef>p03_u6</flowNodeRef>
+        <flowNodeRef>p03_e1</flowNodeRef>
+      </lane>
+      <lane id="p03_pool1_lane_2" name="App EcoScan Chile">
+        <flowNodeRef>p03_a1</flowNodeRef>
+        <flowNodeRef>p03_g0</flowNodeRef>
+        <flowNodeRef>p03_a0</flowNodeRef>
+        <flowNodeRef>p03_e0</flowNodeRef>
+        <flowNodeRef>p03_a2</flowNodeRef>
+        <flowNodeRef>p03_a3</flowNodeRef>
+      </lane>
+      <lane id="p03_pool1_lane_3" name="Fuente de datos de puntos limpios">
+        <flowNodeRef>p03_d1</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p03_s" name="Necesita reciclar un residuo" />
+    <userTask id="p03_u1" name="Abrir pestaña 'Puntos Limpios RM'" />
+    <serviceTask id="p03_a1" name="Solicitar listado de puntos limpios" />
+    <serviceTask id="p03_d1" name="Entregar 35 puntos desde MySQL (10 propios + 25 externos por confirmar)"><documentation>SELECT punto_limpio JOIN comuna, horario_punto, punto_material</documentation></serviceTask>
+    <exclusiveGateway id="p03_g0" name="¿Datos disponibles?" />
+    <serviceTask id="p03_a0" name="Mostrar error: no se pudo cargar el listado" />
+    <endEvent id="p03_e0" name="Fin: listado no disponible" />
+    <serviceTask id="p03_a2" name="Mostrar tarjetas de todos los puntos (filtro 'Todas')" />
+    <userTask id="p03_u2" name="Revisar filtros por comuna y material" />
+    <exclusiveGateway id="p03_g1" name="¿Filtrar por comuna?" />
+    <userTask id="p03_u3" name="Seleccionar filtro de comuna o material" />
+    <serviceTask id="p03_a3" name="Filtrar tarjetas y ordenar por distancia (sin recargar la página)" />
+    <exclusiveGateway id="p03_g2" />
+    <userTask id="p03_u4" name="Revisar tarjeta: dirección, horario y materiales aceptados" />
+    <exclusiveGateway id="p03_g3" name="¿Acepta el material que quiero reciclar?" />
+    <exclusiveGateway id="p03_g4" name="¿Está abierto ahora? (cálculo automático)" />
+    <userTask id="p03_u5" name="Abrir mapa Leaflet y enlace de cómo llegar" />
+    <userTask id="p03_u6" name="Acudir al punto limpio y entregar el residuo" />
+    <endEvent id="p03_e1" name="Fin: punto limpio identificado y residuo entregado" />
+    <sequenceFlow id="p03_sf1" sourceRef="p03_s" targetRef="p03_u1" />
+    <sequenceFlow id="p03_sf2" sourceRef="p03_u1" targetRef="p03_a1" />
+    <sequenceFlow id="p03_sf3" sourceRef="p03_a1" targetRef="p03_d1" />
+    <sequenceFlow id="p03_sf4" sourceRef="p03_d1" targetRef="p03_g0" />
+    <sequenceFlow id="p03_sf5" name="Sí" sourceRef="p03_g0" targetRef="p03_a2" />
+    <sequenceFlow id="p03_sf6" name="No" sourceRef="p03_g0" targetRef="p03_a0" />
+    <sequenceFlow id="p03_sf7" sourceRef="p03_a0" targetRef="p03_e0" />
+    <sequenceFlow id="p03_sf8" sourceRef="p03_a2" targetRef="p03_u2" />
+    <sequenceFlow id="p03_sf9" sourceRef="p03_u2" targetRef="p03_g1" />
+    <sequenceFlow id="p03_sf10" name="Sí" sourceRef="p03_g1" targetRef="p03_u3" />
+    <sequenceFlow id="p03_sf11" sourceRef="p03_u3" targetRef="p03_a3" />
+    <sequenceFlow id="p03_sf12" sourceRef="p03_a3" targetRef="p03_g2" />
+    <sequenceFlow id="p03_sf13" name="No" sourceRef="p03_g1" targetRef="p03_g2" />
+    <sequenceFlow id="p03_sf14" sourceRef="p03_g2" targetRef="p03_u4" />
+    <sequenceFlow id="p03_sf15" sourceRef="p03_u4" targetRef="p03_g3" />
+    <sequenceFlow id="p03_sf16" name="Sí" sourceRef="p03_g3" targetRef="p03_g4" />
+    <sequenceFlow id="p03_sf17" name="No: probar otra comuna" sourceRef="p03_g3" targetRef="p03_g1" />
+    <sequenceFlow id="p03_sf18" name="Sí" sourceRef="p03_g4" targetRef="p03_u5" />
+    <sequenceFlow id="p03_sf19" name="No: buscar otro punto" sourceRef="p03_g4" targetRef="p03_g1" />
+    <sequenceFlow id="p03_sf20" sourceRef="p03_u5" targetRef="p03_u6" />
+    <sequenceFlow id="p03_sf21" sourceRef="p03_u6" targetRef="p03_e1" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p03_pool1_di" bpmnElement="p03_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="3268" height="494" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_pool1_lane_1_di" bpmnElement="p03_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="3238" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_pool1_lane_2_di" bpmnElement="p03_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="190" width="3238" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_pool1_lane_3_di" bpmnElement="p03_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="424" width="3238" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_s_di" bpmnElement="p03_s"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_u1_di" bpmnElement="p03_u1"><dc:Bounds x="354" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_a1_di" bpmnElement="p03_a1"><dc:Bounds x="530" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_d1_di" bpmnElement="p03_d1"><dc:Bounds x="706" y="450" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_g0_di" bpmnElement="p03_g0" isMarkerVisible="true"><dc:Bounds x="927" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_a0_di" bpmnElement="p03_a0" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1058" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_e0_di" bpmnElement="p03_e0"><dc:Bounds x="1286" y="335" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_a2_di" bpmnElement="p03_a2"><dc:Bounds x="1058" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_u2_di" bpmnElement="p03_u2"><dc:Bounds x="1234" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_g1_di" bpmnElement="p03_g1" isMarkerVisible="true"><dc:Bounds x="1455" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_u3_di" bpmnElement="p03_u3"><dc:Bounds x="1586" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_a3_di" bpmnElement="p03_a3"><dc:Bounds x="1762" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_g2_di" bpmnElement="p03_g2" isMarkerVisible="true"><dc:Bounds x="1983" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_u4_di" bpmnElement="p03_u4"><dc:Bounds x="2114" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_g3_di" bpmnElement="p03_g3" isMarkerVisible="true"><dc:Bounds x="2335" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_g4_di" bpmnElement="p03_g4" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2687" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_u5_di" bpmnElement="p03_u5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2818" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_u6_di" bpmnElement="p03_u6"><dc:Bounds x="2994" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p03_e1_di" bpmnElement="p03_e1"><dc:Bounds x="3222" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p03_sf1_di" bpmnElement="p03_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="354" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf2_di" bpmnElement="p03_sf2"><di:waypoint x="494" y="119" /><di:waypoint x="512" y="119" /><di:waypoint x="512" y="249" /><di:waypoint x="530" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf3_di" bpmnElement="p03_sf3"><di:waypoint x="670" y="249" /><di:waypoint x="688" y="249" /><di:waypoint x="688" y="483" /><di:waypoint x="706" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf4_di" bpmnElement="p03_sf4"><di:waypoint x="846" y="483" /><di:waypoint x="886" y="483" /><di:waypoint x="886" y="249" /><di:waypoint x="927" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf5_di" bpmnElement="p03_sf5"><di:waypoint x="977" y="249" /><di:waypoint x="1058" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf6_di" bpmnElement="p03_sf6"><di:waypoint x="952" y="274" /><di:waypoint x="952" y="353" /><di:waypoint x="1058" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf7_di" bpmnElement="p03_sf7"><di:waypoint x="1198" y="353" /><di:waypoint x="1286" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf8_di" bpmnElement="p03_sf8"><di:waypoint x="1198" y="249" /><di:waypoint x="1216" y="249" /><di:waypoint x="1216" y="119" /><di:waypoint x="1234" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf9_di" bpmnElement="p03_sf9"><di:waypoint x="1374" y="119" /><di:waypoint x="1455" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf10_di" bpmnElement="p03_sf10"><di:waypoint x="1505" y="119" /><di:waypoint x="1586" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf11_di" bpmnElement="p03_sf11"><di:waypoint x="1726" y="119" /><di:waypoint x="1744" y="119" /><di:waypoint x="1744" y="249" /><di:waypoint x="1762" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf12_di" bpmnElement="p03_sf12"><di:waypoint x="1902" y="249" /><di:waypoint x="1942" y="249" /><di:waypoint x="1942" y="119" /><di:waypoint x="1983" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf13_di" bpmnElement="p03_sf13"><di:waypoint x="1480" y="144" /><di:waypoint x="1480" y="160" /><di:waypoint x="2008" y="160" /><di:waypoint x="2008" y="144" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf14_di" bpmnElement="p03_sf14"><di:waypoint x="2033" y="119" /><di:waypoint x="2114" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf15_di" bpmnElement="p03_sf15"><di:waypoint x="2254" y="119" /><di:waypoint x="2335" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf16_di" bpmnElement="p03_sf16"><di:waypoint x="2385" y="119" /><di:waypoint x="2687" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf17_di" bpmnElement="p03_sf17"><di:waypoint x="2360" y="94" /><di:waypoint x="2360" y="78" /><di:waypoint x="1480" y="78" /><di:waypoint x="1480" y="94" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf18_di" bpmnElement="p03_sf18"><di:waypoint x="2737" y="119" /><di:waypoint x="2818" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf19_di" bpmnElement="p03_sf19"><di:waypoint x="2712" y="94" /><di:waypoint x="2712" y="78" /><di:waypoint x="1480" y="78" /><di:waypoint x="1480" y="94" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf20_di" bpmnElement="p03_sf20"><di:waypoint x="2958" y="119" /><di:waypoint x="2994" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p03_sf21_di" bpmnElement="p03_sf21"><di:waypoint x="3134" y="119" /><di:waypoint x="3222" y="119" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

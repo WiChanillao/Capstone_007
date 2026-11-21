@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Escáner IA: escanear un residuo (cliente, extendido)">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p01_pool1" name="01 Escáner IA: escanear un residuo (AS-IS Fase 3 + TO-BE)" processRef="p01_pool1_proc" />
+    <participant id="p01_pool2" name="02 Servicio de inferencia POST /predict (ver modelo 02)" />
+    <messageFlow id="p01_mf1" name="Imagen (multipart)" sourceRef="p01_a7" targetRef="p01_pool2" />
+    <messageFlow id="p01_mf2" name="Respuesta JSON" sourceRef="p01_pool2" targetRef="p01_w1" />
+  </collaboration>
+  <process id="p01_pool1_proc" name="01 Escáner IA: escanear un residuo (AS-IS Fase 3 + TO-BE)" isExecutable="false">
+    <documentation>AS-IS VERIFICADO (Fase 3, commit af7d14d): la app muestra 5 pestañas (Menú Principal mas 4 módulos), permite cámara o archivo, convierte HEIC/HEIF a JPG, valida hasta 10 MB, envía POST /predict con AbortController de 10 s y muestra resultados por material con contenedor, pasos y confianza; admite varios materiales por foto. Fuente: App.jsx:617-674, 723-854 y main.py:405-609. TO-BE PROPUESTO: mensaje dedicado de timeout con botón de reintento, error específico de archivo no soportado, consentimiento previo y enlaces y pasos leídos desde MySQL en lugar de texto hardcodeado.</documentation>
+    <laneSet id="p01_pool1_ls">
+      <lane id="p01_pool1_lane_1" name="Usuario">
+        <flowNodeRef>p01_s</flowNodeRef>
+        <flowNodeRef>p01_u1</flowNodeRef>
+        <flowNodeRef>p01_g1</flowNodeRef>
+        <flowNodeRef>p01_u3</flowNodeRef>
+        <flowNodeRef>p01_u2</flowNodeRef>
+        <flowNodeRef>p01_g3</flowNodeRef>
+        <flowNodeRef>p01_u5</flowNodeRef>
+        <flowNodeRef>p01_g6</flowNodeRef>
+        <flowNodeRef>p01_u6</flowNodeRef>
+        <flowNodeRef>p01_u7</flowNodeRef>
+        <flowNodeRef>p01_e4</flowNodeRef>
+      </lane>
+      <lane id="p01_pool1_lane_2" name="App EcoScan Chile (React + Vite)">
+        <flowNodeRef>p01_a1</flowNodeRef>
+        <flowNodeRef>p01_ga</flowNodeRef>
+        <flowNodeRef>p01_b1</flowNodeRef>
+        <flowNodeRef>p01_b2</flowNodeRef>
+        <flowNodeRef>p01_a2</flowNodeRef>
+        <flowNodeRef>p01_g2</flowNodeRef>
+        <flowNodeRef>p01_a3</flowNodeRef>
+        <flowNodeRef>p01_e0</flowNodeRef>
+        <flowNodeRef>p01_a4</flowNodeRef>
+        <flowNodeRef>p01_g4</flowNodeRef>
+        <flowNodeRef>p01_a5</flowNodeRef>
+        <flowNodeRef>p01_e1</flowNodeRef>
+        <flowNodeRef>p01_a6</flowNodeRef>
+        <flowNodeRef>p01_a7</flowNodeRef>
+        <flowNodeRef>p01_bt</flowNodeRef>
+        <flowNodeRef>p01_w1</flowNodeRef>
+        <flowNodeRef>p01_g5</flowNodeRef>
+        <flowNodeRef>p01_a9</flowNodeRef>
+        <flowNodeRef>p01_a10</flowNodeRef>
+        <flowNodeRef>p01_a8</flowNodeRef>
+        <flowNodeRef>p01_e2</flowNodeRef>
+        <flowNodeRef>p01_e3</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p01_s" name="Usuario abre EcoScan Chile" />
+    <serviceTask id="p01_a1" name="Cargar app y mostrar 5 pestañas (Menú Principal + 4 módulos)" />
+    <parallelGateway id="p01_ga" />
+    <serviceTask id="p01_b1" name="Mostrar banner de impacto ambiental RM"><documentation>Tabla banner_impacto (RF-11)</documentation></serviceTask>
+    <intermediateCatchEvent id="p01_b2" name="Rotación o clic en 'Siguiente'"><timerEventDefinition /></intermediateCatchEvent>
+    <userTask id="p01_u1" name="Presionar 'Subir Imagen / Tomar Foto'" />
+    <exclusiveGateway id="p01_g1" name="¿Origen de la imagen?" />
+    <serviceTask id="p01_a2" name="Solicitar permiso de cámara al navegador" />
+    <exclusiveGateway id="p01_g2" name="¿Permiso concedido?" />
+    <serviceTask id="p01_a3" name="Informar: usar galería de archivos" />
+    <endEvent id="p01_e0" name="Fin: sin cámara" />
+    <userTask id="p01_u3" name="Tomar foto con la cámara" />
+    <userTask id="p01_u2" name="Elegir imagen desde archivo" />
+    <exclusiveGateway id="p01_g3" />
+    <serviceTask id="p01_a4" name="Validar tipo y tamaño en el cliente (10 MB); convertir HEIC/HEIF a JPG" />
+    <exclusiveGateway id="p01_g4" name="¿Archivo válido?" />
+    <serviceTask id="p01_a5" name="Mostrar error: archivo no soportado" />
+    <endEvent id="p01_e1" name="Fin: archivo rechazado" />
+    <serviceTask id="p01_a6" name="Mostrar vista previa de la imagen" />
+    <serviceTask id="p01_a7" name="Enviar a POST /predict con AbortController de 10 s y mostrar 'Esperando imagen...'" />
+    <boundaryEvent id="p01_bt" name="Timeout 10 s" attachedToRef="p01_a7" cancelActivity="true"><timerEventDefinition /></boundaryEvent>
+    <intermediateCatchEvent id="p01_w1" name="Respuesta JSON del servicio"><messageEventDefinition /></intermediateCatchEvent>
+    <exclusiveGateway id="p01_g5" name="¿Resultado de la respuesta?" />
+    <serviceTask id="p01_a9" name="Mostrar resultados por material (contenedor, pasos y confianza)" />
+    <serviceTask id="p01_a10" name="Mostrar aviso: repetir foto (sin detecciones o confianza baja)" />
+    <serviceTask id="p01_a8" name="[TO-BE] Mostrar error de servicio / tiempo agotado y ofrecer reintento" />
+    <endEvent id="p01_e2" name="Fin: usuario repite captura" />
+    <endEvent id="p01_e3" name="Fin: error informado" />
+    <userTask id="p01_u5" name="Revisar contenedor y pasos de preparación" />
+    <exclusiveGateway id="p01_g6" name="¿Qué desea hacer?" />
+    <userTask id="p01_u6" name="Alternar '¿Cómo Reciclar?' / '¿Cómo Reutilizar?'" />
+    <userTask id="p01_u7" name="Abrir enlace externo (texto hardcodeado)" />
+    <endEvent id="p01_e4" name="Fin: usuario informado" />
+    <sequenceFlow id="p01_sf1" sourceRef="p01_s" targetRef="p01_a1" />
+    <sequenceFlow id="p01_sf2" sourceRef="p01_a1" targetRef="p01_ga" />
+    <sequenceFlow id="p01_sf3" sourceRef="p01_ga" targetRef="p01_b1" />
+    <sequenceFlow id="p01_sf4" sourceRef="p01_ga" targetRef="p01_u1" />
+    <sequenceFlow id="p01_sf5" sourceRef="p01_b1" targetRef="p01_b2" />
+    <sequenceFlow id="p01_sf6" name="siguiente dato" sourceRef="p01_b2" targetRef="p01_b1" />
+    <sequenceFlow id="p01_sf7" sourceRef="p01_u1" targetRef="p01_g1" />
+    <sequenceFlow id="p01_sf8" name="Archivo" sourceRef="p01_g1" targetRef="p01_u2" />
+    <sequenceFlow id="p01_sf9" name="Cámara" sourceRef="p01_g1" targetRef="p01_a2" />
+    <sequenceFlow id="p01_sf10" sourceRef="p01_a2" targetRef="p01_g2" />
+    <sequenceFlow id="p01_sf11" name="Sí" sourceRef="p01_g2" targetRef="p01_u3" />
+    <sequenceFlow id="p01_sf12" name="No" sourceRef="p01_g2" targetRef="p01_a3" />
+    <sequenceFlow id="p01_sf13" sourceRef="p01_a3" targetRef="p01_e0" />
+    <sequenceFlow id="p01_sf14" sourceRef="p01_u3" targetRef="p01_g3" />
+    <sequenceFlow id="p01_sf15" sourceRef="p01_u2" targetRef="p01_g3" />
+    <sequenceFlow id="p01_sf16" sourceRef="p01_g3" targetRef="p01_a4" />
+    <sequenceFlow id="p01_sf17" sourceRef="p01_a4" targetRef="p01_g4" />
+    <sequenceFlow id="p01_sf18" name="Sí" sourceRef="p01_g4" targetRef="p01_a6" />
+    <sequenceFlow id="p01_sf19" name="No" sourceRef="p01_g4" targetRef="p01_a5" />
+    <sequenceFlow id="p01_sf20" sourceRef="p01_a5" targetRef="p01_e1" />
+    <sequenceFlow id="p01_sf21" sourceRef="p01_a6" targetRef="p01_a7" />
+    <sequenceFlow id="p01_sf22" sourceRef="p01_a7" targetRef="p01_w1" />
+    <sequenceFlow id="p01_sf23" name="Sin respuesta" sourceRef="p01_bt" targetRef="p01_a8" />
+    <sequenceFlow id="p01_sf24" sourceRef="p01_w1" targetRef="p01_g5" />
+    <sequenceFlow id="p01_sf25" name="200 OK" sourceRef="p01_g5" targetRef="p01_a9" />
+    <sequenceFlow id="p01_sf26" name="422 / baja confianza" sourceRef="p01_g5" targetRef="p01_a10" />
+    <sequenceFlow id="p01_sf27" name="4xx / 5xx" sourceRef="p01_g5" targetRef="p01_a8" />
+    <sequenceFlow id="p01_sf28" sourceRef="p01_a10" targetRef="p01_e2" />
+    <sequenceFlow id="p01_sf29" sourceRef="p01_a8" targetRef="p01_e3" />
+    <sequenceFlow id="p01_sf30" sourceRef="p01_a9" targetRef="p01_u5" />
+    <sequenceFlow id="p01_sf31" sourceRef="p01_u5" targetRef="p01_g6" />
+    <sequenceFlow id="p01_sf32" name="Alternar" sourceRef="p01_g6" targetRef="p01_u6" />
+    <sequenceFlow id="p01_sf33" name="Recursos" sourceRef="p01_g6" targetRef="p01_u7" />
+    <sequenceFlow id="p01_sf34" name="Terminar" sourceRef="p01_g6" targetRef="p01_e4" />
+    <sequenceFlow id="p01_sf35" name="Escanear otro" sourceRef="p01_g6" targetRef="p01_u1" />
+    <sequenceFlow id="p01_sf36" sourceRef="p01_u6" targetRef="p01_g6" />
+    <sequenceFlow id="p01_sf37" sourceRef="p01_u7" targetRef="p01_g6" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p01_pool1_di" bpmnElement="p01_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="3444" height="676" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_pool1_lane_1_di" bpmnElement="p01_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="3414" height="338" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_pool1_lane_2_di" bpmnElement="p01_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="398" width="3414" height="338" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_pool2_di" bpmnElement="p01_pool2" isHorizontal="true"><dc:Bounds x="100" y="792" width="3444" height="64" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_s_di" bpmnElement="p01_s"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_a1_di" bpmnElement="p01_a1"><dc:Bounds x="354" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_ga_di" bpmnElement="p01_ga"><dc:Bounds x="575" y="432" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_b1_di" bpmnElement="p01_b1"><dc:Bounds x="706" y="528" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_b2_di" bpmnElement="p01_b2"><dc:Bounds x="934" y="543" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_u1_di" bpmnElement="p01_u1"><dc:Bounds x="706" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_g1_di" bpmnElement="p01_g1" isMarkerVisible="true"><dc:Bounds x="927" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_a2_di" bpmnElement="p01_a2"><dc:Bounds x="1058" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_g2_di" bpmnElement="p01_g2" isMarkerVisible="true"><dc:Bounds x="1279" y="432" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_a3_di" bpmnElement="p01_a3"><dc:Bounds x="1410" y="528" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_e0_di" bpmnElement="p01_e0"><dc:Bounds x="1638" y="543" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_u3_di" bpmnElement="p01_u3"><dc:Bounds x="1410" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_u2_di" bpmnElement="p01_u2"><dc:Bounds x="1410" y="190" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_g3_di" bpmnElement="p01_g3" isMarkerVisible="true"><dc:Bounds x="1631" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_a4_di" bpmnElement="p01_a4"><dc:Bounds x="1762" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_g4_di" bpmnElement="p01_g4" isMarkerVisible="true"><dc:Bounds x="1983" y="432" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_a5_di" bpmnElement="p01_a5"><dc:Bounds x="2114" y="528" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_e1_di" bpmnElement="p01_e1"><dc:Bounds x="2342" y="543" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_a6_di" bpmnElement="p01_a6"><dc:Bounds x="2114" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_a7_di" bpmnElement="p01_a7"><dc:Bounds x="2290" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_bt_di" bpmnElement="p01_bt" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2382" y="472" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_w1_di" bpmnElement="p01_w1"><dc:Bounds x="2518" y="439" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_g5_di" bpmnElement="p01_g5" isMarkerVisible="true"><dc:Bounds x="2687" y="432" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_a9_di" bpmnElement="p01_a9"><dc:Bounds x="2818" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_a10_di" bpmnElement="p01_a10"><dc:Bounds x="2818" y="528" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_a8_di" bpmnElement="p01_a8" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2818" y="632" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_e2_di" bpmnElement="p01_e2"><dc:Bounds x="3046" y="543" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_e3_di" bpmnElement="p01_e3"><dc:Bounds x="3046" y="647" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_u5_di" bpmnElement="p01_u5"><dc:Bounds x="2994" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_g6_di" bpmnElement="p01_g6" isMarkerVisible="true"><dc:Bounds x="3215" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_u6_di" bpmnElement="p01_u6"><dc:Bounds x="3346" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_u7_di" bpmnElement="p01_u7"><dc:Bounds x="3346" y="190" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p01_e4_di" bpmnElement="p01_e4"><dc:Bounds x="3398" y="309" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p01_sf1_di" bpmnElement="p01_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="310" y="119" /><di:waypoint x="310" y="457" /><di:waypoint x="354" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf2_di" bpmnElement="p01_sf2"><di:waypoint x="494" y="457" /><di:waypoint x="575" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf3_di" bpmnElement="p01_sf3"><di:waypoint x="600" y="482" /><di:waypoint x="600" y="561" /><di:waypoint x="706" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf4_di" bpmnElement="p01_sf4"><di:waypoint x="600" y="432" /><di:waypoint x="600" y="119" /><di:waypoint x="706" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf5_di" bpmnElement="p01_sf5"><di:waypoint x="846" y="561" /><di:waypoint x="934" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf6_di" bpmnElement="p01_sf6"><di:waypoint x="952" y="579" /><di:waypoint x="952" y="610" /><di:waypoint x="776" y="610" /><di:waypoint x="776" y="594" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf7_di" bpmnElement="p01_sf7"><di:waypoint x="846" y="119" /><di:waypoint x="927" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf8_di" bpmnElement="p01_sf8"><di:waypoint x="952" y="144" /><di:waypoint x="952" y="223" /><di:waypoint x="1410" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf9_di" bpmnElement="p01_sf9"><di:waypoint x="977" y="119" /><di:waypoint x="1018" y="119" /><di:waypoint x="1018" y="457" /><di:waypoint x="1058" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf10_di" bpmnElement="p01_sf10"><di:waypoint x="1198" y="457" /><di:waypoint x="1279" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf11_di" bpmnElement="p01_sf11"><di:waypoint x="1304" y="432" /><di:waypoint x="1304" y="119" /><di:waypoint x="1410" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf12_di" bpmnElement="p01_sf12"><di:waypoint x="1304" y="482" /><di:waypoint x="1304" y="561" /><di:waypoint x="1410" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf13_di" bpmnElement="p01_sf13"><di:waypoint x="1550" y="561" /><di:waypoint x="1638" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf14_di" bpmnElement="p01_sf14"><di:waypoint x="1550" y="119" /><di:waypoint x="1631" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf15_di" bpmnElement="p01_sf15"><di:waypoint x="1550" y="223" /><di:waypoint x="1590" y="223" /><di:waypoint x="1590" y="119" /><di:waypoint x="1631" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf16_di" bpmnElement="p01_sf16"><di:waypoint x="1656" y="144" /><di:waypoint x="1656" y="457" /><di:waypoint x="1762" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf17_di" bpmnElement="p01_sf17"><di:waypoint x="1902" y="457" /><di:waypoint x="1983" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf18_di" bpmnElement="p01_sf18"><di:waypoint x="2033" y="457" /><di:waypoint x="2114" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf19_di" bpmnElement="p01_sf19"><di:waypoint x="2008" y="482" /><di:waypoint x="2008" y="561" /><di:waypoint x="2114" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf20_di" bpmnElement="p01_sf20"><di:waypoint x="2254" y="561" /><di:waypoint x="2342" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf21_di" bpmnElement="p01_sf21"><di:waypoint x="2254" y="457" /><di:waypoint x="2290" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf22_di" bpmnElement="p01_sf22"><di:waypoint x="2430" y="457" /><di:waypoint x="2518" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf23_di" bpmnElement="p01_sf23"><di:waypoint x="2400" y="508" /><di:waypoint x="2400" y="665" /><di:waypoint x="2818" y="665" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf24_di" bpmnElement="p01_sf24"><di:waypoint x="2554" y="457" /><di:waypoint x="2687" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf25_di" bpmnElement="p01_sf25"><di:waypoint x="2737" y="457" /><di:waypoint x="2818" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf26_di" bpmnElement="p01_sf26"><di:waypoint x="2712" y="482" /><di:waypoint x="2712" y="561" /><di:waypoint x="2818" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf27_di" bpmnElement="p01_sf27"><di:waypoint x="2737" y="457" /><di:waypoint x="2778" y="457" /><di:waypoint x="2778" y="665" /><di:waypoint x="2818" y="665" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf28_di" bpmnElement="p01_sf28"><di:waypoint x="2958" y="561" /><di:waypoint x="3046" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf29_di" bpmnElement="p01_sf29"><di:waypoint x="2958" y="665" /><di:waypoint x="3046" y="665" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf30_di" bpmnElement="p01_sf30"><di:waypoint x="2958" y="457" /><di:waypoint x="2976" y="457" /><di:waypoint x="2976" y="119" /><di:waypoint x="2994" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf31_di" bpmnElement="p01_sf31"><di:waypoint x="3134" y="119" /><di:waypoint x="3215" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf32_di" bpmnElement="p01_sf32"><di:waypoint x="3265" y="119" /><di:waypoint x="3346" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf33_di" bpmnElement="p01_sf33"><di:waypoint x="3240" y="144" /><di:waypoint x="3240" y="223" /><di:waypoint x="3346" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf34_di" bpmnElement="p01_sf34"><di:waypoint x="3265" y="119" /><di:waypoint x="3332" y="119" /><di:waypoint x="3332" y="327" /><di:waypoint x="3398" y="327" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf35_di" bpmnElement="p01_sf35"><di:waypoint x="3240" y="94" /><di:waypoint x="3240" y="70" /><di:waypoint x="776" y="70" /><di:waypoint x="776" y="86" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf36_di" bpmnElement="p01_sf36"><di:waypoint x="3416" y="152" /><di:waypoint x="3416" y="168" /><di:waypoint x="3240" y="168" /><di:waypoint x="3240" y="144" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_sf37_di" bpmnElement="p01_sf37"><di:waypoint x="3416" y="256" /><di:waypoint x="3416" y="272" /><di:waypoint x="3240" y="272" /><di:waypoint x="3240" y="144" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_mf1_di" bpmnElement="p01_mf1"><di:waypoint x="2360" y="490" /><di:waypoint x="2360" y="792" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p01_mf2_di" bpmnElement="p01_mf2"><di:waypoint x="2536" y="792" /><di:waypoint x="2536" y="475" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

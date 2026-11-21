@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Eco-Simulador RM: calcular el aporte ecológico (extendido)">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p04_pool1" name="04 Eco-Simulador RM: impacto desde escaneos (AS-IS Fase 3) + escenarios (TO-BE)" processRef="p04_pool1_proc" />
+
+  </collaboration>
+  <process id="p04_pool1_proc" name="04 Eco-Simulador RM: impacto desde escaneos (AS-IS Fase 3) + escenarios (TO-BE)" isExecutable="false">
+    <documentation>AS-IS VERIFICADO (Fase 3, commit af7d14d): NO existen los 3 deslizadores. /db/impacto calcula agua, CO2 y residuos desde los escaneos de los últimos 30 días multiplicados por factores de item_simulador; la UI muestra consejos y videos, sin guardado de escenarios. Fuente: rutas_db.py:180-266, App.jsx:212-253, 676-693. TO-BE PROPUESTO: deslizadores manuales con validación entera, impacto anual, guardar y comparar escenarios, y mostrar fuente y vigencia de los factores.</documentation>
+    <laneSet id="p04_pool1_ls">
+      <lane id="p04_pool1_lane_1" name="Usuario">
+        <flowNodeRef>p04_s</flowNodeRef>
+        <flowNodeRef>p04_u1</flowNodeRef>
+        <flowNodeRef>p04_g1</flowNodeRef>
+        <flowNodeRef>p04_g2</flowNodeRef>
+        <flowNodeRef>p04_e1</flowNodeRef>
+      </lane>
+      <lane id="p04_pool1_lane_2" name="App EcoScan Chile">
+        <flowNodeRef>p04_a1</flowNodeRef>
+        <flowNodeRef>p04_a2</flowNodeRef>
+        <flowNodeRef>p04_a3</flowNodeRef>
+        <flowNodeRef>p04_ga</flowNodeRef>
+        <flowNodeRef>p04_a4</flowNodeRef>
+        <flowNodeRef>p04_a5</flowNodeRef>
+        <flowNodeRef>p04_a6</flowNodeRef>
+        <flowNodeRef>p04_gj</flowNodeRef>
+        <flowNodeRef>p04_a7</flowNodeRef>
+        <flowNodeRef>p04_a8</flowNodeRef>
+        <flowNodeRef>p04_a9</flowNodeRef>
+        <flowNodeRef>p04_a10</flowNodeRef>
+      </lane>
+      <lane id="p04_pool1_lane_3" name="Parámetros y factores de impacto">
+        <flowNodeRef>p04_d1</flowNodeRef>
+        <flowNodeRef>p04_d2</flowNodeRef>
+        <flowNodeRef>p04_e2</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p04_s" name="Abrir 'Eco-Simulador RM'" />
+    <serviceTask id="p04_a1" name="Solicitar factores de item_simulador y escaneos de la sesión" />
+    <serviceTask id="p04_d1" name="Entregar ítems y factores de impacto vigentes"><documentation>SELECT item_simulador JOIN factor_impacto (vigente)</documentation></serviceTask>
+    <serviceTask id="p04_a2" name="Mostrar impacto calculado desde escaneos de los últimos 30 días" />
+    <userTask id="p04_u1" name="Consultar GET /db/impacto con id_sesion" />
+    <serviceTask id="p04_a3" name="[TO-BE] Validar rango (mín–máx) y número entero" />
+    <parallelGateway id="p04_ga" />
+    <serviceTask id="p04_a4" name="Calcular agua ahorrada (L) desde escaneos" />
+    <serviceTask id="p04_a5" name="Calcular CO₂ no emitido (kg) desde escaneos" />
+    <serviceTask id="p04_a6" name="Calcular residuos desviados (kg) desde escaneos" />
+    <parallelGateway id="p04_gj" />
+    <serviceTask id="p04_a7" name="Calcular equivalencias (duchas de 5 min, km en bus Red)" />
+    <serviceTask id="p04_a8" name="Mostrar consejos y videos según el impacto" />
+    <serviceTask id="p04_a9" name="Actualizar tarjetas de impacto y mensaje en pantalla" />
+    <exclusiveGateway id="p04_g1" name="[TO-BE] ¿Ajusta otro valor?" />
+    <exclusiveGateway id="p04_g2" name="[TO-BE] ¿Desea guardar el escenario?" />
+    <endEvent id="p04_e1" name="Fin: usuario revisa su impacto" />
+    <serviceTask id="p04_a10" name="[TO-BE] Guardar escenario (ítems, totales y fecha)" />
+    <serviceTask id="p04_d2" name="[TO-BE] Persistir escenario_simulacion y escenario_item"><documentation>INSERT escenario_simulacion, escenario_item</documentation></serviceTask>
+    <endEvent id="p04_e2" name="[TO-BE] Fin: escenario guardado" />
+    <sequenceFlow id="p04_sf1" sourceRef="p04_s" targetRef="p04_a1" />
+    <sequenceFlow id="p04_sf2" sourceRef="p04_a1" targetRef="p04_d1" />
+    <sequenceFlow id="p04_sf3" sourceRef="p04_d1" targetRef="p04_a2" />
+    <sequenceFlow id="p04_sf4" sourceRef="p04_a2" targetRef="p04_u1" />
+    <sequenceFlow id="p04_sf5" sourceRef="p04_u1" targetRef="p04_a3" />
+    <sequenceFlow id="p04_sf6" sourceRef="p04_a3" targetRef="p04_ga" />
+    <sequenceFlow id="p04_sf7" sourceRef="p04_ga" targetRef="p04_a4" />
+    <sequenceFlow id="p04_sf8" sourceRef="p04_ga" targetRef="p04_a5" />
+    <sequenceFlow id="p04_sf9" sourceRef="p04_ga" targetRef="p04_a6" />
+    <sequenceFlow id="p04_sf10" sourceRef="p04_a4" targetRef="p04_gj" />
+    <sequenceFlow id="p04_sf11" sourceRef="p04_a5" targetRef="p04_gj" />
+    <sequenceFlow id="p04_sf12" sourceRef="p04_a6" targetRef="p04_gj" />
+    <sequenceFlow id="p04_sf13" sourceRef="p04_gj" targetRef="p04_a7" />
+    <sequenceFlow id="p04_sf14" sourceRef="p04_a7" targetRef="p04_a8" />
+    <sequenceFlow id="p04_sf15" sourceRef="p04_a8" targetRef="p04_a9" />
+    <sequenceFlow id="p04_sf16" sourceRef="p04_a9" targetRef="p04_g1" />
+    <sequenceFlow id="p04_sf17" name="Sí" sourceRef="p04_g1" targetRef="p04_u1" />
+    <sequenceFlow id="p04_sf18" name="No" sourceRef="p04_g1" targetRef="p04_g2" />
+    <sequenceFlow id="p04_sf19" name="Sí" sourceRef="p04_g2" targetRef="p04_a10" />
+    <sequenceFlow id="p04_sf20" name="No" sourceRef="p04_g2" targetRef="p04_e1" />
+    <sequenceFlow id="p04_sf21" sourceRef="p04_a10" targetRef="p04_d2" />
+    <sequenceFlow id="p04_sf22" sourceRef="p04_d2" targetRef="p04_e2" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p04_pool1_di" bpmnElement="p04_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="3092" height="702" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_pool1_lane_1_di" bpmnElement="p04_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="3062" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_pool1_lane_2_di" bpmnElement="p04_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="294" width="3062" height="338" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_pool1_lane_3_di" bpmnElement="p04_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="632" width="3062" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_s_di" bpmnElement="p04_s"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_a1_di" bpmnElement="p04_a1"><dc:Bounds x="354" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_d1_di" bpmnElement="p04_d1"><dc:Bounds x="530" y="658" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_a2_di" bpmnElement="p04_a2"><dc:Bounds x="706" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_u1_di" bpmnElement="p04_u1"><dc:Bounds x="882" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_a3_di" bpmnElement="p04_a3"><dc:Bounds x="1058" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_ga_di" bpmnElement="p04_ga"><dc:Bounds x="1279" y="328" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_a4_di" bpmnElement="p04_a4"><dc:Bounds x="1410" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_a5_di" bpmnElement="p04_a5"><dc:Bounds x="1410" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_a6_di" bpmnElement="p04_a6"><dc:Bounds x="1410" y="528" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_gj_di" bpmnElement="p04_gj"><dc:Bounds x="1631" y="328" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_a7_di" bpmnElement="p04_a7"><dc:Bounds x="1762" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_a8_di" bpmnElement="p04_a8"><dc:Bounds x="1938" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_a9_di" bpmnElement="p04_a9"><dc:Bounds x="2114" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_g1_di" bpmnElement="p04_g1" isMarkerVisible="true"><dc:Bounds x="2335" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_g2_di" bpmnElement="p04_g2" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2511" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_e1_di" bpmnElement="p04_e1"><dc:Bounds x="2694" y="205" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_a10_di" bpmnElement="p04_a10" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2642" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_d2_di" bpmnElement="p04_d2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2818" y="658" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p04_e2_di" bpmnElement="p04_e2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3046" y="673" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p04_sf1_di" bpmnElement="p04_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="310" y="119" /><di:waypoint x="310" y="353" /><di:waypoint x="354" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf2_di" bpmnElement="p04_sf2"><di:waypoint x="494" y="353" /><di:waypoint x="512" y="353" /><di:waypoint x="512" y="691" /><di:waypoint x="530" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf3_di" bpmnElement="p04_sf3"><di:waypoint x="670" y="691" /><di:waypoint x="688" y="691" /><di:waypoint x="688" y="353" /><di:waypoint x="706" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf4_di" bpmnElement="p04_sf4"><di:waypoint x="846" y="353" /><di:waypoint x="864" y="353" /><di:waypoint x="864" y="119" /><di:waypoint x="882" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf5_di" bpmnElement="p04_sf5"><di:waypoint x="1022" y="119" /><di:waypoint x="1040" y="119" /><di:waypoint x="1040" y="353" /><di:waypoint x="1058" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf6_di" bpmnElement="p04_sf6"><di:waypoint x="1198" y="353" /><di:waypoint x="1279" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf7_di" bpmnElement="p04_sf7"><di:waypoint x="1329" y="353" /><di:waypoint x="1410" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf8_di" bpmnElement="p04_sf8"><di:waypoint x="1304" y="378" /><di:waypoint x="1304" y="457" /><di:waypoint x="1410" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf9_di" bpmnElement="p04_sf9"><di:waypoint x="1329" y="353" /><di:waypoint x="1370" y="353" /><di:waypoint x="1370" y="561" /><di:waypoint x="1410" y="561" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf10_di" bpmnElement="p04_sf10"><di:waypoint x="1550" y="353" /><di:waypoint x="1631" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf11_di" bpmnElement="p04_sf11"><di:waypoint x="1550" y="457" /><di:waypoint x="1590" y="457" /><di:waypoint x="1590" y="353" /><di:waypoint x="1631" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf12_di" bpmnElement="p04_sf12"><di:waypoint x="1550" y="561" /><di:waypoint x="1590" y="561" /><di:waypoint x="1590" y="353" /><di:waypoint x="1631" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf13_di" bpmnElement="p04_sf13"><di:waypoint x="1681" y="353" /><di:waypoint x="1762" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf14_di" bpmnElement="p04_sf14"><di:waypoint x="1902" y="353" /><di:waypoint x="1938" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf15_di" bpmnElement="p04_sf15"><di:waypoint x="2078" y="353" /><di:waypoint x="2114" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf16_di" bpmnElement="p04_sf16"><di:waypoint x="2254" y="353" /><di:waypoint x="2294" y="353" /><di:waypoint x="2294" y="119" /><di:waypoint x="2335" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf17_di" bpmnElement="p04_sf17"><di:waypoint x="2360" y="94" /><di:waypoint x="2360" y="70" /><di:waypoint x="952" y="70" /><di:waypoint x="952" y="86" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf18_di" bpmnElement="p04_sf18"><di:waypoint x="2385" y="119" /><di:waypoint x="2511" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf19_di" bpmnElement="p04_sf19"><di:waypoint x="2536" y="144" /><di:waypoint x="2536" y="353" /><di:waypoint x="2642" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf20_di" bpmnElement="p04_sf20"><di:waypoint x="2561" y="119" /><di:waypoint x="2628" y="119" /><di:waypoint x="2628" y="223" /><di:waypoint x="2694" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf21_di" bpmnElement="p04_sf21"><di:waypoint x="2782" y="353" /><di:waypoint x="2800" y="353" /><di:waypoint x="2800" y="691" /><di:waypoint x="2818" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p04_sf22_di" bpmnElement="p04_sf22"><di:waypoint x="2958" y="691" /><di:waypoint x="3046" y="691" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Sesión anónima, consentimiento y cuenta opcional">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p10_pool1" name="10 Sesión anónima (AS-IS Fase 3) + consentimiento y cuenta (TO-BE)" processRef="p10_pool1_proc" />
+
+  </collaboration>
+  <process id="p10_pool1_proc" name="10 Sesión anónima (AS-IS Fase 3) + consentimiento y cuenta (TO-BE)" isExecutable="false">
+    <documentation>AS-IS VERIFICADO (Fase 3, commit af7d14d): solo existe una sesión anónima con UUID en localStorage.ecolearn_id_sesion, POST /db/sesiones y retención manual a 6/12 meses sin scheduler. La tabla sesion solo tiene id_sesion y creada_en; no hay usuarios, roles, tokens ni consentimiento. Fuente: App.jsx:492-510, rutas_db.py:275-308, 01_schema.sql:297-301, DECISIONES.md:110-112. TO-BE PROPUESTO: aviso de privacidad, consentimiento explícito con hash de imagen, cuenta opcional con verificación por correo en 24 h, vinculación de sesión y migración de progreso.</documentation>
+    <laneSet id="p10_pool1_ls">
+      <lane id="p10_pool1_lane_1" name="Visitante / Usuario">
+        <flowNodeRef>p10_s</flowNodeRef>
+        <flowNodeRef>p10_u1</flowNodeRef>
+        <flowNodeRef>p10_g1</flowNodeRef>
+        <flowNodeRef>p10_u2</flowNodeRef>
+        <flowNodeRef>p10_g3</flowNodeRef>
+        <flowNodeRef>p10_e1</flowNodeRef>
+        <flowNodeRef>p10_u3</flowNodeRef>
+        <flowNodeRef>p10_u4</flowNodeRef>
+        <flowNodeRef>p10_bt</flowNodeRef>
+      </lane>
+      <lane id="p10_pool1_lane_2" name="App EcoScan Chile">
+        <flowNodeRef>p10_a1</flowNodeRef>
+        <flowNodeRef>p10_a2</flowNodeRef>
+        <flowNodeRef>p10_a3</flowNodeRef>
+        <flowNodeRef>p10_a4</flowNodeRef>
+        <flowNodeRef>p10_g2</flowNodeRef>
+        <flowNodeRef>p10_a5</flowNodeRef>
+      </lane>
+      <lane id="p10_pool1_lane_3" name="Servicio de cuentas (TO-BE)">
+        <flowNodeRef>p10_c1</flowNodeRef>
+        <flowNodeRef>p10_g4</flowNodeRef>
+        <flowNodeRef>p10_c2</flowNodeRef>
+        <flowNodeRef>p10_c6</flowNodeRef>
+        <flowNodeRef>p10_e3</flowNodeRef>
+        <flowNodeRef>p10_c3</flowNodeRef>
+        <flowNodeRef>p10_c4</flowNodeRef>
+        <flowNodeRef>p10_c5</flowNodeRef>
+        <flowNodeRef>p10_e2</flowNodeRef>
+      </lane>
+      <lane id="p10_pool1_lane_4" name="Servicio de correo (TO-BE)">
+        <flowNodeRef>p10_m1</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p10_s" name="Primera visita a EcoScan Chile" />
+    <serviceTask id="p10_a1" name="Crear sesión anónima (UUID) en localStorage.ecolearn_id_sesion"><documentation>INSERT sesion</documentation></serviceTask>
+    <serviceTask id="p10_a2" name="[TO-BE] Mostrar aviso de privacidad y uso de datos" />
+    <userTask id="p10_u1" name="[TO-BE] Decidir si permite guardar imágenes para mejorar el modelo" />
+    <exclusiveGateway id="p10_g1" name="[TO-BE] ¿Acepta guardar imágenes?" />
+    <serviceTask id="p10_a3" name="[TO-BE] Registrar consentimiento = Sí"><documentation>UPDATE sesion SET consentimiento_imagenes</documentation></serviceTask>
+    <serviceTask id="p10_a4" name="[TO-BE] Registrar consentimiento = No (solo hash de la imagen)" />
+    <exclusiveGateway id="p10_g2" />
+    <serviceTask id="p10_a5" name="Habilitar uso sin cuenta de los 4 módulos (RF-24)" />
+    <userTask id="p10_u2" name="Usar escáner, puntos limpios, simulador y desafío" />
+    <exclusiveGateway id="p10_g3" name="[TO-BE] ¿Desea crear cuenta para guardar su progreso?" />
+    <endEvent id="p10_e1" name="Fin: sigue como anónimo" />
+    <userTask id="p10_u3" name="[TO-BE] Completar registro (correo, nombre, comuna)" />
+    <serviceTask id="p10_c1" name="[TO-BE] Validar datos y unicidad del correo" />
+    <exclusiveGateway id="p10_g4" name="¿Datos válidos?" />
+    <serviceTask id="p10_c2" name="[TO-BE] Crear usuario (rol usuario) y token de verificación"><documentation>INSERT usuario</documentation></serviceTask>
+    <serviceTask id="p10_m1" name="[TO-BE] Enviar correo con enlace de verificación" />
+    <userTask id="p10_u4" name="[TO-BE] Abrir el enlace de verificación" />
+    <boundaryEvent id="p10_bt" name="Expira en 24 h" attachedToRef="p10_u4" cancelActivity="true"><timerEventDefinition /></boundaryEvent>
+    <serviceTask id="p10_c6" name="[TO-BE] Invalidar enlace y ofrecer reenvío" />
+    <endEvent id="p10_e3" name="Fin: verificación expirada" />
+    <serviceTask id="p10_c3" name="[TO-BE] Marcar la cuenta como verificada" />
+    <serviceTask id="p10_c4" name="[TO-BE] Vincular la sesión anónima con el usuario"><documentation>UPDATE sesion SET id_usuario</documentation></serviceTask>
+    <serviceTask id="p10_c5" name="[TO-BE] Migrar progreso del desafío y escenarios guardados" />
+    <endEvent id="p10_e2" name="Fin: cuenta activa con progreso conservado" />
+    <sequenceFlow id="p10_sf1" sourceRef="p10_s" targetRef="p10_a1" />
+    <sequenceFlow id="p10_sf2" sourceRef="p10_a1" targetRef="p10_a2" />
+    <sequenceFlow id="p10_sf3" sourceRef="p10_a2" targetRef="p10_u1" />
+    <sequenceFlow id="p10_sf4" sourceRef="p10_u1" targetRef="p10_g1" />
+    <sequenceFlow id="p10_sf5" name="Sí" sourceRef="p10_g1" targetRef="p10_a3" />
+    <sequenceFlow id="p10_sf6" name="No" sourceRef="p10_g1" targetRef="p10_a4" />
+    <sequenceFlow id="p10_sf7" sourceRef="p10_a3" targetRef="p10_g2" />
+    <sequenceFlow id="p10_sf8" sourceRef="p10_a4" targetRef="p10_g2" />
+    <sequenceFlow id="p10_sf9" sourceRef="p10_g2" targetRef="p10_a5" />
+    <sequenceFlow id="p10_sf10" sourceRef="p10_a5" targetRef="p10_u2" />
+    <sequenceFlow id="p10_sf11" sourceRef="p10_u2" targetRef="p10_g3" />
+    <sequenceFlow id="p10_sf12" name="No" sourceRef="p10_g3" targetRef="p10_e1" />
+    <sequenceFlow id="p10_sf13" name="Sí" sourceRef="p10_g3" targetRef="p10_u3" />
+    <sequenceFlow id="p10_sf14" sourceRef="p10_u3" targetRef="p10_c1" />
+    <sequenceFlow id="p10_sf15" sourceRef="p10_c1" targetRef="p10_g4" />
+    <sequenceFlow id="p10_sf16" name="Corregir datos" sourceRef="p10_g4" targetRef="p10_u3" />
+    <sequenceFlow id="p10_sf17" name="Sí" sourceRef="p10_g4" targetRef="p10_c2" />
+    <sequenceFlow id="p10_sf18" sourceRef="p10_c2" targetRef="p10_m1" />
+    <sequenceFlow id="p10_sf19" sourceRef="p10_m1" targetRef="p10_u4" />
+    <sequenceFlow id="p10_sf20" name="Enlace abierto" sourceRef="p10_u4" targetRef="p10_c3" />
+    <sequenceFlow id="p10_sf21" name="Sin respuesta" sourceRef="p10_bt" targetRef="p10_c6" />
+    <sequenceFlow id="p10_sf22" sourceRef="p10_c6" targetRef="p10_e3" />
+    <sequenceFlow id="p10_sf23" sourceRef="p10_c3" targetRef="p10_c4" />
+    <sequenceFlow id="p10_sf24" sourceRef="p10_c4" targetRef="p10_c5" />
+    <sequenceFlow id="p10_sf25" sourceRef="p10_c5" targetRef="p10_e2" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p10_pool1_di" bpmnElement="p10_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="3620" height="832" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_pool1_lane_1_di" bpmnElement="p10_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="3590" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_pool1_lane_2_di" bpmnElement="p10_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="294" width="3590" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_pool1_lane_3_di" bpmnElement="p10_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="528" width="3590" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_pool1_lane_4_di" bpmnElement="p10_pool1_lane_4" isHorizontal="true"><dc:Bounds x="130" y="762" width="3590" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_s_di" bpmnElement="p10_s" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_a1_di" bpmnElement="p10_a1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="354" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_a2_di" bpmnElement="p10_a2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_u1_di" bpmnElement="p10_u1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="706" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_g1_di" bpmnElement="p10_g1" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="927" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_a3_di" bpmnElement="p10_a3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1058" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_a4_di" bpmnElement="p10_a4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1058" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_g2_di" bpmnElement="p10_g2" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1279" y="328" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_a5_di" bpmnElement="p10_a5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1410" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_u2_di" bpmnElement="p10_u2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_g3_di" bpmnElement="p10_g3" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1807" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_e1_di" bpmnElement="p10_e1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1990" y="205" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_u3_di" bpmnElement="p10_u3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1938" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_c1_di" bpmnElement="p10_c1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2114" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_g4_di" bpmnElement="p10_g4" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2335" y="562" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_c2_di" bpmnElement="p10_c2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2466" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_m1_di" bpmnElement="p10_m1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2642" y="788" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_u4_di" bpmnElement="p10_u4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2818" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_bt_di" bpmnElement="p10_bt" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2910" y="134" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_c6_di" bpmnElement="p10_c6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2994" y="658" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_e3_di" bpmnElement="p10_e3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3222" y="673" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_c3_di" bpmnElement="p10_c3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2994" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_c4_di" bpmnElement="p10_c4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3170" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_c5_di" bpmnElement="p10_c5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3346" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p10_e2_di" bpmnElement="p10_e2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3574" y="569" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p10_sf1_di" bpmnElement="p10_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="310" y="119" /><di:waypoint x="310" y="353" /><di:waypoint x="354" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf2_di" bpmnElement="p10_sf2"><di:waypoint x="494" y="353" /><di:waypoint x="530" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf3_di" bpmnElement="p10_sf3"><di:waypoint x="670" y="353" /><di:waypoint x="688" y="353" /><di:waypoint x="688" y="119" /><di:waypoint x="706" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf4_di" bpmnElement="p10_sf4"><di:waypoint x="846" y="119" /><di:waypoint x="927" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf5_di" bpmnElement="p10_sf5"><di:waypoint x="952" y="144" /><di:waypoint x="952" y="353" /><di:waypoint x="1058" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf6_di" bpmnElement="p10_sf6"><di:waypoint x="952" y="144" /><di:waypoint x="952" y="457" /><di:waypoint x="1058" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf7_di" bpmnElement="p10_sf7"><di:waypoint x="1198" y="353" /><di:waypoint x="1279" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf8_di" bpmnElement="p10_sf8"><di:waypoint x="1198" y="457" /><di:waypoint x="1238" y="457" /><di:waypoint x="1238" y="353" /><di:waypoint x="1279" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf9_di" bpmnElement="p10_sf9"><di:waypoint x="1329" y="353" /><di:waypoint x="1410" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf10_di" bpmnElement="p10_sf10"><di:waypoint x="1550" y="353" /><di:waypoint x="1568" y="353" /><di:waypoint x="1568" y="119" /><di:waypoint x="1586" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf11_di" bpmnElement="p10_sf11"><di:waypoint x="1726" y="119" /><di:waypoint x="1807" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf12_di" bpmnElement="p10_sf12"><di:waypoint x="1832" y="144" /><di:waypoint x="1832" y="223" /><di:waypoint x="1990" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf13_di" bpmnElement="p10_sf13"><di:waypoint x="1857" y="119" /><di:waypoint x="1938" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf14_di" bpmnElement="p10_sf14"><di:waypoint x="2078" y="119" /><di:waypoint x="2096" y="119" /><di:waypoint x="2096" y="587" /><di:waypoint x="2114" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf15_di" bpmnElement="p10_sf15"><di:waypoint x="2254" y="587" /><di:waypoint x="2335" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf16_di" bpmnElement="p10_sf16"><di:waypoint x="2360" y="562" /><di:waypoint x="2360" y="70" /><di:waypoint x="2008" y="70" /><di:waypoint x="2008" y="86" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf17_di" bpmnElement="p10_sf17"><di:waypoint x="2385" y="587" /><di:waypoint x="2466" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf18_di" bpmnElement="p10_sf18"><di:waypoint x="2606" y="587" /><di:waypoint x="2624" y="587" /><di:waypoint x="2624" y="821" /><di:waypoint x="2642" y="821" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf19_di" bpmnElement="p10_sf19"><di:waypoint x="2782" y="821" /><di:waypoint x="2800" y="821" /><di:waypoint x="2800" y="119" /><di:waypoint x="2818" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf20_di" bpmnElement="p10_sf20"><di:waypoint x="2958" y="119" /><di:waypoint x="2976" y="119" /><di:waypoint x="2976" y="587" /><di:waypoint x="2994" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf21_di" bpmnElement="p10_sf21"><di:waypoint x="2928" y="170" /><di:waypoint x="2928" y="691" /><di:waypoint x="2994" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf22_di" bpmnElement="p10_sf22"><di:waypoint x="3134" y="691" /><di:waypoint x="3222" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf23_di" bpmnElement="p10_sf23"><di:waypoint x="3134" y="587" /><di:waypoint x="3170" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf24_di" bpmnElement="p10_sf24"><di:waypoint x="3310" y="587" /><di:waypoint x="3346" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p10_sf25_di" bpmnElement="p10_sf25"><di:waypoint x="3486" y="587" /><di:waypoint x="3574" y="587" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Desafío Verde RM: completar los hábitos de la semana (extendido)">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p05_pool1" name="05 Desafío Verde RM: hábitos automáticos y trivia (AS-IS Fase 3) + cierre semanal (TO-BE)" processRef="p05_pool1_proc" />
+    <participant id="p05_pool2" name="05b Cierre semanal automático (TO-BE - no implementado)" processRef="p05_pool2_proc" />
+
+  </collaboration>
+  <process id="p05_pool1_proc" name="05 Desafío Verde RM: hábitos automáticos y trivia (AS-IS Fase 3) + cierre semanal (TO-BE)" isExecutable="false">
+    <documentation>AS-IS VERIFICADO (Fase 3, commit af7d14d): NO hay 4 casillas marcables. El cumplimiento de los 4 hábitos se deriva automáticamente de los escaneos (reglas 3/3/1 y los 3 materiales) y se complementa con trivia de 25 preguntas, 5 por ronda; hay mensaje de felicitación al 100 % pero sin insignias persistentes. El endpoint PUT de hábitos es un vestigio que la UI ya no usa. Fuente: App.jsx:355-362, 695-721, trivia.js, rutas_db.py:323-330. TO-BE PROPUESTO: cierre semanal, racha, insignias persistentes, configuración de hábitos por administrador y coherencia entre reglas y descripciones sembradas.</documentation>
+    <laneSet id="p05_pool1_ls">
+      <lane id="p05_pool1_lane_1" name="Usuario">
+        <flowNodeRef>p05_s</flowNodeRef>
+        <flowNodeRef>p05_u1</flowNodeRef>
+      </lane>
+      <lane id="p05_pool1_lane_2" name="App EcoScan Chile">
+        <flowNodeRef>p05_a1</flowNodeRef>
+        <flowNodeRef>p05_a2</flowNodeRef>
+        <flowNodeRef>p05_a3</flowNodeRef>
+        <flowNodeRef>p05_a4</flowNodeRef>
+        <flowNodeRef>p05_g3</flowNodeRef>
+        <flowNodeRef>p05_a5</flowNodeRef>
+        <flowNodeRef>p05_e1</flowNodeRef>
+        <flowNodeRef>p05_g4</flowNodeRef>
+        <flowNodeRef>p05_a8</flowNodeRef>
+        <flowNodeRef>p05_e3</flowNodeRef>
+        <flowNodeRef>p05_a6</flowNodeRef>
+        <flowNodeRef>p05_a7</flowNodeRef>
+        <flowNodeRef>p05_e2</flowNodeRef>
+      </lane>
+      <lane id="p05_pool1_lane_3" name="Persistencia (TO-BE: BD con semana e insignias)">
+        <flowNodeRef>p05_d1</flowNodeRef>
+        <flowNodeRef>p05_g1</flowNodeRef>
+        <flowNodeRef>p05_d2</flowNodeRef>
+        <flowNodeRef>p05_g2</flowNodeRef>
+        <flowNodeRef>p05_d3</flowNodeRef>
+        <flowNodeRef>p05_d4</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p05_s" name="Abrir 'Desafío Verde RM'" />
+    <serviceTask id="p05_a1" name="[TO-BE] Determinar la semana vigente" />
+    <serviceTask id="p05_d1" name="[TO-BE] Buscar participación de la sesión en la semana"><documentation>SELECT participacion_desafio</documentation></serviceTask>
+    <exclusiveGateway id="p05_g1" name="[TO-BE] ¿Existe participación?" />
+    <serviceTask id="p05_d2" name="[TO-BE] Crear participación con 0 % de progreso"><documentation>INSERT participacion_desafio, habito_cumplido</documentation></serviceTask>
+    <exclusiveGateway id="p05_g2" />
+    <serviceTask id="p05_a2" name="Mostrar 4 hábitos con estado automático y % de progreso" />
+    <userTask id="p05_u1" name="[TO-BE] Marcar o desmarcar un hábito manualmente" />
+    <serviceTask id="p05_a3" name="[TO-BE] Registrar el cambio manual del hábito" />
+    <serviceTask id="p05_d3" name="[TO-BE] Persistir hábito cumplido (brecha B-4)"><documentation>UPDATE habito_cumplido</documentation></serviceTask>
+    <serviceTask id="p05_a4" name="Calcular progreso = hábitos cumplidos automáticamente / 4 × 100 %" />
+    <exclusiveGateway id="p05_g3" name="¿Progreso = 100 %?" />
+    <serviceTask id="p05_a5" name="Mostrar % actualizado (0 / 25 / 50 / 75 / 100 %)" />
+    <endEvent id="p05_e1" name="Fin: progreso guardado" />
+    <exclusiveGateway id="p05_g4" name="¿Insignia ya otorgada esta semana?" />
+    <serviceTask id="p05_a8" name="[TO-BE] Mostrar insignia de semanas anteriores" />
+    <endEvent id="p05_e3" name="Fin: sin cambios" />
+    <serviceTask id="p05_a6" name="Mostrar mensaje de felicitación al completar 100 %" />
+    <serviceTask id="p05_d4" name="[TO-BE] Registrar insignia obtenida"><documentation>INSERT insignia_obtenida</documentation></serviceTask>
+    <serviceTask id="p05_a7" name="Mostrar insignia y mensaje de felicitación" />
+    <endEvent id="p05_e2" name="Fin: insignia otorgada" />
+    <sequenceFlow id="p05_sf1" sourceRef="p05_s" targetRef="p05_a1" />
+    <sequenceFlow id="p05_sf2" sourceRef="p05_a1" targetRef="p05_d1" />
+    <sequenceFlow id="p05_sf3" sourceRef="p05_d1" targetRef="p05_g1" />
+    <sequenceFlow id="p05_sf4" name="Sí" sourceRef="p05_g1" targetRef="p05_g2" />
+    <sequenceFlow id="p05_sf5" name="No" sourceRef="p05_g1" targetRef="p05_d2" />
+    <sequenceFlow id="p05_sf6" sourceRef="p05_d2" targetRef="p05_g2" />
+    <sequenceFlow id="p05_sf7" sourceRef="p05_g2" targetRef="p05_a2" />
+    <sequenceFlow id="p05_sf8" sourceRef="p05_a2" targetRef="p05_u1" />
+    <sequenceFlow id="p05_sf9" sourceRef="p05_u1" targetRef="p05_a3" />
+    <sequenceFlow id="p05_sf10" sourceRef="p05_a3" targetRef="p05_d3" />
+    <sequenceFlow id="p05_sf11" sourceRef="p05_d3" targetRef="p05_a4" />
+    <sequenceFlow id="p05_sf12" sourceRef="p05_a4" targetRef="p05_g3" />
+    <sequenceFlow id="p05_sf13" name="Sí" sourceRef="p05_g3" targetRef="p05_g4" />
+    <sequenceFlow id="p05_sf14" name="No" sourceRef="p05_g3" targetRef="p05_a5" />
+    <sequenceFlow id="p05_sf15" sourceRef="p05_a5" targetRef="p05_e1" />
+    <sequenceFlow id="p05_sf16" name="No" sourceRef="p05_g4" targetRef="p05_a6" />
+    <sequenceFlow id="p05_sf17" name="Sí" sourceRef="p05_g4" targetRef="p05_a8" />
+    <sequenceFlow id="p05_sf18" sourceRef="p05_a8" targetRef="p05_e3" />
+    <sequenceFlow id="p05_sf19" sourceRef="p05_a6" targetRef="p05_d4" />
+    <sequenceFlow id="p05_sf20" sourceRef="p05_d4" targetRef="p05_a7" />
+    <sequenceFlow id="p05_sf21" sourceRef="p05_a7" targetRef="p05_e2" />
+  </process>
+  <process id="p05_pool2_proc" name="05b Cierre semanal automático (TO-BE - no implementado)" isExecutable="false">
+      <documentation>TO-BE PROPUESTO (no implementado en Fase 3, commit af7d14d): no existe job de cierre semanal, tabla de semana, historial de insignias ni cálculo de racha. Fuente: ausencia en 01_schema.sql, rutas_db.py y main.py.</documentation>
+    <laneSet id="p05_pool2_ls">
+      <lane id="p05_pool2_lane_1" name="Planificador (cron)">
+        <flowNodeRef>p05_c0</flowNodeRef>
+      </lane>
+      <lane id="p05_pool2_lane_2" name="Servicio de desafíos">
+        <flowNodeRef>p05_c1</flowNodeRef>
+        <flowNodeRef>p05_c2</flowNodeRef>
+        <flowNodeRef>p05_c3</flowNodeRef>
+        <flowNodeRef>p05_c4</flowNodeRef>
+        <flowNodeRef>p05_cg</flowNodeRef>
+        <flowNodeRef>p05_c5</flowNodeRef>
+        <flowNodeRef>p05_c6</flowNodeRef>
+        <flowNodeRef>p05_cj</flowNodeRef>
+        <flowNodeRef>p05_c7</flowNodeRef>
+        <flowNodeRef>p05_ce</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p05_c0" name="Domingo 23:59 (hora de Chile)"><timerEventDefinition /></startEvent>
+    <serviceTask id="p05_c1" name="Cerrar el desafío de la semana" />
+    <serviceTask id="p05_c2" name="Calcular participaciones completadas y racha" />
+    <serviceTask id="p05_c3" name="Archivar progreso e insignias" />
+    <serviceTask id="p05_c4" name="Crear el desafío de la nueva semana" />
+    <exclusiveGateway id="p05_cg" name="¿Hay hábitos nuevos configurados?" />
+    <serviceTask id="p05_c5" name="Reutilizar los hábitos de la semana anterior" />
+    <serviceTask id="p05_c6" name="Asignar los hábitos configurados" />
+    <exclusiveGateway id="p05_cj" />
+    <serviceTask id="p05_c7" name="Reiniciar el progreso a 0 %" />
+    <endEvent id="p05_ce" name="Fin: nueva semana lista" />
+    <sequenceFlow id="p05_sf22" sourceRef="p05_c0" targetRef="p05_c1" />
+    <sequenceFlow id="p05_sf23" sourceRef="p05_c1" targetRef="p05_c2" />
+    <sequenceFlow id="p05_sf24" sourceRef="p05_c2" targetRef="p05_c3" />
+    <sequenceFlow id="p05_sf25" sourceRef="p05_c3" targetRef="p05_c4" />
+    <sequenceFlow id="p05_sf26" sourceRef="p05_c4" targetRef="p05_cg" />
+    <sequenceFlow id="p05_sf27" name="Sí" sourceRef="p05_cg" targetRef="p05_c6" />
+    <sequenceFlow id="p05_sf28" name="No" sourceRef="p05_cg" targetRef="p05_c5" />
+    <sequenceFlow id="p05_sf29" sourceRef="p05_c6" targetRef="p05_cj" />
+    <sequenceFlow id="p05_sf30" sourceRef="p05_c5" targetRef="p05_cj" />
+    <sequenceFlow id="p05_sf31" sourceRef="p05_cj" targetRef="p05_c7" />
+    <sequenceFlow id="p05_sf32" sourceRef="p05_c7" targetRef="p05_ce" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p05_pool1_di" bpmnElement="p05_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="3268" height="702" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_pool1_lane_1_di" bpmnElement="p05_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="3238" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_pool1_lane_2_di" bpmnElement="p05_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="190" width="3238" height="338" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_pool1_lane_3_di" bpmnElement="p05_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="528" width="3238" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_pool2_di" bpmnElement="p05_pool2" isHorizontal="true"><dc:Bounds x="100" y="818" width="3268" height="364" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_pool2_lane_1_di" bpmnElement="p05_pool2_lane_1" isHorizontal="true"><dc:Bounds x="130" y="818" width="3238" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_pool2_lane_2_di" bpmnElement="p05_pool2_lane_2" isHorizontal="true"><dc:Bounds x="130" y="948" width="3238" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_s_di" bpmnElement="p05_s"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_a1_di" bpmnElement="p05_a1"><dc:Bounds x="354" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_d1_di" bpmnElement="p05_d1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_g1_di" bpmnElement="p05_g1" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="751" y="562" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_d2_di" bpmnElement="p05_d2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="658" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_g2_di" bpmnElement="p05_g2" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1103" y="562" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_a2_di" bpmnElement="p05_a2"><dc:Bounds x="1234" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_u1_di" bpmnElement="p05_u1"><dc:Bounds x="1410" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_a3_di" bpmnElement="p05_a3"><dc:Bounds x="1586" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_d3_di" bpmnElement="p05_d3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1762" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_a4_di" bpmnElement="p05_a4"><dc:Bounds x="1938" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_g3_di" bpmnElement="p05_g3" isMarkerVisible="true"><dc:Bounds x="2159" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_a5_di" bpmnElement="p05_a5"><dc:Bounds x="2290" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_e1_di" bpmnElement="p05_e1"><dc:Bounds x="2518" y="335" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_g4_di" bpmnElement="p05_g4" isMarkerVisible="true"><dc:Bounds x="2335" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_a8_di" bpmnElement="p05_a8"><dc:Bounds x="2466" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_e3_di" bpmnElement="p05_e3"><dc:Bounds x="2694" y="439" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_a6_di" bpmnElement="p05_a6"><dc:Bounds x="2642" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_d4_di" bpmnElement="p05_d4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2818" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_a7_di" bpmnElement="p05_a7"><dc:Bounds x="2994" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_e2_di" bpmnElement="p05_e2"><dc:Bounds x="3222" y="231" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_c0_di" bpmnElement="p05_c0" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="859" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_c1_di" bpmnElement="p05_c1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="354" y="974" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_c2_di" bpmnElement="p05_c2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="974" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_c3_di" bpmnElement="p05_c3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="706" y="974" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_c4_di" bpmnElement="p05_c4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="974" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_cg_di" bpmnElement="p05_cg" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1103" y="982" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_c5_di" bpmnElement="p05_c5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1234" y="1078" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_c6_di" bpmnElement="p05_c6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1234" y="974" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_cj_di" bpmnElement="p05_cj" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1455" y="982" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_c7_di" bpmnElement="p05_c7" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="974" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p05_ce_di" bpmnElement="p05_ce" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1814" y="989" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p05_sf1_di" bpmnElement="p05_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="310" y="119" /><di:waypoint x="310" y="249" /><di:waypoint x="354" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf2_di" bpmnElement="p05_sf2"><di:waypoint x="494" y="249" /><di:waypoint x="512" y="249" /><di:waypoint x="512" y="587" /><di:waypoint x="530" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf3_di" bpmnElement="p05_sf3"><di:waypoint x="670" y="587" /><di:waypoint x="751" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf4_di" bpmnElement="p05_sf4"><di:waypoint x="801" y="587" /><di:waypoint x="1103" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf5_di" bpmnElement="p05_sf5"><di:waypoint x="776" y="612" /><di:waypoint x="776" y="691" /><di:waypoint x="882" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf6_di" bpmnElement="p05_sf6"><di:waypoint x="1022" y="691" /><di:waypoint x="1062" y="691" /><di:waypoint x="1062" y="587" /><di:waypoint x="1103" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf7_di" bpmnElement="p05_sf7"><di:waypoint x="1128" y="562" /><di:waypoint x="1128" y="249" /><di:waypoint x="1234" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf8_di" bpmnElement="p05_sf8"><di:waypoint x="1374" y="249" /><di:waypoint x="1392" y="249" /><di:waypoint x="1392" y="119" /><di:waypoint x="1410" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf9_di" bpmnElement="p05_sf9"><di:waypoint x="1550" y="119" /><di:waypoint x="1568" y="119" /><di:waypoint x="1568" y="249" /><di:waypoint x="1586" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf10_di" bpmnElement="p05_sf10"><di:waypoint x="1726" y="249" /><di:waypoint x="1744" y="249" /><di:waypoint x="1744" y="587" /><di:waypoint x="1762" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf11_di" bpmnElement="p05_sf11"><di:waypoint x="1902" y="587" /><di:waypoint x="1920" y="587" /><di:waypoint x="1920" y="249" /><di:waypoint x="1938" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf12_di" bpmnElement="p05_sf12"><di:waypoint x="2078" y="249" /><di:waypoint x="2159" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf13_di" bpmnElement="p05_sf13"><di:waypoint x="2209" y="249" /><di:waypoint x="2335" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf14_di" bpmnElement="p05_sf14"><di:waypoint x="2184" y="274" /><di:waypoint x="2184" y="353" /><di:waypoint x="2290" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf15_di" bpmnElement="p05_sf15"><di:waypoint x="2430" y="353" /><di:waypoint x="2518" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf16_di" bpmnElement="p05_sf16"><di:waypoint x="2385" y="249" /><di:waypoint x="2642" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf17_di" bpmnElement="p05_sf17"><di:waypoint x="2385" y="249" /><di:waypoint x="2426" y="249" /><di:waypoint x="2426" y="457" /><di:waypoint x="2466" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf18_di" bpmnElement="p05_sf18"><di:waypoint x="2606" y="457" /><di:waypoint x="2694" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf19_di" bpmnElement="p05_sf19"><di:waypoint x="2782" y="249" /><di:waypoint x="2800" y="249" /><di:waypoint x="2800" y="587" /><di:waypoint x="2818" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf20_di" bpmnElement="p05_sf20"><di:waypoint x="2958" y="587" /><di:waypoint x="2976" y="587" /><di:waypoint x="2976" y="249" /><di:waypoint x="2994" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf21_di" bpmnElement="p05_sf21"><di:waypoint x="3134" y="249" /><di:waypoint x="3222" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf22_di" bpmnElement="p05_sf22"><di:waypoint x="266" y="877" /><di:waypoint x="310" y="877" /><di:waypoint x="310" y="1007" /><di:waypoint x="354" y="1007" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf23_di" bpmnElement="p05_sf23"><di:waypoint x="494" y="1007" /><di:waypoint x="530" y="1007" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf24_di" bpmnElement="p05_sf24"><di:waypoint x="670" y="1007" /><di:waypoint x="706" y="1007" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf25_di" bpmnElement="p05_sf25"><di:waypoint x="846" y="1007" /><di:waypoint x="882" y="1007" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf26_di" bpmnElement="p05_sf26"><di:waypoint x="1022" y="1007" /><di:waypoint x="1103" y="1007" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf27_di" bpmnElement="p05_sf27"><di:waypoint x="1153" y="1007" /><di:waypoint x="1234" y="1007" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf28_di" bpmnElement="p05_sf28"><di:waypoint x="1128" y="1032" /><di:waypoint x="1128" y="1111" /><di:waypoint x="1234" y="1111" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf29_di" bpmnElement="p05_sf29"><di:waypoint x="1374" y="1007" /><di:waypoint x="1455" y="1007" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf30_di" bpmnElement="p05_sf30"><di:waypoint x="1374" y="1111" /><di:waypoint x="1414" y="1111" /><di:waypoint x="1414" y="1007" /><di:waypoint x="1455" y="1007" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf31_di" bpmnElement="p05_sf31"><di:waypoint x="1505" y="1007" /><di:waypoint x="1586" y="1007" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p05_sf32_di" bpmnElement="p05_sf32"><di:waypoint x="1726" y="1007" /><di:waypoint x="1814" y="1007" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

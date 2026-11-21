@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Feedback de clasificación y mejora continua">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p11_pool1" name="11 Feedback de clasificación (TO-BE - no implementado)" processRef="p11_pool1_proc" />
+
+  </collaboration>
+  <process id="p11_pool1_proc" name="11 Feedback de clasificación (TO-BE - no implementado)" isExecutable="false">
+    <documentation>TO-BE PROPUESTO (no implementado en Fase 3, commit af7d14d): no hay tabla feedback_inferencia, endpoint ni botones Correcta/Incorrecta. detecciones_rechazadas es un rechazo técnico por confianza menor a 0,5, no un voto del usuario. Fuente: main.py:497-518, 575-582.</documentation>
+    <laneSet id="p11_pool1_ls">
+      <lane id="p11_pool1_lane_1" name="Usuario">
+        <flowNodeRef>p11_s</flowNodeRef>
+        <flowNodeRef>p11_g1</flowNodeRef>
+        <flowNodeRef>p11_u1</flowNodeRef>
+        <flowNodeRef>p11_u2</flowNodeRef>
+        <flowNodeRef>p11_u3</flowNodeRef>
+      </lane>
+      <lane id="p11_pool1_lane_2" name="App EcoScan Chile">
+        <flowNodeRef>p11_a1</flowNodeRef>
+        <flowNodeRef>p11_e1</flowNodeRef>
+        <flowNodeRef>p11_a2</flowNodeRef>
+        <flowNodeRef>p11_g2</flowNodeRef>
+        <flowNodeRef>p11_e2</flowNodeRef>
+      </lane>
+      <lane id="p11_pool1_lane_3" name="Servicio y base de datos">
+        <flowNodeRef>p11_d1</flowNodeRef>
+        <flowNodeRef>p11_g3</flowNodeRef>
+        <flowNodeRef>p11_e3</flowNodeRef>
+        <flowNodeRef>p11_d2</flowNodeRef>
+        <flowNodeRef>p11_g5</flowNodeRef>
+        <flowNodeRef>p11_t1</flowNodeRef>
+        <flowNodeRef>p11_e5</flowNodeRef>
+        <flowNodeRef>p11_e6</flowNodeRef>
+      </lane>
+      <lane id="p11_pool1_lane_4" name="Curador de datos">
+        <flowNodeRef>p11_c1</flowNodeRef>
+        <flowNodeRef>p11_g4</flowNodeRef>
+        <flowNodeRef>p11_e4</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p11_s" name="Usuario ve el resultado de la clasificación" />
+    <exclusiveGateway id="p11_g1" name="¿La clasificación es correcta?" />
+    <userTask id="p11_u1" name="Presionar 'Correcta'" />
+    <serviceTask id="p11_a1" name="Registrar feedback positivo" />
+    <endEvent id="p11_e1" name="Fin: feedback registrado" />
+    <userTask id="p11_u2" name="Presionar 'Incorrecta' y elegir el material correcto" />
+    <userTask id="p11_u3" name="Escribir comentario (opcional)" />
+    <serviceTask id="p11_a2" name="Validar feedback (inferencia existente, un voto por sesión)" />
+    <exclusiveGateway id="p11_g2" name="¿Feedback válido?" />
+    <endEvent id="p11_e2" name="Fin: feedback descartado" />
+    <serviceTask id="p11_d1" name="Guardar feedback (correcto = No, material sugerido)"><documentation>INSERT feedback_inferencia</documentation></serviceTask>
+    <exclusiveGateway id="p11_g3" name="¿Hay consentimiento e imagen almacenada?" />
+    <endEvent id="p11_e3" name="Fin: se usa solo como métrica" />
+    <userTask id="p11_c1" name="Revisar la imagen y confirmar la etiqueta correcta" />
+    <exclusiveGateway id="p11_g4" name="¿Etiqueta confirmada?" />
+    <endEvent id="p11_e4" name="Fin: muestra descartada" />
+    <serviceTask id="p11_d2" name="Agregar a dataset candidato (pendiente de versión)"><documentation>INSERT imagen_dataset (split pendiente)</documentation></serviceTask>
+    <exclusiveGateway id="p11_g5" name="¿Muestras candidatas ≥ umbral (p. ej. 200)?" />
+    <intermediateThrowEvent id="p11_t1" name="Iniciar reentrenamiento (modelo 06)"><messageEventDefinition /></intermediateThrowEvent>
+    <endEvent id="p11_e5" name="Fin: reentrenamiento solicitado" />
+    <endEvent id="p11_e6" name="Fin: muestra en espera" />
+    <sequenceFlow id="p11_sf1" sourceRef="p11_s" targetRef="p11_g1" />
+    <sequenceFlow id="p11_sf2" name="Sí" sourceRef="p11_g1" targetRef="p11_u1" />
+    <sequenceFlow id="p11_sf3" sourceRef="p11_u1" targetRef="p11_a1" />
+    <sequenceFlow id="p11_sf4" sourceRef="p11_a1" targetRef="p11_e1" />
+    <sequenceFlow id="p11_sf5" name="No" sourceRef="p11_g1" targetRef="p11_u2" />
+    <sequenceFlow id="p11_sf6" sourceRef="p11_u2" targetRef="p11_u3" />
+    <sequenceFlow id="p11_sf7" sourceRef="p11_u3" targetRef="p11_a2" />
+    <sequenceFlow id="p11_sf8" sourceRef="p11_a2" targetRef="p11_g2" />
+    <sequenceFlow id="p11_sf9" name="No" sourceRef="p11_g2" targetRef="p11_e2" />
+    <sequenceFlow id="p11_sf10" name="Sí" sourceRef="p11_g2" targetRef="p11_d1" />
+    <sequenceFlow id="p11_sf11" sourceRef="p11_d1" targetRef="p11_g3" />
+    <sequenceFlow id="p11_sf12" name="No" sourceRef="p11_g3" targetRef="p11_e3" />
+    <sequenceFlow id="p11_sf13" name="Sí" sourceRef="p11_g3" targetRef="p11_c1" />
+    <sequenceFlow id="p11_sf14" sourceRef="p11_c1" targetRef="p11_g4" />
+    <sequenceFlow id="p11_sf15" name="No" sourceRef="p11_g4" targetRef="p11_e4" />
+    <sequenceFlow id="p11_sf16" name="Sí" sourceRef="p11_g4" targetRef="p11_d2" />
+    <sequenceFlow id="p11_sf17" sourceRef="p11_d2" targetRef="p11_g5" />
+    <sequenceFlow id="p11_sf18" name="Sí" sourceRef="p11_g5" targetRef="p11_t1" />
+    <sequenceFlow id="p11_sf19" sourceRef="p11_t1" targetRef="p11_e5" />
+    <sequenceFlow id="p11_sf20" name="No" sourceRef="p11_g5" targetRef="p11_e6" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p11_pool1_di" bpmnElement="p11_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="2564" height="936" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_pool1_lane_1_di" bpmnElement="p11_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="2534" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_pool1_lane_2_di" bpmnElement="p11_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="294" width="2534" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_pool1_lane_3_di" bpmnElement="p11_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="528" width="2534" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_pool1_lane_4_di" bpmnElement="p11_pool1_lane_4" isHorizontal="true"><dc:Bounds x="130" y="762" width="2534" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_s_di" bpmnElement="p11_s" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_g1_di" bpmnElement="p11_g1" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="399" y="94" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_u1_di" bpmnElement="p11_u1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_a1_di" bpmnElement="p11_a1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="706" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_e1_di" bpmnElement="p11_e1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="934" y="335" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_u2_di" bpmnElement="p11_u2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="190" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_u3_di" bpmnElement="p11_u3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="706" y="190" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_a2_di" bpmnElement="p11_a2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="424" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_g2_di" bpmnElement="p11_g2" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1103" y="432" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_e2_di" bpmnElement="p11_e2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1286" y="439" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_d1_di" bpmnElement="p11_d1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1234" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_g3_di" bpmnElement="p11_g3" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1455" y="562" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_e3_di" bpmnElement="p11_e3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1638" y="673" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_c1_di" bpmnElement="p11_c1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="788" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_g4_di" bpmnElement="p11_g4" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1807" y="796" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_e4_di" bpmnElement="p11_e4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1990" y="907" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_d2_di" bpmnElement="p11_d2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1938" y="554" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_g5_di" bpmnElement="p11_g5" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2159" y="562" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_t1_di" bpmnElement="p11_t1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2342" y="569" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_e5_di" bpmnElement="p11_e5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2518" y="569" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p11_e6_di" bpmnElement="p11_e6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2342" y="673" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p11_sf1_di" bpmnElement="p11_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="399" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf2_di" bpmnElement="p11_sf2"><di:waypoint x="449" y="119" /><di:waypoint x="530" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf3_di" bpmnElement="p11_sf3"><di:waypoint x="670" y="119" /><di:waypoint x="688" y="119" /><di:waypoint x="688" y="353" /><di:waypoint x="706" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf4_di" bpmnElement="p11_sf4"><di:waypoint x="846" y="353" /><di:waypoint x="934" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf5_di" bpmnElement="p11_sf5"><di:waypoint x="424" y="144" /><di:waypoint x="424" y="223" /><di:waypoint x="530" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf6_di" bpmnElement="p11_sf6"><di:waypoint x="670" y="223" /><di:waypoint x="706" y="223" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf7_di" bpmnElement="p11_sf7"><di:waypoint x="846" y="223" /><di:waypoint x="864" y="223" /><di:waypoint x="864" y="457" /><di:waypoint x="882" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf8_di" bpmnElement="p11_sf8"><di:waypoint x="1022" y="457" /><di:waypoint x="1103" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf9_di" bpmnElement="p11_sf9"><di:waypoint x="1153" y="457" /><di:waypoint x="1286" y="457" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf10_di" bpmnElement="p11_sf10"><di:waypoint x="1128" y="482" /><di:waypoint x="1128" y="587" /><di:waypoint x="1234" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf11_di" bpmnElement="p11_sf11"><di:waypoint x="1374" y="587" /><di:waypoint x="1455" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf12_di" bpmnElement="p11_sf12"><di:waypoint x="1480" y="612" /><di:waypoint x="1480" y="691" /><di:waypoint x="1638" y="691" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf13_di" bpmnElement="p11_sf13"><di:waypoint x="1480" y="612" /><di:waypoint x="1480" y="821" /><di:waypoint x="1586" y="821" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf14_di" bpmnElement="p11_sf14"><di:waypoint x="1726" y="821" /><di:waypoint x="1807" y="821" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf15_di" bpmnElement="p11_sf15"><di:waypoint x="1832" y="846" /><di:waypoint x="1832" y="925" /><di:waypoint x="1990" y="925" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf16_di" bpmnElement="p11_sf16"><di:waypoint x="1832" y="796" /><di:waypoint x="1832" y="587" /><di:waypoint x="1938" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf17_di" bpmnElement="p11_sf17"><di:waypoint x="2078" y="587" /><di:waypoint x="2159" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf18_di" bpmnElement="p11_sf18"><di:waypoint x="2209" y="587" /><di:waypoint x="2342" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf19_di" bpmnElement="p11_sf19"><di:waypoint x="2378" y="587" /><di:waypoint x="2518" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p11_sf20_di" bpmnElement="p11_sf20"><di:waypoint x="2184" y="612" /><di:waypoint x="2184" y="691" /><di:waypoint x="2342" y="691" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

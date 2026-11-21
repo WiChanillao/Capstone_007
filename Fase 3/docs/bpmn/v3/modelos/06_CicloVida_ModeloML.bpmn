@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ecoscan.example/bpmn" id="Definitions_EcoScan" name="EcoScan Chile - Ciclo de vida del modelo de clasificación (MLOps)">
+  <collaboration id="Collab_EcoScan">
+    <participant id="p06_pool1" name="06 Ciclo de vida del modelo MLOps (TO-BE - hoy solo artefactos manuales)" processRef="p06_pool1_proc" />
+
+  </collaboration>
+  <process id="p06_pool1_proc" name="06 Ciclo de vida del modelo MLOps (TO-BE - hoy solo artefactos manuales)" isExecutable="false">
+    <documentation>AS-IS VERIFICADO (Fase 3, commit af7d14d): existe el notebook CRISP-DM con YOLO11n y 50 épocas, el archivo best.pt, la herramienta manual probar_modelo.py y /version con SHA256 del modelo y dataset. La métrica real es mAP@50 0,562, por debajo del objetivo 0,65; el reentrenamiento de 19-11-2026 fue descartado (0,622 validación, 0,527 test). Fuente: README.md:124-134, 171-176, main.py:342-358. TO-BE PROPUESTO: ciclo MLOps automatizado con dataset versionado, Macro-F1 mayor o igual 0,85, p95 menor o igual 2 s, aprobación, deploy, rollback y monitoreo de deriva. No existen las tablas dataset_version, modelo_ml ni evaluacion_modelo.</documentation>
+    <laneSet id="p06_pool1_ls">
+      <lane id="p06_pool1_lane_1" name="Equipo de datos">
+        <flowNodeRef>p06_s</flowNodeRef>
+        <flowNodeRef>p06_d1</flowNodeRef>
+        <flowNodeRef>p06_d2</flowNodeRef>
+        <flowNodeRef>p06_d3</flowNodeRef>
+        <flowNodeRef>p06_d4</flowNodeRef>
+      </lane>
+      <lane id="p06_pool1_lane_2" name="Pipeline de entrenamiento (Ultralytics)">
+        <flowNodeRef>p06_p1</flowNodeRef>
+        <flowNodeRef>p06_p2</flowNodeRef>
+        <flowNodeRef>p06_p3</flowNodeRef>
+        <flowNodeRef>p06_g1</flowNodeRef>
+        <flowNodeRef>p06_p4</flowNodeRef>
+        <flowNodeRef>p06_p5</flowNodeRef>
+        <flowNodeRef>p06_g2</flowNodeRef>
+        <flowNodeRef>p06_p6</flowNodeRef>
+      </lane>
+      <lane id="p06_pool1_lane_3" name="Líder técnico (aprobador)">
+        <flowNodeRef>p06_l1</flowNodeRef>
+        <flowNodeRef>p06_g3</flowNodeRef>
+        <flowNodeRef>p06_e1</flowNodeRef>
+      </lane>
+      <lane id="p06_pool1_lane_4" name="Entorno de producción">
+        <flowNodeRef>p06_o1</flowNodeRef>
+        <flowNodeRef>p06_o2</flowNodeRef>
+        <flowNodeRef>p06_g4</flowNodeRef>
+        <flowNodeRef>p06_o3</flowNodeRef>
+        <flowNodeRef>p06_e2</flowNodeRef>
+        <flowNodeRef>p06_o4</flowNodeRef>
+        <flowNodeRef>p06_o5</flowNodeRef>
+        <flowNodeRef>p06_t1</flowNodeRef>
+        <flowNodeRef>p06_g5</flowNodeRef>
+        <flowNodeRef>p06_x1</flowNodeRef>
+        <flowNodeRef>p06_e3</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="p06_s" name="Nueva versión del modelo requerida" />
+    <userTask id="p06_d1" name="Definir clases de materiales y reglas de etiquetado" />
+    <userTask id="p06_d2" name="Recolectar imágenes por clase (propias, públicas, feedback)" />
+    <userTask id="p06_d3" name="Etiquetar y depurar (duplicados, baja calidad)" />
+    <serviceTask id="p06_p1" name="Dividir en train / val / test y versionar el dataset"><documentation>INSERT dataset_version, imagen_dataset</documentation></serviceTask>
+    <serviceTask id="p06_p2" name="Entrenar YOLOv8n-cls con hiperparámetros definidos" />
+    <serviceTask id="p06_p3" name="Evaluar en validación: Macro-F1 y matriz de confusión"><documentation>INSERT evaluacion_modelo, evaluacion_clase</documentation></serviceTask>
+    <exclusiveGateway id="p06_g1" name="¿Macro-F1 ≥ 0,85? (RNF-02)" />
+    <userTask id="p06_d4" name="Analizar errores y clases débiles; ampliar datos" />
+    <serviceTask id="p06_p4" name="Exportar pesos del modelo y registrar versión"><documentation>INSERT modelo_ml, clase_modelo</documentation></serviceTask>
+    <serviceTask id="p06_p5" name="Medir latencia en lote de 20+ imágenes" />
+    <exclusiveGateway id="p06_g2" name="¿p95 ≤ 2 s? (RNF-01)" />
+    <userTask id="p06_p6" name="Optimizar (resolución, cuantización)" />
+    <userTask id="p06_l1" name="Revisar informe de métricas y aprobar liberación" />
+    <exclusiveGateway id="p06_g3" name="¿Aprobado?" />
+    <endEvent id="p06_e1" name="Fin: modelo rechazado" />
+    <serviceTask id="p06_o1" name="Desplegar contenedor Docker con el nuevo modelo" />
+    <serviceTask id="p06_o2" name="Smoke test y health check (GET /health)" />
+    <exclusiveGateway id="p06_g4" name="¿Salud OK?" />
+    <serviceTask id="p06_o3" name="Revertir a la versión anterior (rollback)" />
+    <endEvent id="p06_e2" name="Fin: despliegue revertido"><errorEventDefinition /></endEvent>
+    <serviceTask id="p06_o4" name="Activar modelo y registrar umbral y métricas"><documentation>UPDATE modelo_ml SET activo; parametro_sistema umbral</documentation></serviceTask>
+    <serviceTask id="p06_o5" name="Monitorear inferencias, confianza media y feedback" />
+    <intermediateCatchEvent id="p06_t1" name="Revisión mensual"><timerEventDefinition /></intermediateCatchEvent>
+    <exclusiveGateway id="p06_g5" name="¿Caída de precisión o deriva de datos?" />
+    <intermediateThrowEvent id="p06_x1" name="Iniciar reentrenamiento"><messageEventDefinition /></intermediateThrowEvent>
+    <endEvent id="p06_e3" name="Fin: modelo vigente" />
+    <sequenceFlow id="p06_sf1" sourceRef="p06_s" targetRef="p06_d1" />
+    <sequenceFlow id="p06_sf2" sourceRef="p06_d1" targetRef="p06_d2" />
+    <sequenceFlow id="p06_sf3" sourceRef="p06_d2" targetRef="p06_d3" />
+    <sequenceFlow id="p06_sf4" sourceRef="p06_d3" targetRef="p06_p1" />
+    <sequenceFlow id="p06_sf5" sourceRef="p06_p1" targetRef="p06_p2" />
+    <sequenceFlow id="p06_sf6" sourceRef="p06_p2" targetRef="p06_p3" />
+    <sequenceFlow id="p06_sf7" sourceRef="p06_p3" targetRef="p06_g1" />
+    <sequenceFlow id="p06_sf8" name="No" sourceRef="p06_g1" targetRef="p06_d4" />
+    <sequenceFlow id="p06_sf9" name="Aumentar datos" sourceRef="p06_d4" targetRef="p06_d2" />
+    <sequenceFlow id="p06_sf10" name="Sí" sourceRef="p06_g1" targetRef="p06_p4" />
+    <sequenceFlow id="p06_sf11" sourceRef="p06_p4" targetRef="p06_p5" />
+    <sequenceFlow id="p06_sf12" sourceRef="p06_p5" targetRef="p06_g2" />
+    <sequenceFlow id="p06_sf13" name="No" sourceRef="p06_g2" targetRef="p06_p6" />
+    <sequenceFlow id="p06_sf14" name="Reentrenar" sourceRef="p06_p6" targetRef="p06_p2" />
+    <sequenceFlow id="p06_sf15" name="Sí" sourceRef="p06_g2" targetRef="p06_l1" />
+    <sequenceFlow id="p06_sf16" sourceRef="p06_l1" targetRef="p06_g3" />
+    <sequenceFlow id="p06_sf17" name="No" sourceRef="p06_g3" targetRef="p06_e1" />
+    <sequenceFlow id="p06_sf18" name="Sí" sourceRef="p06_g3" targetRef="p06_o1" />
+    <sequenceFlow id="p06_sf19" sourceRef="p06_o1" targetRef="p06_o2" />
+    <sequenceFlow id="p06_sf20" sourceRef="p06_o2" targetRef="p06_g4" />
+    <sequenceFlow id="p06_sf21" name="No" sourceRef="p06_g4" targetRef="p06_o3" />
+    <sequenceFlow id="p06_sf22" sourceRef="p06_o3" targetRef="p06_e2" />
+    <sequenceFlow id="p06_sf23" name="Sí" sourceRef="p06_g4" targetRef="p06_o4" />
+    <sequenceFlow id="p06_sf24" sourceRef="p06_o4" targetRef="p06_o5" />
+    <sequenceFlow id="p06_sf25" sourceRef="p06_o5" targetRef="p06_t1" />
+    <sequenceFlow id="p06_sf26" sourceRef="p06_t1" targetRef="p06_g5" />
+    <sequenceFlow id="p06_sf27" name="No" sourceRef="p06_g5" targetRef="p06_e3" />
+    <sequenceFlow id="p06_sf28" name="Sí" sourceRef="p06_g5" targetRef="p06_x1" />
+    <sequenceFlow id="p06_sf29" name="Nuevo ciclo" sourceRef="p06_x1" targetRef="p06_d2" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EcoScan">
+      <bpmndi:BPMNShape id="p06_pool1_di" bpmnElement="p06_pool1" isHorizontal="true"><dc:Bounds x="100" y="60" width="3796" height="832" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_pool1_lane_1_di" bpmnElement="p06_pool1_lane_1" isHorizontal="true"><dc:Bounds x="130" y="60" width="3766" height="130" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_pool1_lane_2_di" bpmnElement="p06_pool1_lane_2" isHorizontal="true"><dc:Bounds x="130" y="190" width="3766" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_pool1_lane_3_di" bpmnElement="p06_pool1_lane_3" isHorizontal="true"><dc:Bounds x="130" y="424" width="3766" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_pool1_lane_4_di" bpmnElement="p06_pool1_lane_4" isHorizontal="true"><dc:Bounds x="130" y="658" width="3766" height="234" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_s_di" bpmnElement="p06_s" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="230" y="101" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_d1_di" bpmnElement="p06_d1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="354" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_d2_di" bpmnElement="p06_d2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="530" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_d3_di" bpmnElement="p06_d3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="706" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_p1_di" bpmnElement="p06_p1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="882" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_p2_di" bpmnElement="p06_p2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1058" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_p3_di" bpmnElement="p06_p3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1234" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_g1_di" bpmnElement="p06_g1" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1455" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_d4_di" bpmnElement="p06_d4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="86" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_p4_di" bpmnElement="p06_p4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1586" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_p5_di" bpmnElement="p06_p5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1762" y="216" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_g2_di" bpmnElement="p06_g2" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="1983" y="224" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_p6_di" bpmnElement="p06_p6" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2114" y="320" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_l1_di" bpmnElement="p06_l1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2114" y="450" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_g3_di" bpmnElement="p06_g3" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2335" y="458" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_e1_di" bpmnElement="p06_e1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2518" y="569" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_o1_di" bpmnElement="p06_o1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2466" y="684" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_o2_di" bpmnElement="p06_o2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2642" y="684" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_g4_di" bpmnElement="p06_g4" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2863" y="692" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_o3_di" bpmnElement="p06_o3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2994" y="788" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_e2_di" bpmnElement="p06_e2" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3222" y="803" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_o4_di" bpmnElement="p06_o4" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="2994" y="684" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_o5_di" bpmnElement="p06_o5" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3170" y="684" width="140" height="66" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_t1_di" bpmnElement="p06_t1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3398" y="699" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_g5_di" bpmnElement="p06_g5" isMarkerVisible="true" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3567" y="692" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_x1_di" bpmnElement="p06_x1" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3750" y="803" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p06_e3_di" bpmnElement="p06_e3" bioc:stroke="#b7791f" bioc:fill="#fff4d6"><dc:Bounds x="3750" y="699" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="p06_sf1_di" bpmnElement="p06_sf1"><di:waypoint x="266" y="119" /><di:waypoint x="354" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf2_di" bpmnElement="p06_sf2"><di:waypoint x="494" y="119" /><di:waypoint x="530" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf3_di" bpmnElement="p06_sf3"><di:waypoint x="670" y="119" /><di:waypoint x="706" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf4_di" bpmnElement="p06_sf4"><di:waypoint x="846" y="119" /><di:waypoint x="864" y="119" /><di:waypoint x="864" y="249" /><di:waypoint x="882" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf5_di" bpmnElement="p06_sf5"><di:waypoint x="1022" y="249" /><di:waypoint x="1058" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf6_di" bpmnElement="p06_sf6"><di:waypoint x="1198" y="249" /><di:waypoint x="1234" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf7_di" bpmnElement="p06_sf7"><di:waypoint x="1374" y="249" /><di:waypoint x="1455" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf8_di" bpmnElement="p06_sf8"><di:waypoint x="1480" y="224" /><di:waypoint x="1480" y="119" /><di:waypoint x="1586" y="119" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf9_di" bpmnElement="p06_sf9"><di:waypoint x="1656" y="152" /><di:waypoint x="1656" y="168" /><di:waypoint x="600" y="168" /><di:waypoint x="600" y="152" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf10_di" bpmnElement="p06_sf10"><di:waypoint x="1505" y="249" /><di:waypoint x="1586" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf11_di" bpmnElement="p06_sf11"><di:waypoint x="1726" y="249" /><di:waypoint x="1762" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf12_di" bpmnElement="p06_sf12"><di:waypoint x="1902" y="249" /><di:waypoint x="1983" y="249" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf13_di" bpmnElement="p06_sf13"><di:waypoint x="2008" y="274" /><di:waypoint x="2008" y="353" /><di:waypoint x="2114" y="353" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf14_di" bpmnElement="p06_sf14"><di:waypoint x="2184" y="386" /><di:waypoint x="2184" y="402" /><di:waypoint x="1128" y="402" /><di:waypoint x="1128" y="282" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf15_di" bpmnElement="p06_sf15"><di:waypoint x="2008" y="274" /><di:waypoint x="2008" y="483" /><di:waypoint x="2114" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf16_di" bpmnElement="p06_sf16"><di:waypoint x="2254" y="483" /><di:waypoint x="2335" y="483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf17_di" bpmnElement="p06_sf17"><di:waypoint x="2360" y="508" /><di:waypoint x="2360" y="587" /><di:waypoint x="2518" y="587" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf18_di" bpmnElement="p06_sf18"><di:waypoint x="2360" y="508" /><di:waypoint x="2360" y="717" /><di:waypoint x="2466" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf19_di" bpmnElement="p06_sf19"><di:waypoint x="2606" y="717" /><di:waypoint x="2642" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf20_di" bpmnElement="p06_sf20"><di:waypoint x="2782" y="717" /><di:waypoint x="2863" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf21_di" bpmnElement="p06_sf21"><di:waypoint x="2888" y="742" /><di:waypoint x="2888" y="821" /><di:waypoint x="2994" y="821" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf22_di" bpmnElement="p06_sf22"><di:waypoint x="3134" y="821" /><di:waypoint x="3222" y="821" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf23_di" bpmnElement="p06_sf23"><di:waypoint x="2913" y="717" /><di:waypoint x="2994" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf24_di" bpmnElement="p06_sf24"><di:waypoint x="3134" y="717" /><di:waypoint x="3170" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf25_di" bpmnElement="p06_sf25"><di:waypoint x="3310" y="717" /><di:waypoint x="3398" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf26_di" bpmnElement="p06_sf26"><di:waypoint x="3434" y="717" /><di:waypoint x="3567" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf27_di" bpmnElement="p06_sf27"><di:waypoint x="3617" y="717" /><di:waypoint x="3750" y="717" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf28_di" bpmnElement="p06_sf28"><di:waypoint x="3592" y="742" /><di:waypoint x="3592" y="821" /><di:waypoint x="3750" y="821" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="p06_sf29_di" bpmnElement="p06_sf29"><di:waypoint x="3768" y="803" /><di:waypoint x="3768" y="70" /><di:waypoint x="600" y="70" /><di:waypoint x="600" y="86" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
